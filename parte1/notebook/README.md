@@ -21,7 +21,7 @@ Los principales componentes utilizados son:
 
 Una vez instalados los requisitos necesarios, se comprobó que las herramientas podían utilizarse correctamente desde la terminal de Windows.
 
-![Requisitos del entorno](images/entorno1-requisitos.png)
+![Requisitos del entorno](parte1/images/entorno1-requisitos.png)
 
 ---
 
