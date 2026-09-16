@@ -67,7 +67,8 @@ La instalación se realizó siguiendo el procedimiento correspondiente para Almo
 
 Una vez finalizada la instalación, se comprobó que Almond estaba disponible mirando su versión y también desde Jupyter mirando que estaba en la lista de los Kernels.
 
-![Almond disponible como kernel](images/almond-version.png)
+![Almond version](images/almond-version.png)
+![Almond disponible como Kernel](images/almond-kernel.png)
 
 En la lista aparece la opción correspondiente a **Scala**, proporcionada por Almond.
 
