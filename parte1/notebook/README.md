@@ -21,7 +21,7 @@ Los principales componentes utilizados son:
 
 Una vez instalados los requisitos necesarios, se comprobó que las herramientas podían utilizarse correctamente desde la terminal de Windows.
 
-![Requisitos del entorno](parte1/images/entorno1-requisitos.png)
+![Requisitos del entorno](../images/entorno1-requisitos.png)
 
 ---
 
@@ -45,11 +45,11 @@ jupyter lab
 
 Este comando inicia el servidor local de JupyterLab y permite acceder a la interfaz desde un navegador web.
 
-![Instalación de JupyterLab](images/jupyterlab-install.png)
+![Instalación de JupyterLab](../images/jupyterlab-install.png)
 
 Al ejecutar el comando, JupyterLab se abrió en el navegador web mediante una dirección local proporcionada por el propio servidor.
 
-![JupyterLab ejecutándose](images/jupyterlab-running.png)
+![JupyterLab ejecutándose](../images/jupyterlab-running.png)
 
 De esta forma se comprobó que JupyterLab estaba correctamente instalado y funcionando en Windows 11.
 
@@ -63,12 +63,12 @@ Almond actúa como un **kernel de Scala para Jupyter**, permitiendo ejecutar có
 
 La instalación se realizó siguiendo el procedimiento correspondiente para Almond y la versión de Scala requerida.
 
-![Instalación de Almond](images/almond-install.png)
+![Instalación de Almond](../images/almond-install.png)
 
 Una vez finalizada la instalación, se comprobó que Almond estaba disponible mirando su versión y también desde Jupyter mirando que estaba en la lista de los Kernels.
 
-![Almond version](images/almond-version.png)
-![Almond disponible como Kernel](images/almond-kernel.png)
+![Almond version](../images/almond-version.png)
+![Almond disponible como Kernel](../images/almond-kernel.png)
 
 En la lista aparece la opción correspondiente a **Scala**, proporcionada por Almond.
 
@@ -88,7 +88,7 @@ Una vez creado el Notebook, se comprobó que la versión de Scala utilizada era 
 
 Para comprobar la versión se ejecutó una instrucción desde una celda del Notebook.
 
-![Versión de Scala 2.12.21](images/scala-version.png)
+![Versión de Scala 2.12.21](../images/scala-version.png)
 
 El resultado obtenido confirma que el entorno está utilizando:
 
@@ -121,7 +121,7 @@ El resultado obtenido fue:
 Hola desdeScala2.12.21
 ```
 
-![Primera prueba de Scala](images/scala-version.png)
+![Primera prueba de Scala](../images/scala-version.png)
 
 Esta prueba permite comprobar el funcionamiento de variables, interpolación de cadenas y salida mediante `println`.
 
@@ -191,7 +191,7 @@ Scala 2.12.21
 
 El Notebook permite ejecutar código Scala de manera interactiva y mostrar sus resultados directamente en cada celda.
 
-![Comprobación final del entorno](images/entorno1-final.png)
+![Comprobación final del entorno](../images/entorno1-final.png)
 
 Por tanto, el **Entorno 1 — JupyterLab + Almond Kernel + Scala 2.12.21** queda correctamente configurado y preparado para trabajar con Scala mediante notebooks.
 
