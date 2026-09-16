@@ -121,7 +121,7 @@ El resultado obtenido fue:
 Hola desdeScala2.12.21
 ```
 
-![Primera prueba de Scala](images/scala-test-1.png)
+![Primera prueba de Scala](images/scala-version.png)
 
 Esta prueba permite comprobar el funcionamiento de variables, interpolación de cadenas y salida mediante `println`.
 
