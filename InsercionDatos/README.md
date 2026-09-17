@@ -25,7 +25,7 @@ Servers → PostgreSQL 18 (doble clic) → contraseña de `postgres` → **Save
 Password** activado. El árbol se despliega mostrando `Databases`,
 `Login/Group Roles` y `Tablespaces`, confirmando la conexión.
 
-![Conectado a PostgreSQL 18 desde pgAdmin, dashboard de actividad visible](images/conectado_pgAdmin_png.png)
+![Conectado a PostgreSQL 18 desde pgAdmin, dashboard de actividad visible](images/conectado_pgAdmin.png)
 
 > **Nota:** en el árbol apareció también una entrada residual **PostgreSQL
 > 16**, de la instalación anterior ya desinstalada (pgAdmin guarda sus
@@ -43,7 +43,7 @@ Se optó por la **Opción 1 (creación por consulta)**.
 servidor en general. Se seleccionó la base `postgres` (única existente en
 ese momento) antes de `Tools → Query Tool`.
 
-![Selección de PostgreSQL 18 / postgres en el árbol antes de abrir Query Tool](images/seleccion_psql18_png.png)
+![Selección de PostgreSQL 18 / postgres en el árbol antes de abrir Query Tool](images/seleccion_psql18.png)
 
 ### Creación de la base de datos
 
