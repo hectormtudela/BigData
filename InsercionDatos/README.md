@@ -175,7 +175,7 @@ Los caracteres especiales (`é`, `ö`, `å`, `è`) se muestran correctamente.
 | Conteo de filas: 91 / 830 / 2155 / 77 / 9 / 29 | ✅ |
 | 14 claves primarias y 13 claves ajenas | ✅ |
 | Nombres con acentos se muestran correctamente | ✅ |
-| Imagen del diagrama ER exportada | ⏳ pendiente |
+| Imagen del diagrama ER exportada | ✅ |
 
 No se presentó ninguno de los problemas descritos en la sección de
 "Problemas frecuentes" del enunciado (cluster fallido, puerto ocupado,
