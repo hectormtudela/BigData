@@ -8,7 +8,7 @@ pgAdmin 4 es una aplicación web servida en local, por lo que el primer
 arranque tarda entre 30 segundos y 2 minutos. No se relanzó la aplicación
 durante la espera.
 
-![Pantalla de bienvenida de pgAdmin 4 en el primer arranque](../images/inicio-pgAdmin_png.png)
+![Pantalla de bienvenida de pgAdmin 4 en el primer arranque](images/inicio-pgAdmin.png)
 
 ### Las dos contraseñas
 
