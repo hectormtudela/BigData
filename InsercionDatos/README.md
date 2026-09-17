@@ -135,7 +135,7 @@ reorganizado con **Auto align** y exportado con **Download image**.
 
 > *(pendiente: adjuntar aquí la imagen exportada del ERD,
 > `images/erd-northwind.png`, cuando esté disponible)*
-
+![Modelo Entidad Relación generado por PSQL](northwind_erd_hd.png)
 Lectura del modelo:
 - `orders` y `order_details` forman el núcleo transaccional.
 - `order_details` tiene clave primaria compuesta (`order_id`, `product_id`).
