@@ -1684,4 +1684,420 @@ Tipos primitivos, listas, tuplas, diccionarios, conjuntos (sets), `if`/`elif`/`e
 
 Uso del intérprete, `val` frente a `var`, tipos principales (`Int`, `Double`, `Boolean`, `String`) e inferencia de tipos, formas de ejecutar Scala (scripts frente a aplicaciones compiladas), definición de funciones, `Array` (mutable, tamaño fijo) y `List` (inmutable, `::`, `:::`), tipado estático frente a dinámico, `if/else` como expresión, bucle `while`, refactorización de `while` a `foreach` como transición al estilo funcional idiomático de Scala.
 
+
+# 21. ÍNDICE DE EJERCICIOS DEL PROFESOR
+ 
+Esta sección te sirve para localizar, dentro de tus propios ejercicios ya resueltos, dónde está trabajado cada concepto de este manual, por si necesitas ver un ejemplo más largo y aplicado.
+ 
+### Scala — 15 ejercicios del capítulo 3
+ 
+- **Ejercicios 1–3**: `val`/`var`, inferencia de tipos, `Double` vs `Float`.
+- **Ejercicios 4–6**: funciones (`bust`, `maxHand`, `ganador`), combinación de condiciones con `if/elif/else`.
+- **Ejercicios 7–9**: `Array`, mutabilidad del contenido, creación con `new Array[Int](n)`, recorrido con `while`.
+- **Ejercicios 10–11**: `List`, inmutabilidad, `::`, `:::`, `Nil`.
+- **Ejercicio 12**: operadores relacionales y lógicos.
+- **Ejercicios 13–14**: `foreach` frente a `while`, efectos secundarios frente a funciones puras.
+- **Ejercicio 15**: proyecto integrado que combina todo lo anterior (torneo de Twenty-One).
+### Scala — Parte 3 (mini proyectos con sbt)
+ 
+- **Parte 3.1** (VS Code + Metals): clasificador de resultados de un torneo, con funciones `bust`, `estadoMano`, `mejorMano`, recorrido con `while` y comparación con `foreach`.
+- **Parte 3.2** (IntelliJ IDEA): analizador de calificaciones de un grupo, con funciones `aprobado`, `estadoNota`, `maxNota`, `clasificacion`, y comparación entre dos evaluaciones.
+### SQL — 20 consultas sobre la base de datos Northwind
+ 
+- **Preguntas 1–3**: `WHERE`, `BETWEEN`, `GROUP BY`, `HAVING`, `CASE WHEN`, cuidado con `NULL` en comparaciones entre columnas.
+- **Preguntas 4–6**: `INNER JOIN` (con varias tablas), `USING`, agregación combinada con `JOIN` y `HAVING`.
+- **Preguntas 7–10**: `LEFT JOIN`, `SELF JOIN`, `CROSS JOIN`, `FULL JOIN`, `COALESCE`.
+- **Preguntas 11–12**: `UNION ALL`, `EXCEPT`, `INTERSECT`.
+- **Preguntas 13–15**: subconsultas con `NOT EXISTS`, subconsulta escalar, subconsulta en `FROM` con agregación en dos niveles.
+- **Preguntas 16–17**: subconsultas correlacionadas, CTE encadenadas, `NTILE()`.
+- **Preguntas 18–20**: funciones de ventana (`RANK()`, `PARTITION BY`, `LAG()`, medias móviles), pivotado con `FILTER`/`CASE WHEN`.
+### Python — 20 ejercicios (de listas a pandas)
+ 
+- **Ejercicios 1–4**: listas, slicing con paso, listas anidadas, copia frente a referencia (`=` vs `list()`/`[:]`), métodos de lista (`.pop()`, `.sort()`, `.insert()`).
+- **Ejercicios 5–7**: funciones con valores por defecto, tuplas y desempaquetado, `import`, módulo propio (`sys.path.append`).
+- **Ejercicios 8–11**: NumPy: vectorización, arrays 2D, máscaras booleanas, estadística descriptiva, reproducibilidad con semillas.
+- **Ejercicios 12–15**: diccionarios anidados, creación de DataFrames, `pd.read_csv`, `.loc`/`.iloc`, columnas calculadas, `.groupby()`/`.agg()`.
+- **Ejercicios 16–18**: operadores de comparación y lógicos, `and`/`or` frente a `&`/`|` en NumPy y pandas, filtrado de DataFrames (`.isin()`, `.between()`, `.query()`).
+- **Ejercicios 19–20**: bucles (`while`, `for`, `enumerate`, `.items()`, `.iterrows()`), construcción de diccionarios resumen con bucles frente a `.groupby()`.
 ---
+ 
+# 22. TEMARIO DE LOS CURSOS DE DATACAMP
+ 
+Esta lista te sirve para comprobar que ya has repasado, dentro de este manual, cada punto del temario de los cursos que has hecho.
+ 
+### SQL Fundamentals
+ 
+Consultas básicas (`SELECT`, `FROM`, `LIMIT`, alias), filtrado (`WHERE`, comparadores, `AND`/`OR`, `BETWEEN`, `IN`, `LIKE`, `NULL`), ordenación (`ORDER BY`), funciones de agregación, `GROUP BY`/`HAVING`, los seis tipos de `JOIN`, operadores de conjunto, subconsultas (en `SELECT`, `FROM`, `WHERE`), subconsultas correlacionadas, `CASE WHEN`, CTE (`WITH`), funciones de ventana (`ROW_NUMBER`, `RANK`, `DENSE_RANK`, `PARTITION BY`, `LAG`/`LEAD`, acumulados y medias móviles), fechas (`EXTRACT`) y texto (`CONCAT`, `UPPER`, `LOWER`, `SUBSTRING`, `TRIM`, `REPLACE`).
+ 
+### Introduction to Python
+ 
+Operadores aritméticos, variables, tipos primitivos y casting, listas (creación, listas anidadas, indexado, slicing, modificar/combinar/eliminar elementos), funciones y métodos integrados (`len`, `type`, `max`, `min`, `round`, `.upper()`, `.count()`, `.index()`, `.append()`, `.reverse()`), paquetes (`import`), NumPy 1D y 2D, operaciones vectorizadas, `.shape`, indexado 2D, estadística básica con NumPy.
+ 
+### Intermediate Python
+ 
+Matplotlib (`plt.plot()`, `plt.scatter()`, `plt.hist()`, personalización de gráficos), diccionarios, DataFrames de pandas (creación, `pd.read_csv()`, `[]`, `[[]]`, `.loc[]`, `.iloc[]`), operadores de comparación y booleanos (incluyendo la versión vectorial con NumPy), `if`/`elif`/`else`, filtrado de DataFrames con máscaras booleanas, bucles (`while`, `for`, `.items()`, `np.nditer()`, `.iterrows()`), números aleatorios y simulación (`numpy.random`, random walk, Monte Carlo).
+ 
+### Introduction to Python for Developers
+ 
+Tipos primitivos, listas, tuplas, diccionarios, conjuntos (sets), `if`/`elif`/`else`, bucles con `break`/`continue`, funciones con parámetros y valores por defecto, ámbito de variables (local/global), clases y objetos, `__init__`, atributos y métodos, herencia, manejo de excepciones (`try`/`except`/`else`/`finally`), lectura y escritura de archivos con `with open(...)`.
+ 
+### Intermediate Python for Developers
+ 
+`*args` y `**kwargs`, funciones como valores de primera clase, funciones lambda, `map()`/`filter()`/`reduce()`, métodos mágicos (`__repr__`, `__str__`, `__len__`, `__eq__`), `@property`, `@classmethod`, `@staticmethod`, generadores y `yield`, expresiones generadoras, decoradores personalizados, organización de módulos/paquetes (`__init__.py`), pruebas unitarias con `unittest`, buenas prácticas PEP 8 y *type hinting*.
+ 
+### Introduction to Scala
+ 
+Uso del intérprete, `val` frente a `var`, tipos principales (`Int`, `Double`, `Boolean`, `String`) e inferencia de tipos, formas de ejecutar Scala (scripts frente a aplicaciones compiladas), definición de funciones, `Array` (mutable, tamaño fijo) y `List` (inmutable, `::`, `:::`), tipado estático frente a dinámico, `if/else` como expresión, bucle `while`, refactorización de `while` a `foreach` como transición al estilo funcional idiomático de Scala.
+ 
+---
+ 
+# 23. EJERCICIOS INTEGRADORES RESUELTOS
+ 
+Estos tres ejercicios combinan, en un único script/consulta, varias de las técnicas de tus propias prácticas. Los de Python y SQL están **ejecutados y verificados** con datos de prueba (el resultado que ves debajo de cada uno es real, no inventado). El de Scala no lo he podido ejecutar en este entorno (no hay JDK/sbt instalado aquí), así que está revisado a mano con mucho cuidado, siguiendo exactamente la sintaxis de tus ejercicios.
+ 
+## 23.1 Python — pedidos de una tienda online
+ 
+**Qué combina:** función con parámetro por defecto, diccionario, lista de tuplas, creación de un DataFrame, `.apply()` con una función de varios argumentos (usando `axis=1`), `.map()` con un diccionario, una segunda función con `if/elif/else`, conversión a array de NumPy y máscara booleana, filtrado de DataFrame con condiciones combinadas (`&`), `.groupby()`, bucle `for` con `enumerate()` sobre `.iterrows()`, y un bucle `while` de reposición de stock.
+ 
+```python
+import numpy as np
+import pandas as pd
+ 
+# 1. Función con parámetro por defecto (igual que el Ejercicio 5 de tu práctica)
+def calcular_importe(unidades, precio_unitario, descuento_pct=0):
+    """Devuelve el importe neto redondeado a 2 decimales."""
+    bruto = unidades * precio_unitario
+    return round(bruto * (1 - descuento_pct / 100), 2)
+ 
+# 2. Diccionario de tarifas de envío por región (igual que el Ejercicio 12)
+tarifas_envio = {
+    "Norte": 4.95, "Sur": 5.50, "Este": 5.20, "Oeste": 6.10, "Centro": 3.90,
+}
+ 
+# 3. Lista de tuplas: cada pedido es (region, producto, unidades, precio, descuento, canal)
+pedidos = [
+    ("Norte", "Auriculares BT", 3, 59.90, 10, "Online"),
+    ("Sur", "Smartwatch S2", 1, 149.00, 0, "Tienda"),
+    ("Este", "Tablet 10", 5, 219.00, 15, "Online"),
+    ("Centro", "Cargador USB-C", 10, 18.50, 0, "Marketplace"),
+    ("Oeste", "Robot Aspirador", 2, 279.00, 20, "Online"),
+    ("Norte", "Cafetera Expres", 4, 189.00, 5, "Tienda"),
+]
+ 
+# 4. Construimos el DataFrame a partir de la lista de tuplas (igual que el Ejercicio 13)
+columnas = ["region", "producto", "unidades", "precio_unitario", "descuento_pct", "canal"]
+df = pd.DataFrame(pedidos, columns=columnas)
+ 
+# 5. Columna calculada con .apply(): como la función necesita VARIOS argumentos de la misma
+#    fila, se usa una lambda + axis=1 (axis=1 dice "aplica fila a fila", no columna a columna)
+df["importe_neto"] = df.apply(
+    lambda fila: calcular_importe(fila["unidades"], fila["precio_unitario"], fila["descuento_pct"]),
+    axis=1
+)
+ 
+# 6. Añadimos el gasto de envío usando el diccionario: .map() busca cada región como clave
+df["envio"] = df["region"].map(tarifas_envio)
+ 
+# 7. Segunda función, con if/elif/else, para clasificar el importe (igual que el Ejercicio 17)
+def clasificar_ticket(importe):
+    if importe < 100:
+        return "Bajo"
+    elif importe < 400:
+        return "Medio"
+    else:
+        return "Alto"
+ 
+df["segmento"] = df["importe_neto"].apply(clasificar_ticket)
+print(df)
+ 
+# 8. NumPy: convertimos la columna a array y aplicamos una máscara booleana (Ejercicios 8-9)
+importes_np = df["importe_neto"].to_numpy()
+mask_altos = importes_np > 200
+print("\nImportes > 200€:", importes_np[mask_altos])
+print("Cuántos pedidos superan 200€:", mask_altos.sum())
+ 
+# 9. Filtrado de DataFrame combinando condiciones con & (Ejercicio 18)
+pedidos_online_caros = df[(df["canal"] == "Online") & (df["importe_neto"] > 150)]
+print("\nPedidos Online > 150€:\n", pedidos_online_caros[["producto", "importe_neto"]])
+ 
+# 10. Agrupación por región (Ejercicio 15)
+resumen_region = df.groupby("region")["importe_neto"].sum().sort_values(ascending=False)
+print("\nFacturación por región:\n", resumen_region)
+ 
+# 11. Bucle for + enumerate sobre .iterrows() -> informe numerado (Ejercicios 19-20)
+print("\n--- Informe de pedidos ---")
+for i, (etiqueta, fila) in enumerate(df.iterrows(), start=1):
+    print(f"{i}. {fila['producto']} ({fila['region']}) -> {fila['importe_neto']} €  [{fila['segmento']}]")
+ 
+# 12. Bucle while -> simulación de reposición de stock (Ejercicio 19)
+stock = 5
+objetivo = 30
+lote = 0
+while stock < objetivo:
+    lote += 1
+    stock += 7
+    print(f"Lote {lote} -> stock: {stock}")
+```
+ 
+**Salida real al ejecutarlo:**
+ 
+```
+Importes > 200€: [930.75 446.4  718.2 ]
+Cuántos pedidos superan 200€: 3
+ 
+Pedidos Online > 150€:
+          producto  importe_neto
+0   Auriculares BT        161.73
+2        Tablet 10        930.75
+4  Robot Aspirador        446.40
+ 
+Facturación por región:
+region
+Este      930.75
+Norte     879.93
+Oeste     446.40
+Centro    185.00
+Sur       149.00
+Name: importe_neto, dtype: float64
+ 
+--- Informe de pedidos ---
+1. Auriculares BT (Norte) -> 161.73 €  [Medio]
+2. Smartwatch S2 (Sur) -> 149.0 €  [Medio]
+3. Tablet 10 (Este) -> 930.75 €  [Alto]
+4. Cargador USB-C (Centro) -> 185.0 €  [Medio]
+5. Robot Aspirador (Oeste) -> 446.4 €  [Alto]
+6. Cafetera Expres (Norte) -> 718.2 €  [Alto]
+Lote 1 -> stock: 12
+Lote 2 -> stock: 19
+Lote 3 -> stock: 26
+Lote 4 -> stock: 33
+```
+ 
+**Qué hace, paso a paso:** primero define dos funciones (`calcular_importe`, con un parámetro que tiene valor por defecto, y `clasificar_ticket`, que usa una cadena de `if/elif/else`). Después construye una tabla (DataFrame) a partir de una lista de tuplas. Con `.apply(..., axis=1)` calcula el importe neto de cada fila llamando a la primera función; con `.map()` añade el coste de envío buscando la región en un diccionario; con otro `.apply()` (esta vez de un solo argumento, así que sin lambda) clasifica cada importe. Luego pasa la columna de importes a un array de NumPy para quedarse, mediante una máscara booleana, solo con los que superan 200€. Filtra el DataFrame combinando dos condiciones a la vez. Agrupa la facturación por región. Imprime un informe numerado recorriendo el DataFrame fila a fila. Y termina con un bucle `while` independiente, sin relación con los datos anteriores, que simula la reposición de stock de un almacén añadiendo lotes de 7 unidades hasta llegar a 30.
+ 
+## 23.2 SQL — facturación por categoría y clientes con poca actividad
+ 
+**Qué combina:** `INNER JOIN` de tres tablas, `GROUP BY`, una CTE, una función de ventana (`RANK() OVER (PARTITION BY ...)`), `CASE WHEN`, y en una segunda consulta `LEFT JOIN` doble, `GROUP BY`/`HAVING`, `COALESCE()` y casteo a `numeric`.
+ 
+```sql
+-- Consulta 1: el producto más vendido de cada categoría, con su facturación,
+-- marcando como 'ESTRELLA' las categorías que superan un umbral de facturación.
+ 
+WITH facturacion_por_producto AS (
+    SELECT
+        p.id AS producto_id,
+        p.nombre AS producto,
+        c.nombre AS categoria,
+        SUM(ROUND((od.precio_unitario::numeric) * od.cantidad * (1 - od.descuento::numeric), 2)) AS facturacion,
+        SUM(od.cantidad) AS unidades_vendidas
+    FROM order_details od
+    INNER JOIN products p ON od.product_id = p.id
+    INNER JOIN categories c ON p.category_id = c.id
+    GROUP BY p.id, p.nombre, c.nombre
+),
+ranking_categoria AS (
+    SELECT
+        *,
+        RANK() OVER (PARTITION BY categoria ORDER BY facturacion DESC) AS posicion
+    FROM facturacion_por_producto
+)
+SELECT categoria, producto, facturacion, unidades_vendidas,
+       CASE WHEN facturacion > 300 THEN 'ESTRELLA' ELSE 'NORMAL' END AS clasificacion
+FROM ranking_categoria
+WHERE posicion = 1
+ORDER BY facturacion DESC;
+```
+ 
+**Resultado real (con datos de prueba: 4 productos en 2 categorías):**
+ 
+```
+ categoria    | producto         | facturacion | unidades_vendidas | clasificacion
+ Hogar        | Cafetera Expres  | 718.20      | 4                  | ESTRELLA
+ Electronica  | Tablet 10        | 438.00      | 2                  | ESTRELLA
+```
+ 
+```sql
+-- Consulta 2: clientes con 1 pedido o menos (incluidos los que no han comprado nunca),
+-- junto con su facturación total.
+ 
+SELECT
+    cl.nombre AS cliente,
+    cl.pais,
+    COUNT(DISTINCT o.id) AS num_pedidos,
+    COALESCE(SUM(ROUND((od.precio_unitario::numeric) * od.cantidad * (1 - od.descuento::numeric), 2)), 0) AS facturacion_total
+FROM customers cl
+LEFT JOIN orders o ON cl.id = o.customer_id
+LEFT JOIN order_details od ON o.id = od.order_id
+GROUP BY cl.nombre, cl.pais
+HAVING COUNT(DISTINCT o.id) <= 1
+ORDER BY facturacion_total DESC;
+```
+ 
+**Resultado real:**
+ 
+```
+ cliente | pais    | num_pedidos | facturacion_total
+ Luis    | Francia | 1            | 718.20
+ Marta   | Italia  | 0            | 0
+```
+ 
+**Qué hace, paso a paso:** la CTE `facturacion_por_producto` une `order_details` con `products` y `categories` mediante dos `INNER JOIN`, y agrupa para calcular cuánto ha facturado cada producto. La CTE `ranking_categoria` toma ese resultado y le añade, con una función de ventana, la posición de cada producto **dentro de su categoría** ordenado por facturación (`PARTITION BY categoria` separa el ranking por categoría; sin eso, `RANK()` numeraría todos los productos juntos, sin distinguir categorías). La consulta final se queda solo con la posición 1 de cada categoría (el producto líder) y usa `CASE WHEN` para etiquetarlo. La segunda consulta usa dos `LEFT JOIN` seguidos para no perder ni a los clientes sin pedidos ni a los pedidos sin líneas de detalle, y `HAVING COUNT(DISTINCT o.id) <= 1` se queda con los clientes de poca o ninguna actividad; `COALESCE(..., 0)` evita que la facturación salga como `NULL` cuando el cliente no tiene ningún pedido.
+ 
+## 23.3 Scala — torneo de Twenty-One (dos rondas)
+ 
+**Qué combina:** `val` frente a `var`, mutabilidad de contenido de un `Array` aunque esté declarado con `val`, funciones puras con `if/else` como expresión y con `if/else if/else`, recorrido con `while` (estilo imperativo) frente a `foreach` (estilo funcional) sobre el mismo dato, y construcción/concatenación de `List` con `::` y `:::` demostrando su inmutabilidad.
+ 
+```scala
+// 1. Datos: List inmutable de nombres, Array mutable de puntuaciones (dos rondas)
+val jugadores = List("Alex", "Chen", "Marta", "Sindhu")
+val manosRonda1 = Array(18, 24, 21, 20)
+val manosRonda2 = Array(22, 19, 20, 21)
+ 
+// Aunque manosRonda1 es un val, SÍ podemos modificar su contenido (el Array es mutable)
+manosRonda1(0) = 17   // Alex corrige su puntuación de la ronda 1
+ 
+// 2. Función pura: determina si una mano se pasa de 21 (sin var, sin efectos secundarios)
+def bust(puntuacion: Int): Boolean = puntuacion > 21
+ 
+// 3. if/else como EXPRESIÓN: la función devuelve directamente el resultado del if
+def estadoMano(puntuacion: Int): String = if (bust(puntuacion)) "BUST" else "VALIDA"
+ 
+// 4. if / else if / else para decidir el ganador entre dos manos
+def mejorMano(a: Int, b: Int): Int = {
+  if (bust(a) && bust(b)) 0
+  else if (bust(a)) b
+  else if (bust(b)) a
+  else if (a > b) a else b
+}
+ 
+// 5. ESTILO IMPERATIVO: recorrido con while, contador mutable (var i)
+println("--- Ronda 1 (con while) ---")
+var i = 0
+while (i < jugadores.length) {
+  println(jugadores(i) + " -> " + manosRonda1(i) + " -> " + estadoMano(manosRonda1(i)))
+  i = i + 1
+}
+ 
+// 6. ESTILO FUNCIONAL: el mismo cálculo con foreach, sin contador ni var
+println("\n--- Estados de la ronda 1 (con foreach) ---")
+manosRonda1.foreach(p => println(p + " -> " + estadoMano(p)))
+ 
+// 7. Buscamos la mejor puntuación válida de cada ronda (reutilizando bust con while)
+def mejorValidaDeRonda(mano: Array[Int]): Int = {
+  var mejor = 0
+  var k = 0
+  while (k < mano.length) {
+    if (!bust(mano(k)) && mano(k) > mejor) {
+      mejor = mano(k)
+    }
+    k = k + 1
+  }
+  mejor
+}
+ 
+val mejorRonda1 = mejorValidaDeRonda(manosRonda1)
+val mejorRonda2 = mejorValidaDeRonda(manosRonda2)
+println("\nMejor puntuación válida ronda 1: " + mejorRonda1)
+println("Mejor puntuación válida ronda 2: " + mejorRonda2)
+println("Comparativa entre rondas -> " + mejorMano(mejorRonda1, mejorRonda2))
+ 
+// 8. List inmutable: añadir un jugador con :: NO modifica "jugadores"
+val jugadoresAmpliados = "Luis" :: jugadores
+println("\nJugadores originales: " + jugadores)
+println("Jugadores ampliados:  " + jugadoresAmpliados)
+ 
+// 9. Concatenar dos listas con :::
+val nuevosFichajes = List("Pedro", "Sofia")
+val plantillaCompleta = jugadoresAmpliados ::: nuevosFichajes
+println("Plantilla completa:   " + plantillaCompleta)
+```
+ 
+**Resultado esperado al ejecutarlo (calculado a mano paso a paso):**
+ 
+```
+--- Ronda 1 (con while) ---
+Alex -> 17 -> VALIDA
+Chen -> 24 -> BUST
+Marta -> 21 -> VALIDA
+Sindhu -> 20 -> VALIDA
+ 
+--- Estados de la ronda 1 (con foreach) ---
+17 -> VALIDA
+24 -> BUST
+21 -> VALIDA
+20 -> VALIDA
+ 
+Mejor puntuación válida ronda 1: 21
+Mejor puntuación válida ronda 2: 21
+Comparativa entre rondas -> 21
+ 
+Jugadores originales: List(Alex, Chen, Marta, Sindhu)
+Jugadores ampliados:  List(Luis, Alex, Chen, Marta, Sindhu)
+Plantilla completa:   List(Luis, Alex, Chen, Marta, Sindhu, Pedro, Sofia)
+```
+ 
+**Qué hace, paso a paso:** primero declara los nombres como `List` (inmutable) y las puntuaciones como `Array` (mutable en contenido), y demuestra justo debajo que se puede cambiar un valor dentro del array (`manosRonda1(0) = 17`) sin que eso contradiga que la variable sea un `val`. Define tres funciones puras (no modifican nada fuera de sí mismas): `bust` comprueba si una mano se pasa, `estadoMano` usa el `if/else` como expresión para devolver un texto, y `mejorMano` encadena `if/else if/else` para decidir el ganador entre dos puntuaciones, incluyendo el caso de que ambas se pasen o de que empaten. Recorre la ronda 1 dos veces con el mismo resultado: primero con `while` (necesitando un contador `var i` que hay que incrementar a mano — estilo imperativo) y después con `foreach` (sin ningún contador — estilo funcional). Calcula, con una función auxiliar que también usa `while`, la mejor puntuación válida de cada ronda, y compara ambas rondas con `mejorMano`. Por último, demuestra que `::` (añadir un elemento al principio) y `:::` (concatenar dos listas) siempre crean una lista **nueva**, dejando intactas tanto `jugadores` como `jugadoresAmpliados`.
+ 
+---
+ 
+# 24. CÓMO CARGAR ARCHIVOS EN PYTHON
+ 
+## 24.1 Cargar un CSV con pandas (lo más habitual en tus ejercicios)
+ 
+```python
+import pandas as pd
+ 
+df = pd.read_csv("ventas_retail.csv")
+```
+ 
+Esto asume que el archivo `ventas_retail.csv` está en la **misma carpeta** desde la que estás ejecutando el notebook. Si el archivo está en otra carpeta, tienes que indicar la "ruta" (path), es decir, el camino de carpetas para llegar hasta él:
+ 
+```python
+df = pd.read_csv("../data/ventas_retail.csv")
+```
+ 
+Aquí `../` significa "sube una carpeta desde donde está el notebook", y `data/` significa "y entra en la carpeta llamada data". Esto es justo lo que hacían tus ejercicios, donde el notebook vive en `notebooks/` y los CSV en `data/`.
+ 
+Opciones que se usan mucho al cargar un CSV:
+ 
+```python
+pd.read_csv("archivo.csv", index_col="id")          # usa la columna "id" como índice de las filas
+pd.read_csv("archivo.csv", sep=";")                   # si el archivo usa ";" en vez de "," para separar columnas
+pd.read_csv("archivo.csv", encoding="utf-8")          # indica la codificación de caracteres (útil con acentos/ñ)
+```
+ 
+## 24.2 En Jupyter Lab: cómo saber dónde está tu notebook y qué archivos hay alrededor
+ 
+Dentro de una celda de Jupyter puedes ejecutar comandos para orientarte:
+ 
+```python
+import os
+print(os.getcwd())      # te dice la carpeta en la que Python cree que estás situado ahora mismo
+print(os.listdir())       # te lista los archivos y carpetas que hay ahí
+```
+ 
+Si `read_csv("archivo.csv")` te da un error de tipo `FileNotFoundError`, casi siempre es porque la ruta que has escrito no corresponde a dónde está realmente el archivo respecto a la carpeta desde la que se ejecuta el notebook. Usa `os.getcwd()` y `os.listdir()` para comprobarlo antes de nada.
+ 
+## 24.3 Subir un archivo directamente en Jupyter Lab
+ 
+Si el archivo está en tu ordenador y no en el mismo sitio que el notebook, en la barra lateral izquierda de Jupyter Lab (el panel de archivos) hay un icono para subir archivos (una flecha hacia arriba). Al subirlo, queda disponible en esa misma carpeta del entorno de Jupyter, y ya puedes cargarlo con `pd.read_csv("nombre_del_archivo.csv")` usando solo el nombre, sin ninguna ruta delante, porque estaría en la carpeta actual.
+ 
+## 24.4 Otros formatos de archivo
+ 
+```python
+pd.read_excel("archivo.xlsx")       # para archivos de Excel (necesita el paquete openpyxl instalado)
+pd.read_json("archivo.json")         # para archivos JSON
+ 
+# Lectura de un archivo de texto plano, sin pandas
+with open("archivo.txt", "r") as f:
+    contenido = f.read()
+```
+ 
+`with open("archivo.txt", "r") as f:` abre el archivo en modo lectura (`"r"` de *read*) y se asegura de cerrarlo automáticamente al terminar el bloque de código, incluso si ocurre un error a mitad. `f.read()` lee todo el contenido del archivo como un único texto.
+ 
+## 24.5 Guardar (exportar) un archivo desde Python
+ 
+```python
+df.to_csv("../outputs/resultado.csv")           # guarda un DataFrame como CSV
+df.to_csv("../outputs/resultado.csv", index=False)  # igual, pero sin guardar la columna de índice
+```
