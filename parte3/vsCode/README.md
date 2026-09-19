@@ -1,7 +1,5 @@
 # Mini proyecto 3.1 — Torneo de Twenty-One
 
-# 
-
 ## Entorno
 
 - Visual Studio Code
