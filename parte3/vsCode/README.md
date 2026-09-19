@@ -133,8 +133,8 @@ puntos.foreach(p => println(s"Puntuación $p : ${estadoMano(p)}"))
 
 ## Capturas
 
-![VSCode abierto con Scala, JDK y SBT funcionando][images/Captura1.PNG]
+![VSCode abierto con Scala, JDK y SBT funcionando](images/Captura1.PNG)
 
-![SBT Compile en uso][images/sbtCompile.PNG]
+![SBT Compile en uso](images/sbtCompile.PNG)
 
-![SBT Run en uso y ejecución del programa][images/sbtRun.PNG]
+![SBT Run en uso y ejecución del programa](images/sbtRun.PNG)
