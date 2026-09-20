@@ -54,4 +54,29 @@ ORDER BY num_clientes DESC, pais;
 
 ---
 
+## Pregunta 3 — Alerta de reposición
+
+**Enunciado:** Productos activos con stock inferior o igual a su nivel de reposición, con una columna que diga 'CRÍTICO' si el stock es 0 y 'AVISO' en el resto.
+
+```sql
+-- Productos activos con stock igual o inferior al nivel de reposición
+SELECT product_name AS producto, units_in_stock AS stock, reorder_level AS nivel_reposicion,
+       units_on_order AS pedido,
+       CASE
+           WHEN units_in_stock = 0 THEN 'CRÍTICO'
+           ELSE 'AVISO'
+       END AS situacion
+FROM products
+WHERE discontinued = 0
+  AND units_in_stock <= reorder_level
+ORDER BY units_in_stock, product_name;
+```
+
+**Resultado:**
+![Resultado prueba](images/ejercicio3.png)
+
+**Comentario:** Usé CASE WHEN para decidir el texto entre "Crítico" y "Aviso" 
+
+
+---
 
