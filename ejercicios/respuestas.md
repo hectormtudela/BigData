@@ -148,7 +148,7 @@ HAVING SUM((order_details.unit_price::numeric) * order_details.quantity * (1 - o
 ORDER BY facturacion DESC;
 ```
 **Resultado:**
-![Resultado prueba](images/prueba.png)
+![Resultado prueba](images/ejercicio6.png)
 
 **Comentario:** En el ``HAVING`` repito la expresión completa del ``SUM()`` porque no le puedo hacer llamada por su nombre
 
