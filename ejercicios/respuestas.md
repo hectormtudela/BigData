@@ -1,17 +1,4 @@
-## Pregunta  — 
-
-**Enunciado:** 
-
-```sql
-
-```
-**Resultado:**
-![Resultado prueba](images/prueba.png)
-
-**Comentario:**  
-
-
----
+<img width="540" height="293" alt="image" src="https://github.com/user-attachments/assets/244fdd1e-0684-409f-8cd8-a02beaf29fcc" />
 
 ## Pregunta 1 — Catálogo comercial activo
 
@@ -353,108 +340,277 @@ ORDER BY pedidos_realizados DESC, customers.company_name;
 
 ---
 
-## Pregunta  — 
+## Pregunta 14 — Productos por encima de la media
 
-**Enunciado:** 
+**Enunciado:** Productos activos con precio superior al precio medio de todo el catálogo, con el precio, la media y la diferencia.
 
 ```sql
-
+-- Productos activos con precio superior a la media del catálogo
+SELECT product_name,
+       ROUND(unit_price::numeric, 2),
+       ROUND((SELECT AVG(unit_price::numeric) FROM products), 2),
+       ROUND(unit_price::numeric - (SELECT AVG(unit_price::numeric) FROM products), 2)
+FROM products
+WHERE discontinued = 0
+  AND unit_price::numeric > (SELECT AVG(unit_price::numeric) FROM products)
+ORDER BY unit_price DESC;
 ```
 **Resultado:**
-![Resultado prueba](images/prueba.png)
+![Resultado ej14](images/ejercicio14.png)
 
-**Comentario:**  
+**Comentario:** Uso una subconsulta escalar (una fila y una columna) en el WHERE para comparar con la media y la repito en el SELECT para mostrarla y calcular la diferencia. 
+
+---
+
+## Pregunta 15 — Ticket medio por cliente
+
+**Enunciado:** Para cada cliente que haya comprado, número de pedidos, importe total y ticket medio. Los 15 con mayor ticket medio.
+
+```sql
+-- Los 15 clientes con mayor ticket medio por pedido
+SELECT customers.company_name,
+       customers.country,
+       COUNT(*),
+       ROUND(SUM(importe_pedido), 2),
+       ROUND(AVG(importe_pedido), 2)
+FROM (
+    SELECT orders.order_id,
+           orders.customer_id,
+           SUM((order_details.unit_price::numeric) * order_details.quantity * (1 - order_details.discount::numeric)) AS importe_pedido
+    FROM orders
+    INNER JOIN order_details
+        ON order_details.order_id = orders.order_id
+    GROUP BY orders.order_id, orders.customer_id
+) AS pedidos
+INNER JOIN customers
+    ON customers.customer_id = pedidos.customer_id
+GROUP BY customers.customer_id, customers.company_name, customers.country
+ORDER BY AVG(pedidos.importe_pedido) DESC
+LIMIT 15;
+```
+**Resultado:** :
+![Resultado ej15](images/ejercicio15.png)
+
+**Comentario:** El cálculo tiene dos niveles. Primero, en una subconsulta en el ``FROM``, sumo las líneas para obtener el importe de cada pedido. Después promedio esos importes por cliente.
 
 
 ---
 
-## Pregunta  — 
+## Pregunta 16 — El producto más caro de cada categoría
 
-**Enunciado:** 
+**Enunciado:** Para cada categoría, el producto con el precio más alto, con el precio medio de su categoría. Con subconsulta correlacionada.
 
 ```sql
+-- Producto más caro de cada categoría, con el precio medio de su categoría
+SELECT categories.category_name,
+       products.product_name,
+       ROUND(products.unit_price::numeric, 2),
+       (SELECT ROUND(AVG(productos_categoria.unit_price::numeric), 2)
+        FROM products AS productos_categoria
+        WHERE productos_categoria.category_id = products.category_id)
+FROM products
+INNER JOIN categories
+    ON categories.category_id = products.category_id
+WHERE products.unit_price = (SELECT MAX(productos_categoria.unit_price)
+                             FROM products AS productos_categoria
+                             WHERE productos_categoria.category_id = products.category_id)
+ORDER BY categories.category_name;
+```
+**Resultado:** 
+![Resultado ej16](images/ejercicio16.png)
 
+**Comentario:**  En el ``WHERE``, la subconsulta correlacionada calcula el precio máximo de la categoría del producto que se está evaluando (p2.category_id = p.category_id). En el ``SELECT``, otra subconsulta correlacionada calcula la media de esa categoría.
+
+---
+
+## Pregunta 17 — Segmentación ABC de la cartera de clientes
+
+**Enunciado:** Con CTE, calcula la facturación de cada cliente, divídelos en cuartiles, etiqueta cada segmento y devuelve por segmento el número de clientes, la facturación y su porcentaje sobre el total.
+
+```sql
+-- Segmentación ABC de clientes por cuartiles de facturación
+WITH facturacion_cliente AS (
+    SELECT orders.customer_id,
+           SUM((order_details.unit_price::numeric) * order_details.quantity * (1 - order_details.discount::numeric)) AS facturacion
+    FROM orders
+    INNER JOIN order_details
+        ON order_details.order_id = orders.order_id
+    GROUP BY orders.customer_id
+),
+cuartiles AS (
+    SELECT facturacion_cliente.customer_id,
+           facturacion_cliente.facturacion,
+           NTILE(4) OVER (ORDER BY facturacion_cliente.facturacion DESC) AS cuartil
+    FROM facturacion_cliente
+),
+segmentos AS (
+    SELECT cuartiles.customer_id,
+           cuartiles.facturacion,
+           CASE cuartiles.cuartil
+               WHEN 1 THEN 'A - Estratégico'
+               WHEN 2 THEN 'B - Consolidado'
+               WHEN 3 THEN 'C - Ocasional'
+               ELSE 'D - Marginal'
+           END AS segmento
+    FROM cuartiles
+)
+SELECT segmentos.segmento,
+       COUNT(*) AS num_clientes,
+       ROUND(SUM(segmentos.facturacion), 2) AS facturacion_segmento,
+       ROUND(100 * SUM(segmentos.facturacion) / SUM(SUM(segmentos.facturacion)) OVER (), 2) AS porcentaje_sobre_total
+FROM segmentos
+GROUP BY segmentos.segmento
+ORDER BY segmentos.segmento;
 ```
 **Resultado:**
-![Resultado prueba](images/prueba.png)
+![Resultado ej17](images/ejercicio17.png)
 
-**Comentario:**  
+**Comentario:** Encadeno tres CTE: facturacion_cliente, cuartiles y segmentos. Para el porcentaje uso ``SUM(SUM(...)) OVER ()``, que suma el total de todos los segmentos.
+
+---
+
+## Pregunta 18 — Los tres productos más vendidos de cada categoría
+
+**Enunciado:** Para cada categoría, los 3 productos con mayor facturación, con posición en la categoría, unidades, facturación y posición global.
+
+```sql
+-- Top 3 de productos por facturación en cada categoría, con su posición global
+WITH ventas AS (
+    SELECT categories.category_name,
+           products.product_name,
+           SUM(order_details.quantity) AS unidades,
+           SUM((order_details.unit_price::numeric) * order_details.quantity * (1 - order_details.discount::numeric)) AS facturacion
+    FROM order_details
+    INNER JOIN products
+        ON products.product_id = order_details.product_id
+    INNER JOIN categories
+        ON categories.category_id = products.category_id
+    GROUP BY categories.category_name, products.product_id, products.product_name
+),
+ranking AS (
+    SELECT ventas.category_name,
+           ventas.product_name,
+           ventas.unidades,
+           ventas.facturacion,
+           RANK() OVER (PARTITION BY ventas.category_name ORDER BY ventas.facturacion DESC) AS posicion_en_categoria,
+           RANK() OVER (ORDER BY ventas.facturacion DESC) AS posicion_global
+    FROM ventas
+)
+SELECT ranking.category_name,
+       ranking.posicion_en_categoria,
+       ranking.product_name,
+       ranking.unidades,
+       ROUND(ranking.facturacion, 2) AS facturacion,
+       ranking.posicion_global
+FROM ranking
+WHERE ranking.posicion_en_categoria <= 3
+ORDER BY ranking.category_name, ranking.posicion_en_categoria;
+```
+**Resultado:**
+![Resultado ej18](images/ejercicio18.png)
+
+**Comentario:** Calculo las dos posiciones con ``RANK()``, una con ``PARTITION BY`` categoria y otra sin partición para el ranking global, y filtro fuera, porque no se puede filtrar por una función de ventana en el ``WHERE``.
 
 
 ---
 
-## Pregunta  — 
+## Pregunta 19 — Evolución mensual con acumulado y media móvil
 
-**Enunciado:** 
+**Enunciado:** Para cada mes de 1997: facturación, acumulado, media móvil de 3 meses, facturación del mes anterior y variación porcentual.
 
 ```sql
-
+-- Evolución mensual de 1997: acumulado, media móvil de 3 meses y variación mensual
+WITH mensual AS (
+    SELECT DATE_TRUNC('month', orders.order_date)::date AS mes,
+           SUM((order_details.unit_price::numeric) * order_details.quantity * (1 - order_details.discount::numeric)) AS facturacion
+    FROM orders
+    INNER JOIN order_details
+        ON order_details.order_id = orders.order_id
+    WHERE orders.order_date >= DATE '1997-01-01'
+      AND orders.order_date < DATE '1998-01-01'
+    GROUP BY DATE_TRUNC('month', orders.order_date)
+)
+SELECT mensual.mes,
+       ROUND(mensual.facturacion, 2) AS facturacion,
+       ROUND(SUM(mensual.facturacion) OVER (ORDER BY mensual.mes), 2) AS acumulado,
+       ROUND(AVG(mensual.facturacion) OVER (
+           ORDER BY mensual.mes
+           ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+       ), 2) AS media_movil_3m,
+       ROUND(LAG(mensual.facturacion) OVER (ORDER BY mensual.mes), 2) AS mes_anterior,
+       ROUND(
+           100 * (mensual.facturacion - LAG(mensual.facturacion) OVER (ORDER BY mensual.mes))
+           / LAG(mensual.facturacion) OVER (ORDER BY mensual.mes),
+           2
+       ) AS variacion_pct
+FROM mensual
+ORDER BY mensual.mes;
 ```
 **Resultado:**
-![Resultado prueba](images/prueba.png)
+![Resultado ej19](images/ejercicio19.png)
 
-**Comentario:**  
+**Comentario:** ``SUM() OVER (ORDER BY mes)`` da el acumulado y para la media móvil declaro el marco a mano con ``ROWS BETWEEN 2 PRECEDING AND CURRENT ROW``.
 
 
 ---
 
-## Pregunta  — 
+## Pregunta 20 — Cuadro de mando anual por categoría 
 
-**Enunciado:** 
-
-```sql
-
-```
-**Resultado:**
-![Resultado prueba](images/prueba.png)
-
-**Comentario:**  
-
-
----
-
-## Pregunta  — 
-
-**Enunciado:** 
+**Enunciado:** Una fila por categoría con la facturación de 1996, 1997 y 1998 en columnas, el total, el peso sobre el total de la compañía, la tendencia 1997-1998 y una fila de totales generales.
 
 ```sql
-
+-- Cuadro de mando anual por categoría con pivotado, totales y tendencia 1997-1998
+-- OJO: 1996 solo tiene datos desde julio y 1998 solo hasta el 6 de mayo, así que
+-- comparar los importes anuales en bruto no es válido. La tendencia se calcula
+-- con el ritmo diario de facturación (importe / días con datos de cada año).
+WITH ventas AS (
+    SELECT categories.category_name,
+           EXTRACT(YEAR FROM orders.order_date)::int AS anio,
+           (order_details.unit_price::numeric) * order_details.quantity * (1 - order_details.discount::numeric) AS importe
+    FROM orders
+    INNER JOIN order_details
+        ON order_details.order_id = orders.order_id
+    INNER JOIN products
+        ON products.product_id = order_details.product_id
+    INNER JOIN categories
+        ON categories.category_id = products.category_id
+),
+dias AS (
+    SELECT 365 AS dias_1997,
+           (SELECT MAX(orders.order_date) FROM orders) - DATE '1998-01-01' + 1 AS dias_1998
+),
+pivotado AS (
+    SELECT ventas.category_name,
+           SUM(ventas.importe) FILTER (WHERE ventas.anio = 1996) AS f_1996,
+           SUM(ventas.importe) FILTER (WHERE ventas.anio = 1997) AS f_1997,
+           SUM(ventas.importe) FILTER (WHERE ventas.anio = 1998) AS f_1998,
+           SUM(ventas.importe) AS total
+    FROM ventas
+    GROUP BY ROLLUP (ventas.category_name)
+)
+SELECT COALESCE(pivotado.category_name, 'TOTAL GENERAL') AS categoria,
+       ROUND(COALESCE(pivotado.f_1996, 0), 2) AS f_1996,
+       ROUND(COALESCE(pivotado.f_1997, 0), 2) AS f_1997,
+       ROUND(COALESCE(pivotado.f_1998, 0), 2) AS f_1998,
+       ROUND(pivotado.total, 2) AS total,
+       ROUND(
+           100 * pivotado.total /
+           SUM(pivotado.total) FILTER (WHERE pivotado.category_name IS NOT NULL) OVER (),
+           2
+       ) AS peso_pct,
+       CASE
+           WHEN COALESCE(pivotado.f_1998, 0) / dias.dias_1998
+                > COALESCE(pivotado.f_1997, 0) / dias.dias_1997
+           THEN 'CRECE'
+           ELSE 'DECRECE'
+       END AS tendencia
+FROM pivotado
+CROSS JOIN dias
+ORDER BY (pivotado.category_name IS NULL), pivotado.category_name;
 ```
 **Resultado:**
-![Resultado prueba](images/prueba.png)
+![Resultado ej20](images/ejercicio20.png)
 
-**Comentario:**  
+**Comentario:** Pivoto con ``SUM(...) FILTER (WHERE anio = ...)``, que es más legible que el ``CASE`` dentro del ``SUM``. ``ROLLUP (categoria)`` añade la fila de totales, que rellena con ``COALESCE`` como total general. 
 
-
----
-
-## Pregunta  — 
-
-**Enunciado:** 
-
-```sql
-
-```
-**Resultado:**
-![Resultado prueba](images/prueba.png)
-
-**Comentario:**  
-
-
----
-
-## Pregunta  — 
-
-**Enunciado:** 
-
-```sql
-
-```
-**Resultado:**
-![Resultado prueba](images/prueba.png)
-
-**Comentario:**  
-
-
----
 
