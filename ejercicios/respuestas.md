@@ -155,4 +155,279 @@ ORDER BY facturacion DESC;
 
 ---
 
+## Pregunta 7 — Clientes sin actividad comercial
+
+**Enunciado:** Todos los clientes con su número de pedidos y la fecha del último. Los que no han pedido salen con 0 y ``'SIN PEDIDOS'``, y los inactivos van primero.
+
+```sql
+-- Todos los clientes con su número de pedidos y fecha del último; los inactivos primero
+SELECT customers.company_name AS cliente,
+       customers.country AS pais,
+       COUNT(orders.order_id) AS num_pedidos,
+       COALESCE(MAX(orders.order_date)::text, 'SIN PEDIDOS') AS ultimo_pedido
+FROM customers
+LEFT JOIN orders ON orders.customer_id = customers.customer_id
+GROUP BY customers.customer_id, customers.company_name, customers.country
+ORDER BY num_pedidos, customers.company_name;
+```
+**Resultado:**
+![Resultado ej7](images/ejercicio7.png)
+
+**Comentario:** Usé ``LEFT JOIN`` para que los clientes sin pedidos no desaparezcan. También, como ``MAX(order_date)`` es una fecha y ``'SIN PEDIDOS'`` es texto, convierto la fecha a texto para poder usar ``COALESCE``.
+
+
+---
+
+## Pregunta 8 — Organigrama de la fuerza de ventas
+
+**Enunciado:** Cada empleado con su cargo, el nombre completo de su responsable y el cargo de este. Quien no reporta a nadie aparece con ``'DIRECCIÓN GENERAL'``.
+
+```sql
+-- Organigrama: cada empleado con su responsable directo
+SELECT employees.first_name || ' ' || employees.last_name AS empleado,
+       employees.title AS cargo,
+       COALESCE(jefe.first_name || ' ' || jefe.last_name, 'DIRECCIÓN GENERAL') AS responsable,
+       COALESCE(jefe.title, '-') AS cargo_responsable
+FROM employees
+LEFT JOIN employees jefe ON jefe.employee_id = employees.reports_to
+ORDER BY employees.employee_id;
+```
+**Resultado:** 
+![Resultado ej8](images/ejercicio8.png)
+
+**Comentario:** Uso de ``SELF JOIN``. La tabla employees aparece dos veces, como empleado y su jefe. En este caso, el alias de uno de ellos es imprescindible, en mi caso uso el del jefe porque lo veo muy necesario.
+
+---
+
+## Pregunta 9 — Rejilla de cobertura categoría × año 
+
+**Enunciado:** Todas las combinaciones de las 8 categorías con los 3 años (24 filas) con su facturación, con 0 cuando no haya ventas.
+
+```sql
+-- Rejilla completa categoría x año con la facturación (0 si no hubo ventas)
+WITH ventas AS (
+    SELECT products.category_id,
+           EXTRACT(YEAR FROM orders.order_date)::int AS anio,
+           (order_details.unit_price::numeric) * order_details.quantity * (1 - order_details.discount::numeric) AS importe
+    FROM orders
+    INNER JOIN order_details ON order_details.order_id = orders.order_id
+    INNER JOIN products ON products.product_id = order_details.product_id
+),
+anios AS (
+    SELECT DISTINCT EXTRACT(YEAR FROM order_date)::int AS anio
+    FROM orders
+)
+SELECT categories.category_name AS categoria,
+       anios.anio AS anio,
+       COALESCE(ROUND(SUM(ventas.importe), 2), 0) AS facturacion
+FROM categories
+CROSS JOIN anios
+LEFT JOIN ventas ON ventas.category_id = categories.category_id AND ventas.anio = anios.anio
+GROUP BY categories.category_name, anios.anio
+ORDER BY categories.category_name, anios.anio;
+```
+**Resultado:**
+![Resultado ej9](images/ejercicio9.png)
+
+**Comentario:** He tenido que usar un ``CROSS JOIN`` por que necesitaba 8 categorías x 3 años y después un ``LEFT JOIN``.
+
+
+---
+
+## Pregunta 10 — Mapa de países: clientes frente a proveedores
+
+**Enunciado:** Para cada país, cuántos clientes y cuántos proveedores hay, y si tiene solo clientes, solo proveedores o ambos.
+
+```sql
+-- Clientes y proveedores por país, con el tipo de presencia
+SELECT COALESCE(client.pais, provider.pais) AS pais,
+       COALESCE(client.num, 0) AS num_clientes,
+       COALESCE(provider.num, 0) AS num_proveedores,
+       CASE
+           WHEN provider.pais IS NULL THEN 'SOLO CLIENTES'
+           WHEN client.pais IS NULL THEN 'SOLO PROVEEDORES'
+           ELSE 'AMBOS'
+       END AS tipo_presencia
+FROM (SELECT country AS pais, COUNT(*) AS num FROM customers GROUP BY country) client
+FULL JOIN (SELECT country AS pais, COUNT(*) AS num FROM suppliers GROUP BY country) provider
+       ON client.pais = provider.pais
+ORDER BY pais;
+```
+**Resultado:**
+![Resultado ej10](images/ejercicio10.png)
+
+**Comentario:** He agregado por separsdo clientes y proveedores en dos subconsultas y las he unido con ``FULL JOIN`` para que así aparezcan los países que están solo en un lado
+
+---
+
+## Pregunta 11 — Directorio unificado de contactos
+
+**Enunciado:** Una sola tabla con los contactos de clientes, proveedores y empleados, con origen, nombre en mayúsculas, organización, ciudad y país.
+
+```sql
+-- Directorio unificado de contactos de clientes, proveedores y empleados
+SELECT 'CLIENTE' AS origen,
+       UPPER(customers.contact_name) AS contacto,
+       customers.company_name AS organizacion,
+       customers.city AS ciudad,
+       customers.country AS pais
+FROM customers
+UNION ALL
+SELECT 'PROVEEDOR',
+       UPPER(suppliers.contact_name),
+       suppliers.company_name,
+       suppliers.city,
+       suppliers.country
+FROM suppliers
+UNION ALL
+SELECT 'EMPLEADO',
+       UPPER(employees.first_name || ' ' || employees.last_name),
+       'NORTHWIND TRADERS',
+       employees.city,
+       employees.country
+FROM employees
+ORDER BY origen, pais, contacto;
+```
+**Resultado:**
+![Resultado ej11](images/ejercicio11.png)
+
+**Comentario:** Uso ``UNION ALL`` porque quiero todas las filas tal cual: con ``UNION`` se eliminarían los duplicados y se borrarían los que coincidiesen en en nombre y ciudad. 
+
+
+---
+
+## Pregunta  — 
+
+**Enunciado:** 
+
+```sql
+
+```
+**Resultado:**
+![Resultado prueba](images/prueba.png)
+
+**Comentario:**  
+
+
+---
+
+## Pregunta  — 
+
+**Enunciado:** 
+
+```sql
+
+```
+**Resultado:**
+![Resultado prueba](images/prueba.png)
+
+**Comentario:**  
+
+
+---
+
+## Pregunta  — 
+
+**Enunciado:** 
+
+```sql
+
+```
+**Resultado:**
+![Resultado prueba](images/prueba.png)
+
+**Comentario:**  
+
+
+---
+
+## Pregunta  — 
+
+**Enunciado:** 
+
+```sql
+
+```
+**Resultado:**
+![Resultado prueba](images/prueba.png)
+
+**Comentario:**  
+
+
+---
+
+## Pregunta  — 
+
+**Enunciado:** 
+
+```sql
+
+```
+**Resultado:**
+![Resultado prueba](images/prueba.png)
+
+**Comentario:**  
+
+
+---
+
+## Pregunta  — 
+
+**Enunciado:** 
+
+```sql
+
+```
+**Resultado:**
+![Resultado prueba](images/prueba.png)
+
+**Comentario:**  
+
+
+---
+
+## Pregunta  — 
+
+**Enunciado:** 
+
+```sql
+
+```
+**Resultado:**
+![Resultado prueba](images/prueba.png)
+
+**Comentario:**  
+
+
+---
+
+## Pregunta  — 
+
+**Enunciado:** 
+
+```sql
+
+```
+**Resultado:**
+![Resultado prueba](images/prueba.png)
+
+**Comentario:**  
+
+
+---
+
+## Pregunta  — 
+
+**Enunciado:** 
+
+```sql
+
+```
+**Resultado:**
+![Resultado prueba](images/prueba.png)
+
+**Comentario:**  
+
+
+---
 
