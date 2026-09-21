@@ -296,33 +296,60 @@ ORDER BY origen, pais, contacto;
 
 ---
 
-## Pregunta  — 
+## Pregunta 12 — Mercados con desequilibrio 
 
-**Enunciado:** 
+**Enunciado:** a) Países con clientes pero sin ningún proveedor. b) Países con clientes y proveedores a la vez.
 
 ```sql
+-- Países con clientes pero sin ningún proveedor
+SELECT country AS pais 
+FROM customers
+EXCEPT
+SELECT country FROM suppliers
+ORDER BY pais;
 
+-- Países con clientes y proveedores a la vez
+SELECT country AS pais 
+FROM customers
+INTERSECT
+SELECT country FROM suppliers
+ORDER BY pais;
 ```
-**Resultado:**
-![Resultado prueba](images/prueba.png)
 
-**Comentario:**  
-
+**Resultados:**
+![Resultado ej12a](images/ejercicio12a.png)
+![Resultado ej12b](images/ejercicio12b.png)
+**Comentario:** El apartado a) usa ``EXCEPT`` (clientes menos proveedores) y el b) usa ``INTERSECT`` (los que están en los dos).
 
 ---
 
-## Pregunta  — 
+## Pregunta 13 — Clientes que nunca han comprado pescado 
 
-**Enunciado:** 
+**Enunciado:** Clientes que nunca han incluido un producto de la categoría Seafood en ningún pedido, con su país y su número de pedidos.
 
 ```sql
-
+-- Clientes que nunca han comprado productos de la categoría Seafood
+SELECT customers.company_name AS cliente,
+       customers.country AS pais,
+       COUNT(orders.order_id) AS pedidos_realizados
+FROM customers
+LEFT JOIN orders ON orders.customer_id = customers.customer_id
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM orders o2
+    INNER JOIN order_details ON order_details.order_id = o2.order_id
+    INNER JOIN products ON products.product_id = order_details.product_id
+    INNER JOIN categories ON categories.category_id = products.category_id
+    WHERE o2.customer_id = customers.customer_id
+      AND categories.category_name = 'Seafood'
+)
+GROUP BY customers.customer_id, customers.company_name, customers.country
+ORDER BY pedidos_realizados DESC, customers.company_name;
 ```
 **Resultado:**
-![Resultado prueba](images/prueba.png)
+![Resultado ej13](images/ejercicio13.png)
 
-**Comentario:**  
-
+**Comentario:** Subconsulta correlacionada que busca si el cliente tiene alguna línea de la categoría Seafood. Uso ``NOT EXISTS`` en vez de ``NOT IN`` porque si la subconsulta devolviera algún ``NULL`` el resultado sería una tabla vacía sin avisar. 
 
 ---
 
