@@ -4,10 +4,6 @@
 
 En este laboratorio practicas el uso de funciones JSON en T-SQL para construir y consultar datos JSON a partir de la base de datos `AdventureWorksLT`. Tambien combinas la salida JSON con una CTE y una funcion de ventana para crear un reporte practico.
 
-**Escenario:** eres desarrollador/a de base de datos para una empresa de e-commerce. El equipo de marketing necesita los datos de productos en formato JSON para un catalogo web, y ademas necesitas crear reportes que clasifiquen productos dentro de cada categoria.
-
-> Verifica siempre que el codigo se haya copiado correctamente antes de ejecutarlo.
-
 ## Prerrequisitos
 
 - SQL Server 2022+ o Azure SQL Database
