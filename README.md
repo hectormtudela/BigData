@@ -8,7 +8,7 @@ Resolución de los 20 ejercicios de la Práctica 3 sobre listas, funciones y paq
 - JupyterLab
 - NumPy
 - pandas
-- Dependencias en `requeriments.txt`
+- Dependencias en `requirements.txt`
 
 ## Estructura del repositorio
 
@@ -65,7 +65,6 @@ En Windows PowerShell:
 3. Instalar las dependencias y abrir el notebook:
 
 ```bash
-python -m pip install -r requeriments.txt
+python -m pip install -r requirements.txt
 jupyter lab notebooks/practica3_python.ipynb
 ```
-
