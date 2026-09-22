@@ -19,6 +19,16 @@ Resolución de los 20 ejercicios de la Práctica 3 sobre listas, funciones y paq
 | `src/` | Módulo de funciones auxiliares |
 | `outputs/` | Ficheros generados durante la ejecución |
 
+## Datos de partida
+
+| Fichero | Filas | Descripción |
+| --- | --- | --- |
+| `ventas_retail.csv` | 420 | Pedidos de una cadena minorista (3 primeros trimestres de 2025) |
+| `empleados.csv` | 180 | Plantilla de una empresa tecnológica |
+| `sensores_planta.csv` | 600 | Telemetría de 4 máquinas de planta, muestreada cada 15 min |
+
+Los tres ficheros están sin modificar en `data/`, tal como se entregaron.
+
 ## Cómo reproducir
 
 1. Crear el entorno virtual:
