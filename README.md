@@ -29,6 +29,17 @@ Resolución de los 20 ejercicios de la Práctica 3 sobre listas, funciones y paq
 
 Los tres ficheros están sin modificar en `data/`, tal como se entregaron.
 
+## Contenido del notebook
+
+El notebook `notebooks/practica3_python.ipynb` resuelve 20 ejercicios agrupados en:
+
+1. **Listas** (ej. 1-4): slicing, listas anidadas, copias vs. referencias, colas.
+2. **Funciones y paquetes** (ej. 5-7): funciones propias, módulo `src/utilidades.py`, NumPy y pandas.
+3. **NumPy** (ej. 8-11): vectorización, máscaras booleanas, arrays 2D, estadística descriptiva.
+4. **Diccionarios y pandas** (ej. 12-15): diccionarios anidados, `DataFrame`, `groupby`, exportación a CSV.
+5. **Lógica y control de flujo** (ej. 16-18): operadores booleanos, `if/elif/else`, filtrado avanzado.
+6. **Bucles** (ej. 19-20): `while`, `for`, `enumerate`, iteración sobre `DataFrame`.
+
 ## Cómo reproducir
 
 1. Crear el entorno virtual:
