@@ -37,8 +37,20 @@ Indica si cada necesidad corresponde a un sistema transaccional o analítico:
 3. Dirección quiere un nuevo gráfico de margen por familia de producto en el cuadro de mando. **Analista de Datos**
 4. Atención al cliente quiere un asistente que responda "¿cuándo llega mi pedido?". **Ingeniero de IA**
 5. Hay que enmascarar los teléfonos de los socios antes de que lleguen a la capa analítica. **Ingeniero de datos**
-6. Marketing quiere saber qué socios tienen mayor probabilidad de dejar de comprar en los próximos 3 meses. **Analísta de datos**
+6. Marketing quiere saber qué socios tienen mayor probabilidad de dejar de comprar en los próximos 3 meses. **Científico de datos**
 7. Se debe decidir si la plataforma se construye en Fabric, en Databricks o combinando ambos. **Arquitecto de Datos**
 8. Dos departamentos presentan en el comité cifras distintas de "venta neta" para el mismo mes. **Analísta de datos**
+
+
+---
+ AYUDA EJERCICIO 5 - PREGINTAR AL PROFE MAÑANA
+---
+## Ejercicio 5 : Investiga y arma un diagrama de arquitectura de capas (como el de la sección 8) con cada una de estas tecnologías:
+- Databricks (no Azure Databricks) Será un destino de la capa de ingesta y orquestación.
+- Microsoft Fabric. Es decir todo enteramente dentro de Fabric. Ingesta y orquestación de datos.
+- AWS
+- GCP
+- Herramientas Open Source ( el mas importante de todos )
+- ¿Y que pasa con Snowflake , dbt y DuckDB?  ¿En que casos se utilizan? ¿En que capas se pueden incluir o con cuales otras tecnologías se puede combinar? Crear al menos 3 diagramas para este caso
 
 
