@@ -32,13 +32,13 @@ Indica si cada necesidad corresponde a un sistema transaccional o analítico:
 
 ### Ejercicio 4 — ¿Qué rol es responsable?
 
-1. El informe de ventas lleva dos días sin actualizarse porque ha fallado la carga nocturna.
-2. Hay que restaurar la base de datos de la tienda online tras un borrado accidental.
-3. Dirección quiere un nuevo gráfico de margen por familia de producto en el cuadro de mando.
-4. Atención al cliente quiere un asistente que responda "¿cuándo llega mi pedido?".
-5. Hay que enmascarar los teléfonos de los socios antes de que lleguen a la capa analítica.
-6. Marketing quiere saber qué socios tienen mayor probabilidad de dejar de comprar en los próximos 3 meses.
-7. Se debe decidir si la plataforma se construye en Fabric, en Databricks o combinando ambos.
-8. Dos departamentos presentan en el comité cifras distintas de "venta neta" para el mismo mes.
+1. El informe de ventas lleva dos días sin actualizarse porque ha fallado la carga nocturna. **Ingeniero de Datos**
+2. Hay que restaurar la base de datos de la tienda online tras un borrado accidental. **Administrador de la base de datos**
+3. Dirección quiere un nuevo gráfico de margen por familia de producto en el cuadro de mando. **Analista de Datos**
+4. Atención al cliente quiere un asistente que responda "¿cuándo llega mi pedido?". **Ingeniero de IA**
+5. Hay que enmascarar los teléfonos de los socios antes de que lleguen a la capa analítica. **Ingeniero de datos**
+6. Marketing quiere saber qué socios tienen mayor probabilidad de dejar de comprar en los próximos 3 meses. **Analísta de datos**
+7. Se debe decidir si la plataforma se construye en Fabric, en Databricks o combinando ambos. **Arquitecto de Datos**
+8. Dos departamentos presentan en el comité cifras distintas de "venta neta" para el mismo mes. **Analísta de datos**
 
 
