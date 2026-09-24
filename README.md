@@ -9,6 +9,8 @@ Clasifica cada fuente como estructurada, semiestructurada o no estructurada y ju
 5. Logs de acceso de la tienda online -> **Semiestructurada si estuviese organizada jerárquica o etiquetada, si no está de esa manera y es texto liso debería de ser no estructurada  **
 6. Fotografías de los lineales tomadas por los reponedores -> **No estructurada porque no tiene sistema que lo pueda interpretar rápidamente**
 
+---
+
 ### Ejercicio 2 — Elige el formato
 
 Para cada escenario de Grupo Alimenta, elige el formato más adecuado y justifica la decisión:
@@ -19,6 +21,7 @@ Para cada escenario de Grupo Alimenta, elige el formato más adecuado y justific
 4. Flujo continuo de lecturas de temperatura de las cámaras frigoríficas. **JSON**
 5. Recepción de pedidos de compra con un gran proveedor que usa EDI. **XML**
 
+---
 
 ### Ejercicio 3 — OLTP u OLAP
 
@@ -29,6 +32,8 @@ Indica si cada necesidad corresponde a un sistema transaccional o analítico:
 3. Consultar si queda aceite de oliva en la tienda de Valencia ahora mismo. **OLTP**
 4. Detectar qué tiendas tienen más roturas de stock los lunes. **OLAP**
 5. Actualizar la dirección de entrega de un pedido online en curso. **OLTP**
+
+---
 
 ### Ejercicio 4 — ¿Qué rol es responsable?
 
@@ -41,8 +46,8 @@ Indica si cada necesidad corresponde a un sistema transaccional o analítico:
 7. Se debe decidir si la plataforma se construye en Fabric, en Databricks o combinando ambos. **Arquitecto de Datos**
 8. Dos departamentos presentan en el comité cifras distintas de "venta neta" para el mismo mes. **Analísta de datos**
 
-
 ---
+
 ## Ejercicio 5 : Investiga y arma un diagrama de arquitectura de capas (como el de la sección 8) con cada una de estas tecnologías:
 **5.1. Databricks (sin Azure)**
 - Fuentes: bases de datos, ficheros, apps SaaS, streaming (igual que en cualquier plataforma).
@@ -93,7 +98,8 @@ Indica si cada necesidad corresponde a un sistema transaccional o analítico:
 - Consumo: Apache Superset, Metabase.
 - Gobierno transversal: DataHub o Apache Atlas.
 
-  
+---
+
 ## 6, 7 y 8. ¿Y Snowflake, dbt y DuckDB?
 No son comparables directamente porque no ocupan la misma capa:
  
@@ -111,6 +117,8 @@ Fuentes → Fivetran/Airbyte → almacenamiento a elegir (Snowflake, BigQuery, D
 
 **Diagrama 3 — DuckDB local y MotherDuck en la nube**
 Archivos Parquet/CSV en local o S3 → DuckDB (corre embebido en Python/notebook/dbt) → si hace falta escalar, MotherDuck (versión serverless en la nube) → consumo en notebooks o BI.
+
+---
 
 ## Sección 10: Caso práctico — Plataforma de datos de Grupo Alimenta
 
@@ -185,6 +193,8 @@ Test de consistencia referencial: todo ``producto_id`` y ``tienda_id`` en la tab
 7. **Ciencia de datos.** Indica qué tablas y variables necesitaría el científico de datos para el modelo de previsión de demanda y cómo escribirías sus predicciones de vuelta en la plataforma.
 8. **Gobierno.** Los datos de socios incluyen nombre, teléfono y correo. Explica qué harías en cada capa y qué papel juega Purview.
 9. **IA.** Explica qué datos necesitaría el ingeniero de IA para construir el asistente en Foundry y qué requisitos de calidad le exigirías como ingeniero de datos.
+
+---
 
 ## Sección 12: Repaso de conceptos
 1. Un fichero donde cada evento puede tener campos distintos y anidados es un ejemplo de dato:
