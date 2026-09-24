@@ -43,8 +43,6 @@ Indica si cada necesidad corresponde a un sistema transaccional o analítico:
 
 
 ---
- AYUDA EJERCICIO 5 - PREGINTAR AL PROFE MAÑANA
----
 ## Ejercicio 5 : Investiga y arma un diagrama de arquitectura de capas (como el de la sección 8) con cada una de estas tecnologías:
 **5.1. Databricks (sin Azure)**
 - Fuentes: bases de datos, ficheros, apps SaaS, streaming (igual que en cualquier plataforma).
