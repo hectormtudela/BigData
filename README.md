@@ -114,4 +114,69 @@ Fuentes → Fivetran/Airbyte → almacenamiento a elegir (Snowflake, BigQuery, D
 **Diagrama 3 — DuckDB local y MotherDuck en la nube**
 Archivos Parquet/CSV en local o S3 → DuckDB (corre embebido en Python/notebook/dbt) → si hace falta escalar, MotherDuck (versión serverless en la nube) → consumo en notebooks o BI.
 
+## Sección 10: Caso práctico — Plataforma de datos de Grupo Alimenta
 
+1. **Clasificación.** Clasifica cada fuente (estructurada, semiestructurada, no estructurada) e indica si es OLTP, fichero o stream.
+TPV/ERP (Azure SQL Database)	Estructurado	OLTP
+App de fidelización (Cosmos DB, JSON)	Semiestructurado	OLTP orientado a documentos
+Sensores IoT cámaras	Semiestructurado	Stream
+Tarifas proveedores (CSV/SFTP)	Estructurado	Fichero 
+Facturas PDF	No estructurado	Fichero 
+Meteorología/festivos (API)	Semiestructurado	Fichero/API batch diario (podría tratarSE1 como stream de baja frecuencia)
+
+2. **Arquitectura.** Dibuja  una arquitectura con capas Bronze, Silver y Gold. Indica qué servicio de Azure usarías en cada paso y justifica si optas por Fabric, Databricks u otro stack
+**Bronze (ingesta cruda):**
+Azure SQL/ERP → Azure Data Factory / Fabric Data Pipelines con ingesta incremental (CDC) hacia el Lakehouse.
+Cosmos DB → conector nativo de Data Factory o Change Feed de Cosmos DB.
+IoT sensores → Azure IoT Hub / Event Hubs → Structured Streaming (Databricks) o Eventstream (Fabric) para landing en tiempo casi real.
+CSV/SFTP → Data Factory con conexión SFTP programada.
+PDFs → Data Factory + Azure AI Document Intelligence para OCR antes de aterrizar el texto extraído.
+API meteo → Data Factory (copy activity) o Azure Function programada.
+**Silver (limpieza y conformado):** normalización de esquemas, deduplicación, tipado correcto, resolución de IDs (cliente, producto, tienda), agregación de streaming IoT a intervalos útiles. Aquí se usa Databricks (PySpark/Spark SQL) o Fabric Notebooks
+**Gold (negocio):** tablas agregadas y modeladas en esquema en estrella, listas para consumo BI y ML. Se publican como Power BI datasets / Fabric Lakehouse SQL endpoint.
+
+**¿Fabric o Databricks?** Con este stack full-Azure y necesidad de BI integrado, Microsoft Fabric es mejor porque junta ingesta, Lakehouse, Power BI y gobierno en un solo SaaS. Databricks sería mejor si necesitaras más potencia de Spark, MLOps o multi-nube.
+
+### Tareas
+
+1. **Clasificación.** Clasifica cada fuente (estructurada, semiestructurada, no estructurada) e indica si es OLTP, fichero o stream.
+2. **Arquitectura.** Dibuja  una arquitectura con capas Bronze, Silver y Gold. Indica qué servicio de Azure usarías en cada paso y justifica si optas por Fabric, Databricks u otro stack
+3. **Formatos.** Indica el formato de almacenamiento de cada capa y por qué.
+4. **Modelo Gold.** Diseña el esquema en estrella de ventas: tabla de hechos, granularidad, medidas y al menos cuatro dimensiones.
+5. **Roles.** Asigna cada paso de la arquitectura a uno de los siete roles vistos, incluyendo arquitecto de datos, analytics engineer y científico de datos.
+6. **Métricas.** Como analytics engineer, redacta la definición oficial de "rotura de stock" y dos pruebas de calidad que aplicarías a la tabla Gold.
+7. **Ciencia de datos.** Indica qué tablas y variables necesitaría el científico de datos para el modelo de previsión de demanda y cómo escribirías sus predicciones de vuelta en la plataforma.
+8. **Gobierno.** Los datos de socios incluyen nombre, teléfono y correo. Explica qué harías en cada capa y qué papel juega Purview.
+9. **IA.** Explica qué datos necesitaría el ingeniero de IA para construir el asistente en Foundry y qué requisitos de calidad le exigirías como ingeniero de datos.
+
+## Sección 12: Repaso de conceptos
+1. Un fichero donde cada evento puede tener campos distintos y anidados es un ejemplo de dato:
+a) Estructurado b) Semiestructurado c) No estructurado d) Binario -> **RESPUESTA: B**
+2. ¿Qué formato almacena juntos los valores de cada columna y es el estándar de facto de los lakehouses?
+a) Avro b) CSV c) Parquet d) XML -> **RESPUESTA: C**
+3. ¿Qué aporta Delta Lake sobre Parquet?
+a) Legibilidad humana b) Un registro de transacciones con ACID y versionado c) Almacenamiento orientado a filas d) Soporte exclusivo para imágenes **-> **RESPUESTA: B****
+4. Si una transacción crea un pedido pero falla la reserva de stock y se deshace todo, se está garantizando la:
+a) Durabilidad b) Atomicidad c) Consistencia d) Disponibilidad -> **RESPUESTA: B**
+5. En el patrón ELT, las transformaciones se realizan:
+a) Antes de extraer b) En un servidor intermedio c) En el sistema de destino d) En la aplicación de origen -> **RESPUESTA: C**
+6. ¿Qué capa de la arquitectura medallón contiene datos limpios, deduplicados y con tipos estandarizados?
+a) Bronze b) Silver c) Gold d) Platinum -> **RESPUESTA: B** 
+7. ¿Qué rol es el responsable de monitorizar que los pipelines de carga se ejecutan correctamente?
+a) DBA b) Analista de datos c) Ingeniero de datos d) Ingeniero de IA -> **RESPUESTA: C** 
+8. ¿Qué característica de Azure Storage permite usarlo como data lake?
+a) File shares b) Tables c) Espacio de nombres jerárquico sobre Blob d) Colas -> **RESPUESTA: C** 
+9. ¿Cuál es la opción recomendada de orquestación cuando todo el trabajo de datos se realiza dentro de Microsoft Fabric?
+a) Azure Data Factory b) Fabric Data Factory c) Azure Stream Analytics d) Azure Data Explorer -> **RESPUESTA: B** 
+10. ¿Qué servicio usarías para trazar el linaje de un dato desde el TPV hasta un informe de Power BI?
+a) Microsoft Foundry b) Azure Cosmos DB c) Microsoft Purview d) Azure Databricks  -> **RESPUESTA: C** 
+11. Microsoft Fabric se ofrece como:
+a) IaaS b) PaaS c) SaaS d) On-premises -> **RESPUESTA: C** 
+12. Una empresa necesita detectar en tiempo real cámaras frigoríficas que superan un umbral de temperatura. ¿Qué servicio encaja mejor?
+a) Power BI b) Azure Stream Analytics c) Azure SQL Managed Instance d) Microsoft Purview -> **RESPUESTA: B** 
+13. ¿Qué rol es responsable de que la métrica "venta neta" tenga una única definición oficial, probada y documentada?
+a) DBA b) Analytics engineer c) Ingeniero de IA d) Científico de datos -> **RESPUESTA: B** 
+14. ¿Qué rol construiría un modelo para predecir qué clientes dejarán de comprar en los próximos meses?
+a) Analista de datos b) Arquitecto de datos c) Científico de datos d) DBA -> **RESPUESTA: C** 
+15. ¿Qué rol decide si la plataforma de la empresa se organiza por dominios y qué servicios se usan en cada capa?
+a) Arquitecto de datos b) Analytics engineer c) Analista de datos d) Ingeniero de IA -> **RESPUESTA: A** 
