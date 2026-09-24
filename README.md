@@ -182,6 +182,42 @@ Dos pruebas de calidad sobre la tabla Gold:
 Test de completitud/no nulos: ninguna fila de ``FactVentas`` puede tener ``tienda_id`` o ``producto_id`` nulos, ni fechas fuera del rango operativo.
 Test de consistencia referencial: todo ``producto_id`` y ``tienda_id`` en la tabla de hechos debe existir en ``DimProducto`` y ``DimTienda`` (evitar huérfanos), y margen nunca puede ser mayor que ``importe_venta``.
 
+7. **Ciencia de datos.** Indica qué tablas y variables necesitaría el científico de datos para el modelo de previsión de demanda y cómo escribirías sus predicciones de vuelta en la plataforma.
+
+Tablas/variables necesarias:
+
+Histórico de ventas diarias por producto-tienda (FactVentas agregada a nivel día).
+Variables de calendario: festivos, día de la semana, estacionalidad (DimFecha).
+Meteorología diaria (temperatura, lluvia) por zona de tienda.
+Roturas de stock pasadas (para no confundir "venta 0" con "sin stock").
+Datos de fidelización agregados (afluencia esperada de clientes).
+
+Cómo devolver las predicciones a la plataforma:
+El científico de datos escribe las predicciones como una nueva tabla ``Gold`` (FactPrevisionDemanda, con producto_id, tienda_id, fecha, demanda_prevista) mediante un job batch (Databricks/Fabric notebook programado) que inserta/actualiza en el Lakehouse, quedando disponible para Power BI y para el sistema de reposición.
+
+---
+
+8. **Gobierno.** Los datos de socios incluyen nombre, teléfono y correo. Explica qué harías en cada capa y qué papel juega Purview.
+   
+**Bronze:** se ingiere tal cual llega de Cosmos DB, pero se marca como zona restringida de acceso.
+**Silver:** se aplican técnicas de protección — pseudonimización o enmascaramiento, separando el dato identificativo del dato analítico.
+**Gold:** las tablas de negocio usan solo el cliente_id anonimizado, nunca datos de contacto directo.
+
+**Papel de Purview:** actúa como catálogo de gobierno transversal: clasifica automáticamente columnas sensibles, aplica etiquetas de sensibilidad, controla de donde viene los datos y aplica políticas de acceso centralizadas en todas las capas.
+
+9. **IA.** Explica qué datos necesitaría el ingeniero de IA para construir el asistente en Foundry y qué requisitos de calidad le exigirías como ingeniero de datos.
+
+Datos que necesita el ingeniero de IA:
+
+Estado y trazabilidad de pedidos online (tabla Silver/Gold de pedidos: estado, fecha estimada, incidencias).
+Datos de cliente asociados al pedido (nombre, sin exponer más PII de la necesaria).
+Histórico de FAQs o políticas de devolución/envío como base de conocimiento (para RAG).
+
+Requisitos de calidad exigidos como ingeniero de datos:
+
+Actualidad (freshness): el estado del pedido debe reflejar el ERP casi en tiempo real (latencia máxima aceptable, p.ej. minutos), o el asistente dará respuestas erróneas.
+Precisión y unicidad: un pedido_id no puede tener estados contradictorios o duplicados en la tabla que consulta el asistente.
+
 ### Tareas
 
 1. **Clasificación.** Clasifica cada fuente (estructurada, semiestructurada, no estructurada) e indica si es OLTP, fichero o stream.
