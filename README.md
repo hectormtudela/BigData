@@ -4,9 +4,9 @@ Clasifica cada fuente como estructurada, semiestructurada o no estructurada y ju
 
 1. Exportación diaria del ERP de compras en CSV -> **Estructurada porque encaja en un esquema fijo (filas/columnas).**
 2. Lecturas de temperatura de las cámaras frigoríficas enviadas cada 30 segundos en JSON -> **Semiestructurada porque tiene una organización jerarquica pero no fijo.**
-3. Grabaciones MP3 del servicio de atención al cliente ->** No estructurada porque no tiene sistema que lo pueda interpretar rápidamente**
+3. Grabaciones MP3 del servicio de atención al cliente -> **No estructurada porque no tiene sistema que lo pueda interpretar rápidamente**
 4. Tabla `Empleados` de la base de datos de RRHH -> **Estructurada porque está estructurado en un esquema fijo (filas/columnas)**
-5. Logs de acceso de la tienda online -> **Semiestructurada si estuviese organizada jerárquica o etiquetada, si no está de esa manera y es texto liso debería de ser no estructurada  **
+5. Logs de acceso de la tienda online -> **Semiestructurada si estuviese organizada jerárquica o etiquetada, si no está de esa manera y es texto liso debería de ser no estructurada**
 6. Fotografías de los lineales tomadas por los reponedores -> **No estructurada porque no tiene sistema que lo pueda interpretar rápidamente**
 
 ---
