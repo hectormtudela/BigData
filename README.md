@@ -137,6 +137,45 @@ API meteo → Data Factory (copy activity) o Azure Function programada.
 
 **¿Fabric o Databricks?** Con este stack full-Azure y necesidad de BI integrado, Microsoft Fabric es mejor porque junta ingesta, Lakehouse, Power BI y gobierno en un solo SaaS. Databricks sería mejor si necesitaras más potencia de Spark, MLOps o multi-nube.
 
+3. **Formatos.** Indica el formato de almacenamiento de cada capa y por qué.
+**Bronze:** formato lo más fiel al origen — JSON crudo, Parquet simple, o Delta sin transformar. Objetivo: trazabilidad, no optimización.
+**Silver:** Delta Lake / formato Delta (Parquet + log de transacciones). Da ACID, versionado (time travel) y esquema forzado.
+**Gold:** también Delta, pero particionado y optimizado (Z-ORDER, compactación) para consultas analíticas rápidas desde Power BI/SQL endpoint.
+
+
+4. **Modelo Gold.** Diseña el esquema en estrella de ventas: tabla de hechos, granularidad, medidas y al menos cuatro dimensiones.
+**Tabla de hechos:** FactVentas
+
+**Granularidad:** una fila por línea de ticket/venta (producto × tienda × fecha × transacción).
+**Medidas:** unidades_vendidas, importe_venta, coste, margen, flag_rotura_stock.
+
+**Dimensiones:**
+DimProducto (SK, familia, categoría, marca, unidad de medida)
+DimTienda (SK, nombre, región, formato de tienda)
+DimFecha (SK, día, mes, trimestre, festivo sí/no — enlaza con la API de meteo/festivos)
+DimCliente (SK, segmento de fidelización — viene de Cosmos DB)
+
+5. Asignación de roles (7 roles)
+| Rol | Responsabilidad en la arquitectura |
+|---|---|
+| Arquitecto de datos |	Diseña la arquitectura Bronze/Silver/Gold, elige Fabric/Databricks, define seguridad y gobierno global |
+| Ingeniero de datos	| Construye pipelines de ingesta (Data Factory, Event Hubs, OCR de PDFs) y transformaciones Bronze→Silver | 
+| Analytics engineer	| Modela la capa Gold (esquema en estrella), define métricas de negocio y tests de calidad |
+| Analista de datos / BI	| Construye el cuadro de mando de ventas/margen/roturas en Power BI |
+| Científico de datos	| Desarrolla el modelo de previsión de demanda de frescos |
+| Ingeniero de IA/ML	| Construye y despliega el asistente conversacional en Azure AI Foundry |
+| Data steward / gobierno |	Vela por la calidad y clasificación de datos personales (con apoyo de Purview) |
+
+6. **Métricas.** Como analytics engineer, redacta la definición oficial de "rotura de stock" y dos pruebas de calidad que aplicarías a la tabla Gold.
+**Definición oficial de "rotura de stock":**
+Decimos que hay rotura de stock cuando un producto se queda a 0 unidades en una tienda durante horario de apertura, y además sabemos que ese día sí había demanda de ese producto (por ejemplo, porque en otras tiendas parecidas sí se vendió). Es decir, no basta con que el stock llegue a cero.
+Ejemplo real: El Domingo día 20 de Septiembre tuve que trabajar en mi empleo de fines de semana en la empresa Ahorramas S.A. Este día justo había habría una tienda de Precocinados Mari al lado de la tienda, una apertura que trajo muchísima gente a comprar a Precocinados Mari su comida para ese domingo y que llevo gente a comprar el pan en mi tienda. Debido a esto, la panadería se quedó sin pan muy rápido y tuvimos una "rotura de stock" porque mucha gente se marchaba sin comprar el pan debido a que no había más para comprar.
+
+Dos pruebas de calidad sobre la tabla Gold:
+
+Test de completitud/no nulos: ninguna fila de ``FactVentas`` puede tener ``tienda_id`` o ``producto_id`` nulos, ni fechas fuera del rango operativo.
+Test de consistencia referencial: todo ``producto_id`` y ``tienda_id`` en la tabla de hechos debe existir en ``DimProducto`` y ``DimTienda`` (evitar huérfanos), y margen nunca puede ser mayor que ``importe_venta``.
+
 ### Tareas
 
 1. **Clasificación.** Clasifica cada fuente (estructurada, semiestructurada, no estructurada) e indica si es OLTP, fichero o stream.
