@@ -23,15 +23,15 @@ Pasos:
    - **Region**: la más cercana disponible.
    - **Performance**: Standard
    - **Redundancy**: Locally-redundant storage (LRS)
-![Captura Basics](image.png)
+![Captura Basics](images/image.png)
 4. Pestaña **Advanced**: dejar **Enable hierarchical namespace** sin marcar (se activará más adelante).
-![Captura advanced](image-1.png)
+![Captura advanced](images/image-1.png)
 5. Pestaña **Data protection**: desmarcar las tres opciones de **Enable soft delete...**.
-![Captura protección de datos](image-2.png)
+![Captura protección de datos](images/image-2.png)
 6. Resto de pestañas: valores por defecto.
 7. **Review + create** → **Create** → esperar despliegue → **Go to resource**.
-![Captura review](image-3.png)
-![Captura creacion](image-4.png)
+![Captura review](images/image-3.png)
+![Captura creacion](images/image-4.png)
 ---
 
 ## 2. Explorar Blob Storage
@@ -39,14 +39,14 @@ Pasos:
 Pasos:
 1. Descargar [product1.json](https://aka.ms/product1.json) al equipo.
 2. En el storage account → **Data storage** → **Containers** → **+ Add container** → nombre `data` (acceso privado, no se puede cambiar por defecto).
-![Data creado](image-5.png)
+![Data creado](images/image-5.png)
 3. Ir a **Storage browser** → **Blob containers** → abrir `data` (vacío).
-![Data vacío](image-6.png)
+![Data vacío](images/image-6.png)
 4. **+ Add Directory** → crear carpeta `products`.
 5. Comprobar que al volver al contenedor `data`, la carpeta `products` **no existe realmente** (las carpetas en blob storage son virtuales, solo existen si contienen blobs).
 6. **⤒ Upload** → subir `product1.json`, indicando en **Advanced → Upload to folder** el valor `product_data`.
 7. Verificar que se ha creado la carpeta virtual `product_data` conteniendo `product1.json`.
-![Comprobación de creación del blob](image-7.png)
+![Comprobación de creación del blob](images/image-7.png)
 
 ---
 
@@ -60,7 +60,7 @@ Pasos:
 5. Verificar que `product_data` ahora contiene ambos archivos.
 6. En **Containers** → carpeta `product_data` → **‧‧‧** → comprobar que ahora SÍ aparecen opciones de gestión: Properties, Rename, Copy URL, Generate SAS, **Manage ACL**, Delete.
 
-![Captura después de cargar el JSON2 y después de actualuzar al Gen2](image-8.png)
+![Captura después de cargar el JSON2 y después de actualuzar al Gen2](images/image-8.png)
 
 **Notas / incidencias:**
 He tenido una incidencia debido a que no podía acutalizarlo pro un fallo en la creación del Storage account.
@@ -74,13 +74,10 @@ Pasos:
 3. **Next: Backup >** → desmarcar **Enable backup** → **Review + create** → **Create**.
 4. Abrir el share `files` creado → **Connect** → revisar las pestañas Windows / Linux / macOS con los scripts de conexión.
 
-![alt text](image-9.png)
-![alt text](image-10.png)
-![alt text](image-11.png)
-![alt text](image-12.png)
-**Notas / incidencias:**
-
-*(pendiente)*
+![alt text](images/image-9.png)
+![alt text](images/image-10.png)
+![alt text](images/image-11.png)
+![alt text](images/image-12.png)
 
 ---
 
