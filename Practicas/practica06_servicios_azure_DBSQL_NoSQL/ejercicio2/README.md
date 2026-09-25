@@ -83,17 +83,8 @@ Pasos:
 
 ## 5. Limpieza de recursos
 
-*(Pendiente de completar)*
-
 1. Ir al grupo de recursos `dp900-lab-rg`.
 2. **Delete resource group** → confirmar escribiendo el nombre → **Delete**.
 
 **Captura:**
-
-*(pendiente)*
-
----
-
-## Conclusiones
-
-*(pendiente: qué se ha aprendido — diferencia entre blob storage plano y Data Lake Gen2 con namespace jerárquico, carpetas virtuales vs reales, ACLs, Azure Files como recurso compartido tipo SMB/NFS)*
+<img width="1917" height="913" alt="image" src="https://github.com/user-attachments/assets/5974e5b2-e8d2-4587-a9db-c9482cf7524c" />
