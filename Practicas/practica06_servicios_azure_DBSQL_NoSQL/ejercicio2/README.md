@@ -52,8 +52,6 @@ Pasos:
 
 ## 3. Explorar Azure Data Lake Storage Gen2
 
-*(Pendiente de completar)*
-
 Pasos:
 1. Descargar [product2.json](https://aka.ms/product2.json) en la misma carpeta local que `product1.json`.
 2. En el storage account → **Settings** → **Data Lake Gen2 upgrade** → completar los 3 pasos (review, validate, upgrade) para activar el hierarchical namespace.
@@ -62,19 +60,13 @@ Pasos:
 5. Verificar que `product_data` ahora contiene ambos archivos.
 6. En **Containers** → carpeta `product_data` → **‧‧‧** → comprobar que ahora SÍ aparecen opciones de gestión: Properties, Rename, Copy URL, Generate SAS, **Manage ACL**, Delete.
 
-**Capturas:**
-
-*(pendiente)*
+![Captura después de cargar el JSON2 y después de actualuzar al Gen2](image-8.png)
 
 **Notas / incidencias:**
-
-*(pendiente: diferencia observada en el menú contextual de la carpeta antes/después del upgrade a Gen2)*
-
+He tenido una incidencia debido a que no podía acutalizarlo pro un fallo en la creación del Storage account.
 ---
 
 ## 4. Explorar Azure Files
-
-*(Pendiente de completar)*
 
 Pasos:
 1. En el storage account → **Data storage** → **Classic file shares** → **+ Classic file share**.
@@ -82,10 +74,10 @@ Pasos:
 3. **Next: Backup >** → desmarcar **Enable backup** → **Review + create** → **Create**.
 4. Abrir el share `files` creado → **Connect** → revisar las pestañas Windows / Linux / macOS con los scripts de conexión.
 
-**Capturas:**
-
-*(pendiente)*
-
+![alt text](image-9.png)
+![alt text](image-10.png)
+![alt text](image-11.png)
+![alt text](image-12.png)
 **Notas / incidencias:**
 
 *(pendiente)*
