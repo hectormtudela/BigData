@@ -113,8 +113,9 @@ WHERE nombre_usuario LIKE '%[_]%'
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
-
+SELECT DISTINCT dispositivo 
+FROM stg_reproducciones
+ORDER BY dispositivo ASC
 ```
 
 **Resultado:**
@@ -126,11 +127,14 @@ WHERE nombre_usuario LIKE '%[_]%'
 **Enunciado:** Lista las reproducciones que corresponden a anuncios filtrando por la columna `cancion_id`. Muestra el id de reproducción, el usuario y la fecha y hora. Comprueba también qué devuelve la condición `cancion_id = NULL` y explica el resultado.
 
 **Explicación:**
-> *Escribe aquí qué devuelve `cancion_id = NULL` y por qué.*
+> La condición = NULL no devuelve nada porque en SQL, NULL no representa un valor normal. Tienes que usar IS NULL
+
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT reproduccion_id, usuario_id, fecha_hora, cancion_id
+FROM reproducciones
+WHERE cancion_id IS NULL
 
 ```
 
@@ -144,7 +148,9 @@ WHERE nombre_usuario LIKE '%[_]%'
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT TOP 2 WITH TIES reproduccion_id, usuario_id, cancion_id, segundos_escuchados
+FROM reproducciones
+ORDER BY segundos_escuchados DESC
 
 ```
 
@@ -158,7 +164,11 @@ WHERE nombre_usuario LIKE '%[_]%'
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT titulo
+FROM canciones
+ORDER BY titulo ASC
+OFFSET 5 ROWS
+FETCH NEXT 5 ROWS ONLY
 
 ```
 
