@@ -38,15 +38,31 @@ SELECT nombre_usuario
 FROM stg_usuarios
 WHERE nombre_usuario LIKE '%[_]%'
 
--- Ejercicio 7
+-- Ejercicio 7 - ¿Desde qué dispositivos se han hecho reproducciones? Muestra cada dispositivo una sola vez, ordenado alfabéticamente.
+SELECT DISTINCT dispositivo 
+FROM stg_reproducciones
+ORDER BY dispositivo ASC
 
 -- Ejercicio 8
 
+SELECT reproduccion_id, usuario_id, fecha_hora, cancion_id
+FROM reproducciones
+WHERE cancion_id IS NULL
+
+-- La condición = NULL no devuelve nada porque en SQL, NULL no representa un valor normal. Tienes que usar IS NULL
 
 -- Ejercicio 9
 
--- Ejercicio 10
+SELECT TOP 2 WITH TIES reproduccion_id, usuario_id, cancion_id, segundos_escuchados
+FROM reproducciones
+ORDER BY segundos_escuchados DESC
+
+-- Ejercicio 10 : La app muestra el catálogo en páginas de 5 canciones ordenadas por título. Obtén los títulos de la **página 2** con `OFFSET ... FETCH`.
+
+
 
 -- Ejercicio 11
 
 -- Ejercicio 12
+
+
