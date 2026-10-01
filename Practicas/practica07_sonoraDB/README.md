@@ -460,8 +460,10 @@ ORDER BY reproducciones.fecha_hora;
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
-
+SELECT usuarios.nombre_usuario, usuarios.plan_suscripcion, usuarios.fecha_alta
+FROM usuarios
+LEFT JOIN reproducciones ON reproducciones.usuario_id = usuarios.usuario_id
+WHERE reproduccion_id IS NULL
 ```
 
 **Resultado:**
@@ -473,11 +475,17 @@ ORDER BY reproducciones.fecha_hora;
 **Enunciado:** Obtén el número de reproducciones de cada artista, incluidos los que no tienen ninguna. Ordena por reproducciones descendente y por nombre. Después cambia el conteo a `COUNT(*)` y explica por qué Sara Cometa pasa a tener 1.
 
 **Explicación:**
-> *Escribe aquí por qué el uso de `COUNT(*)` altera el resultado de Sara Cometa.*
+> El uso de `COUNT(*)` altera el resultado de Sara Cometa porque también cuenta los valores NULL
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT artistas.nombre, COUNT(reproducciones.reproduccion_id) as num_reproducciones
+FROM artistas
+LEFT JOIN canciones ON canciones.artista_id = artistas.artista_id
+LEFT JOIN reproducciones ON reproducciones.cancion_id = canciones.cancion_id
+GROUP BY artistas.nombre
+ORDER BY num_reproducciones DESC, artistas.nombre
+
 
 ```
 
@@ -491,7 +499,15 @@ ORDER BY reproducciones.fecha_hora;
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT empleado.nombre, empleado.puesto,
+    CASE
+        WHEN empleado.jefe_id IS NULL THEN '(sin jefe)'
+        ELSE jefe.nombre
+    END
+FROM empleados AS empleado
+LEFT JOIN empleados AS jefe
+    ON empleado.jefe_id = jefe.empleado_id
+ORDER BY empleado.empleado_id
 
 ```
 
@@ -505,7 +521,20 @@ ORDER BY reproducciones.fecha_hora;
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT
+    generos.nombre AS genero,
+    COUNT(reproducciones.reproduccion_id) AS num_reproducciones,
+    CAST(SUM(reproducciones.segundos_escuchados) / 60.0 AS DECIMAL(10,1)) AS minutos_escuchados
+FROM reproducciones
+INNER JOIN canciones
+    ON canciones.cancion_id = reproducciones.cancion_id
+INNER JOIN generos
+    ON generos.genero_id = canciones.genero_id
+WHERE reproducciones.tipo_contenido = 'Canción'
+  AND reproducciones.segundos_escuchados >= 30
+GROUP BY generos.nombre
+HAVING COUNT(reproducciones.reproduccion_id) > 3
+ORDER BY num_reproducciones DESC;
 
 ```
 
@@ -518,11 +547,41 @@ ORDER BY reproducciones.fecha_hora;
 **Enunciado:** Sonora quiere saber en qué países tiene presencia, ya sea por artistas o por usuarios. Obtén la lista de países sin repetir, ordenada. Después cambia a `UNION ALL`, cuenta las filas y explica la diferencia.
 
 **Explicación:**
-> *Escribe aquí la diferencia entre usar `UNION` y `UNION ALL` en este contexto.*
+> UNION elimina los países duplicados y cuenta países distintos mientras que UNION ALL se queda los duplicados y cuenta todas las filas procedentes de artistas y usuarios.
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT pais
+FROM artistas
+UNION
+SELECT pais
+FROM usuarios
+ORDER BY pais;
+
+SELECT pais
+FROM artistas
+UNION ALL
+SELECT pais
+FROM usuarios
+ORDER BY pais;
+
+SELECT COUNT(*) AS total_paises
+FROM (
+    SELECT pais
+    FROM artistas
+    UNION
+    SELECT pais
+    FROM usuarios
+) AS paises;
+
+SELECT COUNT(*) AS total_filas
+FROM (
+    SELECT pais
+    FROM artistas
+    UNION ALL
+    SELECT pais
+    FROM usuarios
+) AS paises;
 
 ```
 
