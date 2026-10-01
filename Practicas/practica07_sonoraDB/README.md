@@ -184,7 +184,15 @@ FETCH NEXT 5 ROWS ONLY
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT titulo,
+  CASE
+    WHEN duracion_seg<180 THEN 'Corta'
+    WHEN duracion_seg>=180 AND duracion_seg<=240 THEN 'Media'
+    ELSE 'Larga'
+  END
+  AS duracion
+  FROM canciones
+  WHERE artista_id='5';
 
 ```
 
@@ -198,7 +206,13 @@ FETCH NEXT 5 ROWS ONLY
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT CONCAT(nombre,' (',pais,')') as nombre_pais, LEN(nombre) as longitud_nombre
+FROM artistas
+ORDER BY nombre ASC
+
+SELECT nombre || ' (' || pais || ')' as nombre_pais
+FROM artistas
+ORDER BY nombre ASC
 
 ```
 
@@ -212,7 +226,9 @@ FETCH NEXT 5 ROWS ONLY
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT nombre_usuario, DATEDIFF(dd,fecha_alta,'24/09/2026') as antiguedad
+FROM stg_usuarios
+ORDER BY antiguedad desc
 
 ```
 
@@ -226,7 +242,13 @@ FETCH NEXT 5 ROWS ONLY
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT
+    CAST(fecha_hora as date) as fecha,
+    CAST(fecha_hora as time(0)) as hora,
+    segundos_escuchados
+FROM reproducciones
+WHERE usuario_id = 3
+ORDER BY fecha, hora
 
 ```
 
@@ -241,11 +263,17 @@ FETCH NEXT 5 ROWS ONLY
 **Enunciado:** Obtén un resumen del catálogo: número de canciones, duración mínima, duración máxima y duración media. Calcula la media dos veces, sobre la columna tal cual y forzando decimales, y explica la diferencia.
 
 **Explicación:**
-> *Escribe aquí la diferencia observada al calcular las medias.*
+> La diferencia es que la que tiene decimales saca el .20000000 y la otra no
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT 
+COUNT(*) as canciones, 
+MIN(duracion_seg) as duracion_minima, 
+MAX(duracion_seg) as duracion_maxima, 
+AVG(duracion_seg) as duracion_media_sin_decimales,
+AVG(CAST(duracion_seg as decimal(10,2))) as duracion_media_con_decimales
+FROM canciones
 
 ```
 
@@ -258,11 +286,12 @@ FETCH NEXT 5 ROWS ONLY
 **Enunciado:** Sobre la tabla `reproducciones`, calcula en una sola consulta: `COUNT(*)`, `COUNT(cancion_id)`, el número de canciones distintas reproducidas y el número de usuarios distintos. Explica por qué las dos primeras cifras no coinciden.
 
 **Explicación:**
-> *Escribe aquí por qué `COUNT(*)` y `COUNT(cancion_id)` no coinciden.*
+> Porque en Sonora los anuncios tienen cancion_id = NULL Y COUNT(cancion_id) no los cuenta
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT COUNT(DISTINCT cancion_id) as num_canciones, COUNT(DISTINCT usuario_id) as num_usuarios
+FROM reproducciones
 
 ```
 
@@ -276,7 +305,9 @@ FETCH NEXT 5 ROWS ONLY
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT dispositivo, COUNT(*) as num_reproducciones, SUM(segundos_escuchados) as segundos_escuchados, SUM(segundos_escuchados) / 60.0 as minutos_Escuchados
+ FROM reproducciones
+GROUP BY dispositivo
 
 ```
 
@@ -290,7 +321,21 @@ FETCH NEXT 5 ROWS ONLY
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT AVG(duracion_seg) as duracion_media, COUNT(*) as num_canciones,
+  CASE
+    WHEN duracion_seg<180 THEN 'Corta'
+    WHEN duracion_seg>=180 AND duracion_seg<=240 THEN 'Media'
+    ELSE 'Larga'
+  END
+  AS duracion
+  FROM canciones
+  GROUP BY 
+   CASE
+    WHEN duracion_seg<180 THEN 'Corta'
+    WHEN duracion_seg>=180 AND duracion_seg<=240 THEN 'Media'
+    ELSE 'Larga'
+  END
+  ORDER BY num_canciones DESC;
 
 ```
 
@@ -304,7 +349,13 @@ FETCH NEXT 5 ROWS ONLY
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT usuarios.nombre_usuario, COUNT(*) as numero_reproducciones, SUM(reproducciones.segundos_escuchados)
+FROM reproducciones
+INNER JOIN usuarios ON reproducciones.usuario_id = usuarios.usuario_id
+WHERE reproducciones.tipo_contenido = 'Canción'
+GROUP BY usuarios.nombre_usuario
+HAVING COUNT(*) > 3 AND SUM(segundos_escuchados) > 800
+ORDER BY SUM(reproducciones.segundos_escuchados) DESC
 
 ```
 
@@ -318,7 +369,11 @@ FETCH NEXT 5 ROWS ONLY
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT usuarios.plan_suscripcion, reproducciones.tipo_contenido, COUNT(reproducciones.reproduccion_id) num_reproducciones
+FROM reproducciones
+INNER JOIN usuarios ON reproducciones.usuario_id = usuarios.usuario_id
+GROUP BY usuarios.plan_suscripcion, reproducciones.tipo_contenido
+ORDER BY usuarios.plan_suscripcion, reproducciones.tipo_contenido;
 
 ```
 
