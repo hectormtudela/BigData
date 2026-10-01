@@ -389,7 +389,12 @@ ORDER BY usuarios.plan_suscripcion, reproducciones.tipo_contenido;
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT canciones.titulo, artistas.nombre, generos.nombre
+FROM canciones
+INNER JOIN artistas ON artistas.artista_id = canciones.artista_id
+INNER JOIN generos ON generos.genero_id = canciones.genero_id
+WHERE artistas.pais = 'ES'
+ORDER BY artistas.nombre, canciones.titulo
 
 ```
 
@@ -403,7 +408,21 @@ ORDER BY usuarios.plan_suscripcion, reproducciones.tipo_contenido;
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT
+    reproducciones.fecha_hora,
+    usuarios.nombre_usuario,
+    canciones.titulo,
+    artistas.nombre AS artista
+FROM reproducciones
+INNER JOIN usuarios
+    ON usuarios.usuario_id = reproducciones.usuario_id
+INNER JOIN canciones
+    ON canciones.cancion_id = reproducciones.cancion_id
+INNER JOIN artistas
+    ON artistas.artista_id = canciones.artista_id
+WHERE reproducciones.fecha_hora >= '2026-09-16'
+  AND reproducciones.fecha_hora < '2026-09-17'
+ORDER BY reproducciones.fecha_hora;
 
 ```
 
@@ -420,7 +439,14 @@ ORDER BY usuarios.plan_suscripcion, reproducciones.tipo_contenido;
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT reproducciones.fecha_hora, usuarios.nombre_usuario, canciones.titulo, artistas.nombre AS artista
+FROM reproducciones
+INNER JOIN usuarios ON usuarios.usuario_id = reproducciones.usuario_id
+LEFT JOIN canciones ON canciones.cancion_id = reproducciones.cancion_id
+LEFT JOIN artistas ON artistas.artista_id = canciones.artista_id
+WHERE reproducciones.fecha_hora >= '2026-09-16'
+  AND reproducciones.fecha_hora < '2026-09-17'
+ORDER BY reproducciones.fecha_hora; 
 
 ```
 
