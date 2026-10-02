@@ -1,5 +1,5 @@
 -- =============================================
--- File: query_optimization.sql
+-- File: query-optimization.sql
 -- Purpose: Compare original query against Copilot's optimization suggestions
 -- Author: Héctor Miguel Tudela
 -- =============================================

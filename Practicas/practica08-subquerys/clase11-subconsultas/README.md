@@ -21,7 +21,7 @@ WHERE duracion_seg > (SELECT AVG(duracion_seg) FROM dbo.canciones)
 ORDER BY duracion_seg DESC;
 ```
 
-![paso2](images/ej1_paso2.png)
+![paso2](images/ej1-paso2.png)
 
 ## Ejemplo 2. Subconsulta escalar en `SELECT`
 
@@ -38,7 +38,7 @@ WHERE artista_id = 1;
 
 > Para obtener la media con decimales basta con forzar un tipo decimal: `AVG(duracion_seg * 1.0)` devuelve **232.200000**. En ingeniería de datos este truncamiento silencioso es una fuente clásica de errores en informes.
 
-![ej2 paso1](images/ej2_paso1.png)
+![ej2 paso1](images/ej2-paso1.png)
 
 ## Ejemplo 3. Subconsulta de lista con `IN` (y subconsultas anidadas)
 
@@ -64,7 +64,7 @@ WHERE usuario_id IN (
 ORDER BY nombre_usuario;
 ```
 
-![ej3 paso1_2_3_4](images/ej3_paso1_2_3_4.png)
+![ej3 paso1_2_3_4](images/ej3-paso1-2-3-4.png)
 
 > `IN` elimina duplicados de forma natural: alexbeats ha escuchado varias veces a Nébula, pero aparece una sola vez. Con un `JOIN` habría que añadir `DISTINCT`.
 
@@ -146,7 +146,7 @@ FROM dbo.canciones
 WHERE cancion_id NOT IN (SELECT cancion_id FROM dbo.reproducciones);
 ```
 
-![ej7_paso1](images/ej7_paso1.png)
+![ej7_paso1](images/ej7-paso1.png)
 
 **Paso 2.** Entender por qué. La subconsulta devuelve también los `NULL` de los anuncios. `NOT IN (101, 103, NULL, ...)` equivale a `cancion_id <> 101 AND cancion_id <> 103 AND cancion_id <> NULL ...`, y cualquier comparación con `NULL` da `UNKNOWN`. Como la condición completa nunca llega a ser `TRUE`, no se devuelve ninguna fila.
 
@@ -164,7 +164,7 @@ WHERE NOT EXISTS (
 
 > **Regla práctica:** para “lo que no está en”, usa `NOT EXISTS`. Si usas `NOT IN`, filtra los nulos dentro de la subconsulta (`WHERE cancion_id IS NOT NULL`). Este fallo es especialmente peligroso en pipelines porque no rompe nada: simplemente deja de cargar datos.
 
-![ej7_paso2](images/ej7_paso2.png)
+![ej7_paso2](images/ej7-paso2.png)
 
 ## Ejemplo 8. `NOT EXISTS` como anti-join para la carga incremental
 
@@ -183,7 +183,7 @@ WHERE NOT EXISTS (
 ORDER BY s.reproduccion_id;
 ```
 
-![ej8_paso1](images/ej8_paso1.png)
+![ej8_paso1](images/ej8-paso1.png)
 
 **Paso 2.** Convertir esa consulta en la carga:
 
@@ -200,9 +200,9 @@ WHERE NOT EXISTS (
 );
 ```
 
-![ej8_paso2](images/ej8_paso2.png)
+![ej8_paso2](images/ej8-paso2.png)
 **Paso 3.** Ejecutar la misma carga una segunda vez: `(0 rows affected)`. La carga es **idempotente**: repetirla no duplica datos. Este patrón es la base de la carga incremental que automatizaremos en las próximas sesiones.
 
-![ej8_paso3](images/ej8_paso3.png)
+![ej8_paso3](images/ej8-paso3.png)
 
 > **A partir de aquí, todos los ejemplos y ejercicios asumen que esta carga ya se ha realizado**

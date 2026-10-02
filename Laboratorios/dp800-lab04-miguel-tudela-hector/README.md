@@ -229,7 +229,7 @@ Este hallazgo se verificó de dos formas:
 
    La diferencia (4) coincide con las 4 categorías raíz de AdventureWorksLT (Bikes, Components, Clothing, Accessories), que quedan fuera del resultado porque el `JOIN` final exige que exista una categoría padre.
 
-> Nota de proceso: al escribir las consultas de verificación se sobrescribió por error el archivo `vGetAllCategories_original.sql` (imagen siguiente). Se recuperó con `Ctrl+Z` antes de guardar, y las consultas de verificación se movieron a un archivo aparte para no perder la definición original.
+> Nota de proceso: al escribir las consultas de verificación se sobrescribió por error el archivo `vGetAllCategories-original.sql` (imagen siguiente). Se recuperó con `Ctrl+Z` antes de guardar, y las consultas de verificación se movieron a un archivo aparte para no perder la definición original.
 >
 > ![Archivo sobrescrito por error, antes de deshacer](images/paso6-02-archivo-sobrescrito-error.png)
 
@@ -278,7 +278,7 @@ Se verificó que la consulta original y la corregida devuelven el mismo número 
 
 | | |
 |---|---|
-| ![Verificación: 542 filas en ambas versiones](images/paso7-01-resultado-verificacion-542.png) | ![query_optimization.sql](images/paso7-02-editor-query-optimization.png) |
+| ![Verificación: 542 filas en ambas versiones](images/paso7-01-resultado-verificacion-542.png) | ![query-optimization.sql](images/paso7-02-editor-query-optimization.png) |
 
 ## 8. Limpieza de recursos
 
