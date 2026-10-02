@@ -48,8 +48,10 @@ Indica si cada necesidad corresponde a un sistema transaccional o analítico:
 
 ---
 
-## Ejercicio 5 : Investiga y arma un diagrama de arquitectura de capas (como el de la sección 8) con cada una de estas tecnologías:
-**5.1. Databricks (sin Azure)**
+## Ejercicio 5: Investiga y arma un diagrama de arquitectura de capas (como el de la sección 8) con cada una de estas tecnologías:
+
+### 5.1. Databricks (sin Azure)
+
 - Fuentes: bases de datos, ficheros, apps SaaS, streaming (igual que en cualquier plataforma).
 - Ingesta: Auto Loader (ingesta incremental de archivos), Lakeflow / Delta Live Tables (pipelines ETL declarativos).
 - Almacenamiento: Delta Lake (formato de tablas open source) sobre S3, ADLS o GCS, según la nube.
@@ -58,8 +60,8 @@ Indica si cada necesidad corresponde a un sistema transaccional o analítico:
 - Consumo: dashboards de AI/BI, o conectores hacia Power BI / Tableau.
 - Gobierno transversal: Unity Catalog (catálogo, linaje y permisos, igual función que Purview).
 
+### 5.2. Microsoft Fabric (100% Fabric, nada fuera)
 
-**5.2. Microsoft Fabric (100% Fabric, nada fuera)**
 - Fuentes: on-premises, SaaS, IoT (conectadas vía gateway).
 - Ingesta: Fabric Data Factory (pipelines, Dataflows Gen2) y Eventstreams (tiempo real).
 - Almacenamiento: OneLake, el único lago de datos lógico de Fabric.
@@ -68,8 +70,8 @@ Indica si cada necesidad corresponde a un sistema transaccional o analítico:
 - Consumo: Power BI y Fabric IQ / Copilot (lenguaje natural).
 - Gobierno transversal: Microsoft Purview, integrado dentro del mismo workspace.
 
-  
-**5.3. AWS**
+### 5.3. AWS
+
 - Fuentes: bases de datos on-prem, apps, IoT.
 - Ingesta: AWS Glue (ETL serverless), AWS DMS (migración de BD), Kinesis (streaming).
 - Almacenamiento: Amazon S3 como data lake central + Lake Formation para el gobierno de permisos.
@@ -78,8 +80,8 @@ Indica si cada necesidad corresponde a un sistema transaccional o analítico:
 - Consumo: Amazon QuickSight.
 - Gobierno transversal: Lake Formation + Glue Data Catalog.
 
+### 5.4. GCP
 
-**5.4. GCP**
 - Fuentes: on-prem, SaaS, IoT.
 - Ingesta: Pub/Sub (mensajería en tiempo real), Datastream (CDC).
 - Almacenamiento: Cloud Storage + BigLake (une lake y warehouse).
