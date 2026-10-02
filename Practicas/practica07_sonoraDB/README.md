@@ -597,8 +597,15 @@ FROM (
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
-
+CREATE TABLE dbo.playlist(
+	playlist_id INT IDENTITY(1,1) PRIMARY KEY,
+	usuario_id INT NOT NULL,
+	nombre VARCHAR(100) NOT NULL,
+	es_publica BIT NOT NULL DEFAULT 0,
+	fecha_creacion DATETIME2(0) NOT NULL DEFAULT SYSDATETIME()
+	CONSTRAINT FK_ID_Usuario FOREIGN KEY (usuario_id)
+        REFERENCES Usuarios(usuario_id)	
+);
 ```
 
 **Resultado:**
@@ -611,7 +618,22 @@ FROM (
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+CREATE TABLE dbo.playlist_canciones (
+    playlist_id INT NOT NULL,
+    cancion_id INT NOT NULL,
+    fecha_agregada DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+
+    CONSTRAINT PK_playlist_canciones
+        PRIMARY KEY (playlist_id, cancion_id),
+
+    CONSTRAINT FK_playlist_canciones_playlist
+        FOREIGN KEY (playlist_id)
+        REFERENCES dbo.playlist(playlist_id),
+
+    CONSTRAINT FK_playlist_canciones_cancion
+        FOREIGN KEY (cancion_id)
+        REFERENCES dbo.canciones(cancion_id)
+);
 
 ```
 
@@ -625,7 +647,21 @@ FROM (
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+ALTER TABLE dbo.playlist
+ADD descripcion NVARCHAR(200) NULL;
+
+ALTER TABLE dbo.playlist
+ADD CONSTRAINT CK_playlist_nombre_min_3
+CHECK (LEN(nombre) >= 3);
+
+SELECT
+    TABLE_NAME,
+    COLUMN_NAME,
+    DATA_TYPE,
+    CHARACTER_MAXIMUM_LENGTH,
+    IS_NULLABLE
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'playlist';
 
 ```
 
@@ -641,7 +677,18 @@ FROM (
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+INSERT INTO dbo.playlist (usuario_id, nombre)
+SELECT usuario_id, 'Perreo Mañanero'
+FROM dbo.usuarios
+WHERE nombre_usuario = 'alexbeats'
+UNION ALL
+SELECT usuario_id, 'Rock para currar'
+FROM dbo.usuarios
+WHERE nombre_usuario = 'marta_rock'
+UNION ALL
+SELECT usuario_id, 'Code & Techno'
+FROM dbo.usuarios
+WHERE nombre_usuario = 'juanpi';
 
 ```
 
@@ -655,7 +702,27 @@ FROM (
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+INSERT INTO dbo.playlist_canciones (playlist_id, cancion_id)
+VALUES
+    (1, 103),
+    (1, 104),
+    (1, 113);
+
+
+INSERT INTO dbo.playlist_canciones (playlist_id, cancion_id)
+VALUES
+    (2, 106),
+    (2, 107),
+    (2, 110);
+
+INSERT INTO dbo.playlist_canciones (playlist_id, cancion_id)
+SELECT
+    3,
+    c.cancion_id
+FROM dbo.canciones AS c
+INNER JOIN dbo.generos AS g
+    ON c.genero_id = g.genero_id
+WHERE g.nombre IN ('House', 'Techno');
 
 ```
 
@@ -669,21 +736,39 @@ FROM (
 
 **Tabla de Errores Encontrados:**
 
-| Intento | Acción | Error | Motivo |
-|---------|--------|-------|--------|
-| 1 | Añadir otra vez la canción 103 a la playlist 1. | *Rellenar* | *Rellenar* |
-| 2 | Añadir la canción 999 a la playlist 1. | *Rellenar* | *Rellenar* |
-| 3 | Crear una playlist para alexbeats llamada AB. | *Rellenar* | *Rellenar* |
-| 4 | Crear otra playlist para alexbeats llamada Perreo Mañanero. | *Rellenar* | *Rellenar* |
+| Intento | Acción                                   | Error              | Motivo                                                       |
+| ------- | ---------------------------------------- | ------------------ | ------------------------------------------------------------ |
+| 1       | Añadir otra vez canción 103 a playlist 1 | **PK/PRIMARY KEY** | La combinación `(playlist_id, cancion_id)` ya existe         |
+| 2       | Añadir canción 999 a playlist 1          | **FK/FOREIGN KEY** | La canción 999 no existe en `canciones`                      |
+| 3       | Crear playlist `AB`                      | **CHECK**          | `LEN(nombre) < 3`                                            |
+| 4       | Crear `Perreo Mañanero` otra vez         | **Ninguno**        | No existe ninguna restricción que prohíba nombres duplicados |
+
 
 **Código SQL (Intentos):**
 ```sql
--- Escribe tu código aquí (o comenta los intentos fallidos)
+INSERT INTO dbo.playlist_canciones (playlist_id, cancion_id)
+VALUES (1, 103);
+
+INSERT INTO dbo.playlist_canciones (playlist_id, cancion_id)
+VALUES (1, 999);
+
+INSERT INTO dbo.playlist (usuario_id, nombre)
+SELECT usuario_id, 'AB'
+FROM dbo.usuarios
+WHERE nombre_usuario = 'alexbeats';
+
+INSERT INTO dbo.playlist (usuario_id, nombre)
+SELECT usuario_id, 'Perreo Mañanero'
+FROM dbo.usuarios
+WHERE nombre_usuario = 'alexbeats';
 
 ```
 
 **Resultado:**
-![Resultado Ejercicio 34](images/ejercicio_34.png)
+![Resultado Ejercicio 34](images/ejercicio_34_1.png)
+![Resultado Ejercicio 34](images/ejercicio_34_2.png)
+![Resultado Ejercicio 34](images/ejercicio_34_3.png)
+![Resultado Ejercicio 34](images/ejercicio_34_4.png)
 
 ---
 
@@ -692,7 +777,16 @@ FROM (
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+UPDATE dbo.playlist
+SET playlist.descripcion = 'Guitarras para la oficina'
+WHERE playlist_id = 2;
+
+UPDATE p
+SET p.es_publica = 1
+FROM dbo.playlist AS p
+INNER JOIN dbo.usuarios AS u
+    ON p.usuario_id = u.usuario_id
+WHERE u.plan_suscripcion = 'Premium';
 
 ```
 
@@ -706,7 +800,23 @@ FROM (
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+SELECT
+    p.playlist_id AS id,
+    u.nombre_usuario AS dueño,
+    p.nombre,
+    p.es_publica AS publica,
+    COUNT(pc.cancion_id) AS numero_canciones
+FROM dbo.playlist AS p
+INNER JOIN dbo.usuarios AS u
+    ON p.usuario_id = u.usuario_id
+LEFT JOIN dbo.playlist_canciones AS pc
+    ON p.playlist_id = pc.playlist_id
+GROUP BY
+    p.playlist_id,
+    u.nombre_usuario,
+    p.nombre,
+    p.es_publica
+ORDER BY p.playlist_id;
 
 ```
 
@@ -719,16 +829,22 @@ FROM (
 **Enunciado:** Aplica estos borrados: Quita la canción Forja (110) de la playlist 2. Intenta borrar la playlist 3 directamente (anota el error). Borra la playlist 3 correctamente, en el orden necesario.
 
 **Anotación del Error:**
-> *Escribe aquí el error al intentar borrar la playlist 3 directamente y el porqué.*
+> La FK FK_playlist_canciones_playlist impide borrar la playlist mientras haya canciones relacionadas con ella.
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+DELETE FROM dbo.playlist_canciones
+WHERE playlist_id = 2
+  AND cancion_id = 110;
+
+  DELETE FROM dbo.playlist
+WHERE playlist_id = 3;
 
 ```
 
 **Resultado:**
-![Resultado Ejercicio 37](images/ejercicio_37.png)
+![Resultado Ejercicio 37](images/ejercicio_37_1.png)
+![Resultado Ejercicio 37](images/ejercicio_37_2.png)
 
 ---
 
@@ -737,7 +853,21 @@ FROM (
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+BEGIN TRANSACTION;
+
+UPDATE dbo.usuarios
+SET plan_suscripcion = 'Premium'
+WHERE usuario_id = 2;
+
+SELECT usuario_id, nombre_usuario, plan_suscripcion
+FROM dbo.usuarios
+WHERE usuario_id = 2;
+
+ROLLBACK;
+
+SELECT usuario_id, nombre_usuario, plan_suscripcion
+FROM dbo.usuarios
+WHERE usuario_id = 2;
 
 ```
 
@@ -751,8 +881,13 @@ FROM (
 
 **Código SQL:**
 ```sql
--- Escribe tu código aquí
+DROP TABLE IF EXISTS dbo.playlist_canciones;
 
+DROP TABLE IF EXISTS dbo.playlist;
+
+SELECT name
+FROM sys.tables
+ORDER BY name;
 ```
 
 **Resultado:**
