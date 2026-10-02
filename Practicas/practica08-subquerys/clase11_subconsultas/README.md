@@ -1,4 +1,7 @@
-### Ejemplo 1. Subconsulta escalar en `WHERE`
+# Práctica 08. Subqueries
+
+## Ejemplo 1. Subconsulta escalar en `WHERE`
+
 > **Pregunta de negocio:** ¿Qué canciones del catálogo duran más que la media?
 
 **Paso 1.** Resolver la pregunta interna por separado:
@@ -20,10 +23,9 @@ ORDER BY duracion_seg DESC;
 
 ![paso2](images/ej1_paso2.png)
 
-### Ejemplo 2. Subconsulta escalar en `SELECT`
+## Ejemplo 2. Subconsulta escalar en `SELECT`
 
 > **Pregunta de negocio:** para las canciones de Luna Roja (artista 1), ¿Cuánto se desvía su duración de la media del catálogo?
-> 
 
 ```sql
 SELECT titulo,
@@ -38,8 +40,7 @@ WHERE artista_id = 1;
 
 ![ej2 paso1](images/ej2_paso1.png)
 
-
-### Ejemplo 3. Subconsulta de lista con `IN` (y subconsultas anidadas)
+## Ejemplo 3. Subconsulta de lista con `IN` (y subconsultas anidadas)
 
 **Pregunta de negocio:** Marketing quiere enviar una notificación a los usuarios que han escuchado alguna canción de **Nébula**.
 
@@ -67,7 +68,7 @@ ORDER BY nombre_usuario;
 
 > `IN` elimina duplicados de forma natural: alexbeats ha escuchado varias veces a Nébula, pero aparece una sola vez. Con un `JOIN` habría que añadir `DISTINCT`.
 
-### Ejemplo 4. Tabla derivada en `FROM`
+## Ejemplo 4. Tabla derivada en `FROM`
 
 **Pregunta de negocio:** ¿qué usuarios han reproducido 5 o más canciones?
 
@@ -89,7 +90,7 @@ ORDER BY t.num_reproducciones DESC, u.nombre_usuario;
 
 ![ej4](images/ej4.png)
 
-### Ejemplo 5. Subconsulta correlacionada
+## Ejemplo 5. Subconsulta correlacionada
 
 **Pregunta de negocio:** Para cada usuario, ¿cuál fue su última reproducción?
 
@@ -113,7 +114,7 @@ ORDER BY r.fecha_hora;
 
 ![ej5](images/ej5.png)
 
-### Ejemplo 6. `EXISTS`
+## Ejemplo 6. `EXISTS`
 
 **Pregunta de negocio:** ¿qué artistas han publicado al menos una canción en 2026?
 
@@ -128,11 +129,12 @@ WHERE EXISTS (
 )
 ORDER BY a.nombre;
 ```
+
 > `EXISTS` se detiene en cuanto encuentra la primera fila que cumple la condición. No le importa cuántas canciones haya: solo si hay alguna.
 
 ![ej6](images/ej6.png)
 
-### Ejemplo 7. La trampa de `NOT IN` con valores `NULL`
+## Ejemplo 7. La trampa de `NOT IN` con valores `NULL`
 
 **Pregunta de negocio:** ¿Qué canciones del catálogo no se han reproducido nunca?
 
@@ -159,11 +161,12 @@ WHERE NOT EXISTS (
     WHERE r.cancion_id = c.cancion_id
 );
 ```
+
 > **Regla práctica:** para “lo que no está en”, usa `NOT EXISTS`. Si usas `NOT IN`, filtra los nulos dentro de la subconsulta (`WHERE cancion_id IS NOT NULL`). Este fallo es especialmente peligroso en pipelines porque no rompe nada: simplemente deja de cargar datos.
 
 ![ej7_paso2](images/ej7_paso2.png)
 
-### Ejemplo 8. `NOT EXISTS` como anti-join para la carga incremental
+## Ejemplo 8. `NOT EXISTS` como anti-join para la carga incremental
 
 **Contexto de ingeniería de datos:** el lote del 21/09 está en `stg_reproducciones`. La app reenvía a veces filas que ya se cargaron (las 32 y 33). Hay que cargar solo las nuevas y que la carga pueda repetirse sin duplicar.
 
@@ -202,4 +205,4 @@ WHERE NOT EXISTS (
 
 ![ej8_paso3](images/ej8_paso3.png)
 
-> **A partir de aquí, todos los ejemplos y ejercicios asumen que esta carga ya se ha realizado** (38 reproducciones).
+> **A partir de aquí, todos los ejemplos y ejercicios asumen que esta carga ya se ha realizado**
