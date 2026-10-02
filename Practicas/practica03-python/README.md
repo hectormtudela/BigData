@@ -23,15 +23,15 @@ Resolución de los 20 ejercicios de la Práctica 3 sobre listas, funciones y paq
 
 | Fichero | Filas | Descripción |
 | --- | --- | --- |
-| `ventas_retail.csv` | 420 | Pedidos de una cadena minorista (3 primeros trimestres de 2025) |
+| `ventas-retail.csv` | 420 | Pedidos de una cadena minorista (3 primeros trimestres de 2025) |
 | `empleados.csv` | 180 | Plantilla de una empresa tecnológica |
-| `sensores_planta.csv` | 600 | Telemetría de 4 máquinas de planta, muestreada cada 15 min |
+| `sensores-planta.csv` | 600 | Telemetría de 4 máquinas de planta, muestreada cada 15 min |
 
 Los tres ficheros están sin modificar en `data/`, tal como se entregaron.
 
 ## Contenido del notebook
 
-El notebook `notebooks/practica3_python.ipynb` resuelve 20 ejercicios agrupados en:
+El notebook `notebooks/practica3-python.ipynb` resuelve 20 ejercicios agrupados en:
 
 1. **Listas** (ej. 1-4): slicing, listas anidadas, copias vs. referencias, colas.
 2. **Funciones y paquetes** (ej. 5-7): funciones propias, módulo `src/utilidades.py`, NumPy y pandas.
@@ -66,5 +66,5 @@ En Windows PowerShell:
 
 ```bash
 python -m pip install -r requirements.txt
-jupyter lab notebooks/practica3_python.ipynb
+jupyter lab notebooks/practica3-python.ipynb
 ```

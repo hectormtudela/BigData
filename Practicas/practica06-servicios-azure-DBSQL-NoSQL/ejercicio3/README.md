@@ -71,12 +71,13 @@ Tras pulsar **Save**, Cosmos DB añadió automáticamente los siguientes metadat
 
 **Capturas:**
 
-![Item Road Helmet creado con metadatos automáticos](images/paso3_item_creado.png)
+![Item Road Helmet creado con metadatos automáticos](images/paso3-item-creado.png)
 
 **Notas / incidencias:**
 
 > **Significado de los metadatos añadidos:**
-> - `_rid`: identificador interno de recursos usado por Cosmos DB.
+>
+> - `_rid`: identificador interno de recursos usado por Cosmos DB
 > - `_self`: enlace de recurso completo hacia el item.
 > - `_etag`: etiqueta de entidad usada para control de concurrencia optimista (evitar sobrescrituras conflictivas).
 > - `_ts`: timestamp Unix (segundos) de la última modificación.
@@ -108,9 +109,9 @@ Resultado: **4 items** devueltos, todos aquellos cuyo campo `name` contiene el t
 
 **Capturas:**
 
-![Resultado SELECT * FROM c](images/paso4_query_select_all.png)
+![Resultado SELECT * FROM c](images/paso4-query-select-all.png)
 
-![Resultado consulta CONTAINS Helmet](images/paso4_query_contains_helmet.png)
+![Resultado consulta CONTAINS Helmet](images/paso4-query-contains-helmet.png)
 
 **Notas / incidencias:**
 
@@ -129,9 +130,9 @@ Una vez finalizadas las consultas, se ha eliminado el grupo de recursos completo
 
 **Capturas:**
 
-![Diálogo de confirmación de eliminación del grupo de recursos](images/paso5_delete_resource_group_dialog.png)
+![Diálogo de confirmación de eliminación del grupo de recursos](images/paso5-delete-resource-group-dialog.png)
 
-![Eliminación en curso del grupo de recursos con Cosmos DB](images/paso5_delete_resource_group_confirmacion.png)
+![Eliminación en curso del grupo de recursos con Cosmos DB](images/paso5-delete-resource-group-confirmacion.png)
 
 ---
 

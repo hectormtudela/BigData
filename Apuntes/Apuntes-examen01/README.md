@@ -2047,13 +2047,13 @@ Plantilla completa:   List(Luis, Alex, Chen, Marta, Sindhu, Pedro, Sofia)
 ```python
 import pandas as pd
  
-df = pd.read_csv("ventas_retail.csv")
+df = pd.read_csv("ventas-retail.csv")
 ```
  
-Esto asume que el archivo `ventas_retail.csv` está en la **misma carpeta** desde la que estás ejecutando el notebook. Si el archivo está en otra carpeta, tienes que indicar la "ruta" (path), es decir, el camino de carpetas para llegar hasta él:
+Esto asume que el archivo `ventas-retail.csv` está en la **misma carpeta** desde la que estás ejecutando el notebook. Si el archivo está en otra carpeta, tienes que indicar la "ruta" (path), es decir, el camino de carpetas para llegar hasta él:
  
 ```python
-df = pd.read_csv("../data/ventas_retail.csv")
+df = pd.read_csv("../data/ventas-retail.csv")
 ```
  
 Aquí `../` significa "sube una carpeta desde donde está el notebook", y `data/` significa "y entra en la carpeta llamada data". Esto es justo lo que hacían tus ejercicios, donde el notebook vive en `notebooks/` y los CSV en `data/`.

@@ -112,16 +112,16 @@ Después de esto, `estudiantes` sigue teniendo 5 nombres y `nuevosEstudiantes` t
 
 **Plugin de Scala instalado:**
 
-![Plugin de Scala](capturas/plugin_instalado.PNG)
+![Plugin de Scala](capturas/plugin-instalado.PNG)
 
 **Estructura del proyecto**, con `Main.scala` dentro de `src/main/scala`:
 
-![Estructura](capturas/estructura_proyecto.png)
+![Estructura](capturas/estructura-proyecto.png)
 
 **`Main.scala` y `sbt compile` correcto:**
 
-![Main.scala y compile](capturas/captura_proyecto_scala.PNG)
+![Main.scala y compile](capturas/captura-proyecto-scala.PNG)
 
 **`sbt compile` y `sbt run`:**
 
-![sbt compile y run](capturas/sbt_run_compile.png)
+![sbt compile y run](capturas/sbt-run-compile.png)

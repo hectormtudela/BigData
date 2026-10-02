@@ -25,7 +25,7 @@ Servers → PostgreSQL 18 (doble clic) → contraseña de `postgres` → **Save
 Password** activado. El árbol se despliega mostrando `Databases`,
 `Login/Group Roles` y `Tablespaces`, confirmando la conexión.
 
-![Conectado a PostgreSQL 18 desde pgAdmin, dashboard de actividad visible](images/conectado_pgAdmin.png)
+![Conectado a PostgreSQL 18 desde pgAdmin, dashboard de actividad visible](images/conectado-pgAdmin.png)
 
 > **Nota:** en el árbol apareció también una entrada residual **PostgreSQL
 > 16**, de la instalación anterior ya desinstalada (pgAdmin guarda sus
@@ -43,7 +43,7 @@ Se optó por la **Opción 1 (creación por consulta)**.
 servidor en general. Se seleccionó la base `postgres` (única existente en
 ese momento) antes de `Tools → Query Tool`.
 
-![Selección de PostgreSQL 18 / postgres en el árbol antes de abrir Query Tool](images/seleccion_psql18.png)
+![Selección de PostgreSQL 18 / postgres en el árbol antes de abrir Query Tool](images/seleccion-psql18.png)
 
 ### Creación de la base de datos
 
@@ -53,7 +53,7 @@ CREATE DATABASE northwind
          TEMPLATE  = template0;
 ```
 
-![Ejecución de CREATE DATABASE northwind, correcta en 805 msec](images/creacion_bbdd_psql.png)
+![Ejecución de CREATE DATABASE northwind, correcta en 805 msec](images/creacion-bbdd-psql.png)
 
 ### Comprobación
 
@@ -69,7 +69,7 @@ Resultado obtenido:
 |---|---|
 | northwind | UTF8 |
 
-![Comprobación de existencia de northwind con codificación UTF8](images/comprobacion_existencia_bbdd.png)
+![Comprobación de existencia de northwind con codificación UTF8](images/comprobacion-existencia-bbdd.png)
 
 ## Sección 3 — Ejecución del script `northwind.sql`
 
@@ -102,7 +102,7 @@ SELECT
 Las 14 tablas quedan visibles en el árbol (`Tables (14)`), confirmando que el
 script creó y pobló todas las tablas del modelo Northwind.
 
-![Verificación de conteo de filas tras cargar el script, con las 14 tablas visibles en el árbol](images/comprobacion_datos_cargados.png)
+![Verificación de conteo de filas tras cargar el script, con las 14 tablas visibles en el árbol](images/comprobacion-datos-cargados.png)
 
 ## Sección 7 — Restricciones (claves primarias y ajenas)
 
@@ -126,14 +126,14 @@ ORDER BY 1;
 
 Coincide exactamente con lo esperado: 14 claves primarias y 13 claves ajenas.
 
-![Comprobación de restricciones: 13 FK, 14 PK](images/comprobacion_restricciones.png)
+![Comprobación de restricciones: 13 FK, 14 PK](images/comprobacion-restricciones.png)
 
 ## Sección 8 — Diagrama entidad-relación (ERD)
 
 Generado con clic derecho sobre la base `northwind` → **ERD For Database**,
 reorganizado con **Auto align** y exportado con **Download image**.
 
-![Modelo Entidad Relación generado por PSQL](images/northwind_erd_hd.png)
+![Modelo Entidad Relación generado por PSQL](images/northwind-erd-hd.png)
 
 Lectura del modelo:
 - `orders` y `order_details` forman el núcleo transaccional.
@@ -163,7 +163,7 @@ WHERE customer_id IN ('ANATR', 'BERGS', 'BLONP');
 
 Los caracteres especiales (`é`, `ö`, `å`, `è`) se muestran correctamente.
 
-![Consulta de clientes con acentos y caracteres especiales, mostrados correctamente](images/comprobacion_codificacion.png)
+![Consulta de clientes con acentos y caracteres especiales, mostrados correctamente](images/comprobacion-codificacion.png)
 
 ## Sección 9 — Checklist final antes de la Parte 2
 

@@ -20,7 +20,7 @@ WHERE d.name = 'SonoraDB';
 ```
 
 **Resultado:**
-![Resultado Ejercicio 1](images/ejercicio_01.png)
+![Resultado Ejercicio 1](images/ejercicio-01.png)
 
 ---
 
@@ -36,7 +36,7 @@ ORDER BY name desc
 ```
 
 **Resultado:**
-![Resultado Ejercicio 2](images/ejercicio_02.png)
+![Resultado Ejercicio 2](images/ejercicio-02.png)
 
 ---
 
@@ -52,7 +52,7 @@ ORDER BY ORDINAL_POSITION
 ```
 
 **Resultado:**
-![Resultado Ejercicio 3](images/ejercicio_03.png)
+![Resultado Ejercicio 3](images/ejercicio-03.png)
 
 ---
 
@@ -69,7 +69,7 @@ WHERE pais = 'ES'
 ```
 
 **Resultado:**
-![Resultado Ejercicio 4](images/ejercicio_04.png)
+![Resultado Ejercicio 4](images/ejercicio-04.png)
 
 ---
 
@@ -86,7 +86,7 @@ ORDER BY fecha_lanzamiento
 ```
 
 **Resultado:**
-![Resultado Ejercicio 5](images/ejercicio_05.png)
+![Resultado Ejercicio 5](images/ejercicio-05.png)
 
 ---
 
@@ -104,7 +104,7 @@ WHERE nombre_usuario LIKE '%[_]%'
 ```
 
 **Resultado:**
-![Resultado Ejercicio 6](images/ejercicio_06.png)
+![Resultado Ejercicio 6](images/ejercicio-06.png)
 
 ---
 
@@ -119,7 +119,7 @@ ORDER BY dispositivo ASC
 ```
 
 **Resultado:**
-![Resultado Ejercicio 7](images/ejercicio_07.png)
+![Resultado Ejercicio 7](images/ejercicio-07.png)
 
 ---
 
@@ -139,7 +139,7 @@ WHERE cancion_id IS NULL
 ```
 
 **Resultado:**
-![Resultado Ejercicio 8](images/ejercicio_08.png)
+![Resultado Ejercicio 8](images/ejercicio-08.png)
 
 ---
 
@@ -155,7 +155,7 @@ ORDER BY segundos_escuchados DESC
 ```
 
 **Resultado:**
-![Resultado Ejercicio 9](images/ejercicio_09.png)
+![Resultado Ejercicio 9](images/ejercicio-09.png)
 
 ---
 
@@ -173,7 +173,7 @@ FETCH NEXT 5 ROWS ONLY
 ```
 
 **Resultado:**
-![Resultado Ejercicio 10](images/ejercicio_10.png)
+![Resultado Ejercicio 10](images/ejercicio-10.png)
 
 ---
 
@@ -197,7 +197,7 @@ SELECT titulo,
 ```
 
 **Resultado:**
-![Resultado Ejercicio 11](images/ejercicio_11.png)
+![Resultado Ejercicio 11](images/ejercicio-11.png)
 
 ---
 
@@ -217,7 +217,7 @@ ORDER BY nombre ASC
 ```
 
 **Resultado:**
-![Resultado Ejercicio 12](images/ejercicio_12.png)
+![Resultado Ejercicio 12](images/ejercicio-12.png)
 
 ---
 
@@ -233,7 +233,7 @@ ORDER BY antiguedad desc
 ```
 
 **Resultado:**
-![Resultado Ejercicio 13](images/ejercicio_13.png)
+![Resultado Ejercicio 13](images/ejercicio-13.png)
 
 ---
 
@@ -253,7 +253,7 @@ ORDER BY fecha, hora
 ```
 
 **Resultado:**
-![Resultado Ejercicio 14](images/ejercicio_14.png)
+![Resultado Ejercicio 14](images/ejercicio-14.png)
 
 ---
 
@@ -278,7 +278,7 @@ FROM canciones
 ```
 
 **Resultado:**
-![Resultado Ejercicio 15](images/ejercicio_15.png)
+![Resultado Ejercicio 15](images/ejercicio-15.png)
 
 ---
 
@@ -296,7 +296,7 @@ FROM reproducciones
 ```
 
 **Resultado:**
-![Resultado Ejercicio 16](images/ejercicio_16.png)
+![Resultado Ejercicio 16](images/ejercicio-16.png)
 
 ---
 
@@ -312,7 +312,7 @@ GROUP BY dispositivo
 ```
 
 **Resultado:**
-![Resultado Ejercicio 17](images/ejercicio_17.png)
+![Resultado Ejercicio 17](images/ejercicio-17.png)
 
 ---
 
@@ -340,7 +340,7 @@ SELECT AVG(duracion_seg) as duracion_media, COUNT(*) as num_canciones,
 ```
 
 **Resultado:**
-![Resultado Ejercicio 18](images/ejercicio_18.png)
+![Resultado Ejercicio 18](images/ejercicio-18.png)
 
 ---
 
@@ -360,7 +360,7 @@ ORDER BY SUM(reproducciones.segundos_escuchados) DESC
 ```
 
 **Resultado:**
-![Resultado Ejercicio 19](images/ejercicio_19.png)
+![Resultado Ejercicio 19](images/ejercicio-19.png)
 
 ---
 
@@ -378,7 +378,7 @@ ORDER BY usuarios.plan_suscripcion, reproducciones.tipo_contenido;
 ```
 
 **Resultado:**
-![Resultado Ejercicio 20](images/ejercicio_20.png)
+![Resultado Ejercicio 20](images/ejercicio-20.png)
 
 ---
 
@@ -399,7 +399,7 @@ ORDER BY artistas.nombre, canciones.titulo
 ```
 
 **Resultado:**
-![Resultado Ejercicio 21](images/ejercicio_21.png)
+![Resultado Ejercicio 21](images/ejercicio-21.png)
 
 ---
 
@@ -427,7 +427,7 @@ ORDER BY reproducciones.fecha_hora;
 ```
 
 **Resultado:**
-![Resultado Ejercicio 22](images/ejercicio_22.png)
+![Resultado Ejercicio 22](images/ejercicio-22.png)
 
 ---
 
@@ -451,7 +451,7 @@ ORDER BY reproducciones.fecha_hora;
 ```
 
 **Resultado:**
-![Resultado Ejercicio 23](images/ejercicio_23.png)
+![Resultado Ejercicio 23](images/ejercicio-23.png)
 
 ---
 
@@ -467,7 +467,7 @@ WHERE reproduccion_id IS NULL
 ```
 
 **Resultado:**
-![Resultado Ejercicio 24](images/ejercicio_24.png)
+![Resultado Ejercicio 24](images/ejercicio-24.png)
 
 ---
 
@@ -490,7 +490,7 @@ ORDER BY num_reproducciones DESC, artistas.nombre
 ```
 
 **Resultado:**
-![Resultado Ejercicio 25](images/ejercicio_25.png)
+![Resultado Ejercicio 25](images/ejercicio-25.png)
 
 ---
 
@@ -512,7 +512,7 @@ ORDER BY empleado.empleado_id
 ```
 
 **Resultado:**
-![Resultado Ejercicio 26](images/ejercicio_26.png)
+![Resultado Ejercicio 26](images/ejercicio-26.png)
 
 ---
 
@@ -539,7 +539,7 @@ ORDER BY num_reproducciones DESC;
 ```
 
 **Resultado:**
-![Resultado Ejercicio 27](images/ejercicio_27.png)
+![Resultado Ejercicio 27](images/ejercicio-27.png)
 
 ---
 
@@ -586,7 +586,7 @@ FROM (
 ```
 
 **Resultado:**
-![Resultado Ejercicio 28](images/ejercicio_28.png)
+![Resultado Ejercicio 28](images/ejercicio-28.png)
 
 ---
 
@@ -609,7 +609,7 @@ CREATE TABLE dbo.playlist(
 ```
 
 **Resultado:**
-![Resultado Ejercicio 29](images/ejercicio_29.png)
+![Resultado Ejercicio 29](images/ejercicio-29.png)
 
 ---
 
@@ -638,7 +638,7 @@ CREATE TABLE dbo.playlist_canciones (
 ```
 
 **Resultado:**
-![Resultado Ejercicio 30](images/ejercicio_30.png)
+![Resultado Ejercicio 30](images/ejercicio-30.png)
 
 ---
 
@@ -666,7 +666,7 @@ WHERE TABLE_NAME = 'playlist';
 ```
 
 **Resultado:**
-![Resultado Ejercicio 31](images/ejercicio_31.png)
+![Resultado Ejercicio 31](images/ejercicio-31.png)
 
 ---
 
@@ -693,7 +693,7 @@ WHERE nombre_usuario = 'juanpi';
 ```
 
 **Resultado:**
-![Resultado Ejercicio 32](images/ejercicio_32.png)
+![Resultado Ejercicio 32](images/ejercicio-32.png)
 
 ---
 
@@ -727,7 +727,7 @@ WHERE g.nombre IN ('House', 'Techno');
 ```
 
 **Resultado:**
-![Resultado Ejercicio 33](images/ejercicio_33.png)
+![Resultado Ejercicio 33](images/ejercicio-33.png)
 
 ---
 
@@ -765,10 +765,10 @@ WHERE nombre_usuario = 'alexbeats';
 ```
 
 **Resultado:**
-![Resultado Ejercicio 34](images/ejercicio_34_1.png)
-![Resultado Ejercicio 34](images/ejercicio_34_2.png)
-![Resultado Ejercicio 34](images/ejercicio_34_3.png)
-![Resultado Ejercicio 34](images/ejercicio_34_4.png)
+![Resultado Ejercicio 34](images/ejercicio-34-1.png)
+![Resultado Ejercicio 34](images/ejercicio-34-2.png)
+![Resultado Ejercicio 34](images/ejercicio-34-3.png)
+![Resultado Ejercicio 34](images/ejercicio-34-4.png)
 
 ---
 
@@ -791,7 +791,7 @@ WHERE u.plan_suscripcion = 'Premium';
 ```
 
 **Resultado:**
-![Resultado Ejercicio 35](images/ejercicio_35.png)
+![Resultado Ejercicio 35](images/ejercicio-35.png)
 
 ---
 
@@ -821,7 +821,7 @@ ORDER BY p.playlist_id;
 ```
 
 **Resultado:**
-![Resultado Ejercicio 36](images/ejercicio_36.png)
+![Resultado Ejercicio 36](images/ejercicio-36.png)
 
 ---
 
@@ -843,8 +843,8 @@ WHERE playlist_id = 3;
 ```
 
 **Resultado:**
-![Resultado Ejercicio 37](images/ejercicio_37_1.png)
-![Resultado Ejercicio 37](images/ejercicio_37_2.png)
+![Resultado Ejercicio 37](images/ejercicio-37-1.png)
+![Resultado Ejercicio 37](images/ejercicio-37-2.png)
 
 ---
 
@@ -872,7 +872,7 @@ WHERE usuario_id = 2;
 ```
 
 **Resultado:**
-![Resultado Ejercicio 38](images/ejercicio_38.png)
+![Resultado Ejercicio 38](images/ejercicio-38.png)
 
 ---
 
@@ -891,4 +891,4 @@ ORDER BY name;
 ```
 
 **Resultado:**
-![Resultado Ejercicio 39](images/ejercicio_39.png)
+![Resultado Ejercicio 39](images/ejercicio-39.png)
