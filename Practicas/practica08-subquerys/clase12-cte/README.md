@@ -335,7 +335,15 @@ ORDER BY t.segundos DESC;
 El sello de Luna Roja quiere saber qué canciones del catálogo duran más que la canción más larga de Luna Roja. Resuélvelo con una subconsulta escalar que obtenga esa duración máxima a partir del **nombre** del artista. Ordena de mayor a menor duración.
 
 ```sql
--- Tu consulta aquí
+SELECT titulo, duracion_seg
+FROM dbo.canciones
+WHERE duracion_seg > (
+    SELECT MAX(c.duracion_seg)
+    FROM dbo.canciones AS c
+    JOIN dbo.artistas AS a ON a.artista_id = c.artista_id
+    WHERE a.nombre = N'Luna Roja'
+)
+ORDER BY duracion_seg DESC;
 ```
 
 ![ejercicio 1](images/clase12/ejercicio1.png)
@@ -345,7 +353,14 @@ El sello de Luna Roja quiere saber qué canciones del catálogo duran más que l
 El equipo de producto está diseñando una nueva interfaz para televisores. Obtén, con una subconsulta de lista (`IN`), los títulos de las canciones que se han reproducido alguna vez desde un dispositivo `Smart TV`. Ordena alfabéticamente.
 
 ```sql
--- Tu consulta aquí
+SELECT c.titulo
+FROM dbo.canciones AS c
+WHERE c.cancion_id IN (
+    SELECT r.cancion_id
+    FROM dbo.reproducciones AS r
+    WHERE r.dispositivo = N'Smart TV'
+)
+ORDER BY c.titulo ASC;
 ```
 
 ![ejercicio 2](images/clase12/ejercicio2.png)
@@ -355,7 +370,13 @@ El equipo de producto está diseñando una nueva interfaz para televisores. Obt�
 El equipo de catálogo necesita detectar artistas fichados que todavía no tienen ninguna canción publicada. Resuélvelo con `NOT EXISTS`.
 
 ```sql
--- Tu consulta aquí
+SELECT a.artista_id, a.nombre
+FROM dbo.artistas AS a
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM dbo.canciones AS c
+    WHERE c.artista_id = a.artista_id
+);
 ```
 
 ![ejercicio 3](images/clase12/ejercicio3.png)
@@ -365,7 +386,15 @@ El equipo de catálogo necesita detectar artistas fichados que todavía no tiene
 El equipo comercial quiere ofrecer un descuento en Premium a los usuarios que han escuchado al menos un anuncio. Obtén su nombre de usuario y su plan con `EXISTS`. Ordena por nombre de usuario.
 
 ```sql
--- Tu consulta aquí
+SELECT u.nombre_usuario, u.plan_suscripcion
+FROM dbo.usuarios AS u
+WHERE EXISTS (
+    SELECT 1
+    FROM dbo.reproducciones AS r
+    WHERE r.usuario_id = u.usuario_id
+      AND r.tipo_contenido = N'Anuncio'
+)
+ORDER BY u.nombre_usuario ASC;
 ```
 
 ![ejercicio 4](images/clase12/ejercicio4.png)
