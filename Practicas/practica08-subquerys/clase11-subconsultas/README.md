@@ -1,5 +1,17 @@
 # Práctica 08. Subqueries
 
+## Caso de uso real
+#### Investiga los casos de uso habituales de las subconsultas en Ingeniería de Datos:
+
+**Ejemplo 1.** https://netflixtechblog.com/formulating-out-of-memory-kill-prediction-on-the-netflix-app-as-a-machine-learning-problem-989599029109
+
+> Netflix explica cómo procesan telemetría aplicando filtrados y consultas previas obligatorias antes de realizar un LEFT JOIN masivo. Intentar cruzar los datos primero y filtrarlos después colapsaba su infraestructura al manejar miles de millones de eventos.
+
+**Ejemplo 2.** https://netflixtechblog.com/incremental-processing-using-netflix-maestro-and-apache-iceberg-b8ba072ddeeb
+
+> En lugar de recalcular todo su histórico diario, cruzan y filtran dinámicamente la tabla maestra utilizando únicamente las claves de los registros que han sufrido cambios recientes. Esta técnica de filtrado previo evita procesar el 100% de los datos y acelera radicalmente el código SQL.
+
+
 ## Ejemplo 1. Subconsulta escalar en `WHERE`
 
 > **Pregunta de negocio:** ¿Qué canciones del catálogo duran más que la media?

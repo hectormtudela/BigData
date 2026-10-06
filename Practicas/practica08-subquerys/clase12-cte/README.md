@@ -406,7 +406,17 @@ Obtén los usuarios con 4 o más reproducciones válidas, mostrando cuántas tie
 **Con tabla derivada:**
 
 ```sql
--- Tu consulta aquí
+SELECT u.nombre_usuario, t.reproducciones_validas
+FROM (
+    SELECT usuario_id, COUNT(*) AS reproducciones_validas
+    FROM dbo.reproducciones
+    WHERE tipo_contenido = N'Canción'
+      AND segundos_escuchados >= 30
+    GROUP BY usuario_id
+) AS t
+JOIN dbo.usuarios AS u ON u.usuario_id = t.usuario_id
+WHERE t.reproducciones_validas >= 4
+ORDER BY t.reproducciones_validas DESC, u.nombre_usuario;
 ```
 
 ![ejercicio 5 tabla derivada](images/clase12/ejercicio5-derivada.png)
@@ -414,7 +424,18 @@ Obtén los usuarios con 4 o más reproducciones válidas, mostrando cuántas tie
 **Con CTE:**
 
 ```sql
--- Tu consulta aquí
+WITH validas AS (
+    SELECT usuario_id, COUNT(*) AS reproducciones_validas
+    FROM dbo.reproducciones
+    WHERE tipo_contenido = N'Canción'
+      AND segundos_escuchados >= 30
+    GROUP BY usuario_id
+)
+SELECT u.nombre_usuario, v.reproducciones_validas
+FROM validas AS v
+JOIN dbo.usuarios AS u ON u.usuario_id = v.usuario_id
+WHERE v.reproducciones_validas >= 4
+ORDER BY v.reproducciones_validas DESC, u.nombre_usuario;
 ```
 
 ![ejercicio 5 cte](images/clase12/ejercicio5-cte.png)
@@ -424,7 +445,17 @@ Obtén los usuarios con 4 o más reproducciones válidas, mostrando cuántas tie
 Para las canciones de Nébula y DJ Coral, muestra el título y el número total de reproducciones (válidas o no) de cada una, **incluidas las que no tienen ninguna**. Usa una subconsulta correlacionada en el `SELECT` para el conteo y una subconsulta de lista para filtrar los artistas por nombre. Ordena por número de reproducciones descendente y por título.
 
 ```sql
--- Tu consulta aquí
+SELECT c.titulo,
+       (SELECT COUNT(*)
+        FROM dbo.reproducciones AS r
+        WHERE r.cancion_id = c.cancion_id) AS total_reproducciones
+FROM dbo.canciones AS c
+WHERE c.artista_id IN (
+    SELECT a.artista_id
+    FROM dbo.artistas AS a
+    WHERE a.nombre IN (N'Nébula', N'DJ Coral')
+)
+ORDER BY total_reproducciones DESC, c.titulo;
 ```
 
 ![ejercicio 6](images/clase12/ejercicio6.png)
@@ -448,12 +479,21 @@ Explica por qué falla y reescríbela correctamente con `NOT EXISTS`. Ordena por
 
 **Explicación:**
 
-_(escribe aquí por qué falla)_
+La consulta devuelve 0 filas por culpa de los valores NULL. Los usuarios Free han escuchado anuncios, y en esas reproducciones cancion_id es NULL, así que la subconsulta del NOT IN devuelve una lista que contiene un NULL. Como la condición completa nunca llega a ser TRUE, no se devuelve ninguna fila.
 
 **Consulta corregida:**
 
 ```sql
--- Tu consulta aquí
+SELECT c.titulo
+FROM dbo.canciones AS c
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM dbo.reproducciones AS r
+    JOIN dbo.usuarios AS u ON u.usuario_id = r.usuario_id
+    WHERE r.cancion_id = c.cancion_id
+      AND u.plan_suscripcion = N'Free'
+)
+ORDER BY c.titulo;
 ```
 
 ![ejercicio 7](images/clase12/ejercicio7.png)
@@ -465,7 +505,14 @@ La tabla `stg_usuarios` contiene el último lote de altas. Algunos usuarios ya e
 **Paso 1.** Consulta que identifica los usuarios nuevos:
 
 ```sql
--- Tu consulta aquí
+SELECT s.usuario_id, s.nombre_usuario, s.plan_suscripcion
+FROM dbo.stg_usuarios AS s
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM dbo.usuarios AS u
+    WHERE u.usuario_id = s.usuario_id
+)
+ORDER BY s.usuario_id;
 ```
 
 ![ejercicio 8 paso 1](images/clase12/ejercicio8-paso1.png)
@@ -473,7 +520,15 @@ La tabla `stg_usuarios` contiene el último lote de altas. Algunos usuarios ya e
 **Paso 2.** Carga con `INSERT ... SELECT`:
 
 ```sql
--- Tu consulta aquí
+INSERT INTO dbo.usuarios
+    (usuario_id, nombre_usuario, email, pais, plan_suscripcion, fecha_alta)
+SELECT s.usuario_id, s.nombre_usuario, s.email, s.pais, s.plan_suscripcion, s.fecha_alta
+FROM dbo.stg_usuarios AS s
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM dbo.usuarios AS u
+    WHERE u.usuario_id = s.usuario_id
+);
 ```
 
 ![ejercicio 8 paso 2](images/clase12/ejercicio8-paso2.png)
@@ -487,7 +542,28 @@ La tabla `stg_usuarios` contiene el último lote de altas. Algunos usuarios ya e
 El equipo de finanzas quiere saber cuánta música válida se consume según el país del usuario y su plan. Escribe un pipeline de tres CTE encadenadas (**limpiar → enriquecer → agregar**) que devuelva el país, el plan, el número de reproducciones válidas y los minutos escuchados con un decimal. Ordena por minutos de mayor a menor.
 
 ```sql
--- Tu consulta aquí
+WITH limpias AS (
+    SELECT usuario_id, segundos_escuchados
+    FROM dbo.reproducciones
+    WHERE tipo_contenido = N'Canción'
+      AND segundos_escuchados >= 30
+),
+enriquecidas AS (
+    SELECT u.pais, u.plan_suscripcion, l.segundos_escuchados
+    FROM limpias AS l
+    JOIN dbo.usuarios AS u ON u.usuario_id = l.usuario_id
+),
+agregadas AS (
+    SELECT pais,
+           plan_suscripcion,
+           COUNT(*) AS reproducciones,
+           CAST(SUM(segundos_escuchados) / 60.0 AS decimal(6,1)) AS minutos
+    FROM enriquecidas
+    GROUP BY pais, plan_suscripcion
+)
+SELECT pais, plan_suscripcion, reproducciones, minutos
+FROM agregadas
+ORDER BY minutos DESC;
 ```
 
 ![ejercicio 9](images/clase12/ejercicio9.png)
@@ -497,7 +573,24 @@ El equipo de finanzas quiere saber cuánta música válida se consume según el 
 Recursos Humanos necesita el organigrama completo de Sonora. Con una CTE recursiva sobre `empleados`, muestra el nombre, el puesto, el nivel (el CEO es nivel 0) y la ruta desde el CEO con el formato `Irene Salas > Tomás Vidal > ...`. Ordena por la ruta.
 
 ```sql
--- Tu consulta aquí
+WITH organigrama AS (
+    SELECT empleado_id, nombre, puesto, jefe_id,
+           0 AS nivel,
+           CAST(nombre AS nvarchar(200)) AS ruta
+    FROM dbo.empleados
+    WHERE jefe_id IS NULL
+
+    UNION ALL
+
+    SELECT e.empleado_id, e.nombre, e.puesto, e.jefe_id,
+           o.nivel + 1,
+           CAST(o.ruta + N' > ' + e.nombre AS nvarchar(200))
+    FROM dbo.empleados AS e
+    JOIN organigrama AS o ON e.jefe_id = o.empleado_id
+)
+SELECT nombre, puesto, nivel, ruta
+FROM organigrama
+ORDER BY ruta;
 ```
 
 ![ejercicio 10](images/clase12/ejercicio10.png)
@@ -507,7 +600,22 @@ Recursos Humanos necesita el organigrama completo de Sonora. Con una CTE recursi
 El equipo editorial prepara una playlist "Todo Urbano". Obtén todas las canciones del género `Urbano` y de **cualquiera de sus subgéneros**, a cualquier profundidad, con su género concreto y su artista. La CTE recursiva debe partir del nombre del género, no de su id. Ordena por género y título.
 
 ```sql
--- Tu consulta aquí
+WITH subgeneros AS (
+    SELECT genero_id, nombre
+    FROM dbo.generos
+    WHERE nombre = N'Urbano'
+
+    UNION ALL
+
+    SELECT g.genero_id, g.nombre
+    FROM dbo.generos AS g
+    JOIN subgeneros AS s ON g.genero_padre_id = s.genero_id
+)
+SELECT c.titulo, s.nombre AS genero, a.nombre AS artista
+FROM subgeneros AS s
+JOIN dbo.canciones AS c ON c.genero_id = s.genero_id
+JOIN dbo.artistas AS a ON a.artista_id = c.artista_id
+ORDER BY s.nombre, c.titulo;
 ```
 
 ![ejercicio 11](images/clase12/ejercicio11.png)
@@ -517,7 +625,21 @@ El equipo editorial prepara una playlist "Todo Urbano". Obtén todas las cancion
 El CTO, Tomás Vidal, quiere saber quién forma parte de su área, directa o indirectamente. Con una CTE recursiva que parta de Tomás Vidal, muestra el nombre, el puesto y el nivel relativo (sus subordinados directos son nivel 1). No incluyas al propio CTO. Ordena por nivel y nombre.
 
 ```sql
--- Tu consulta aquí
+WITH area_cto AS (
+    SELECT empleado_id, nombre, puesto, 0 AS nivel
+    FROM dbo.empleados
+    WHERE nombre = N'Tomás Vidal'
+
+    UNION ALL
+
+    SELECT e.empleado_id, e.nombre, e.puesto, a.nivel + 1
+    FROM dbo.empleados AS e
+    JOIN area_cto AS a ON e.jefe_id = a.empleado_id
+)
+SELECT nombre, puesto, nivel
+FROM area_cto
+WHERE nivel > 0
+ORDER BY nivel, nombre;
 ```
 
 ![ejercicio 12](images/clase12/ejercicio12.png)
