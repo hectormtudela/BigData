@@ -48,7 +48,7 @@ FROM dbo.canciones
 WHERE artista_id = 1;
 ```
 
-> Para obtener la media con decimales basta con forzar un tipo decimal: `AVG(duracion_seg * 1.0)` devuelve **232.200000**. En ingeniería de datos este truncamiento silencioso es una fuente clásica de errores en informes.
+> Para obtener la media con decimales basta con forzar un tipo decimal: `AVG(duracion_seg * 1.0)` devuelve **232.200000**. En SQL Server, la forma más explícita y legible suele ser `CAST(AVG(duracion_seg) AS decimal(10,2))`; este detalle es importante porque los tipos enteros pueden truncar resultados silenciosamente y producir errores en informes.
 
 ![ej2 paso1](images/clase11/ej2-paso1.png)
 
@@ -82,9 +82,9 @@ ORDER BY nombre_usuario;
 
 ## Ejemplo 4. Tabla derivada en `FROM`
 
-**Pregunta de negocio:** ¿qué usuarios han reproducido 5 o más canciones?
+**Pregunta de negocio:** ¿qué usuarios tienen 5 o más reproducciones de canciones?
 
-**Paso 1.** La tabla derivada `t` calcula cuántas canciones ha reproducido cada usuario.
+**Paso 1.** La tabla derivada `t` calcula cuántas reproducciones de canciones tiene cada usuario.
 **Paso 2.** La consulta externa trata `t` como una tabla más: la une con `usuarios` y filtra.
 
 ```sql
