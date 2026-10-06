@@ -197,30 +197,9 @@ ORDER BY reproducciones_validas DESC;
 
 > Fíjate en que el ancla combina una CTE con una subconsulta escalar para localizar la raíz sin escribir su id a mano.
 
-**Equivalente con subconsultas:**
+**Nota sobre el equivalente con subconsultas:**
 
-```sql
-WITH arbol AS (
-    SELECT genero_id, nombre, genero_padre_id,
-           0 AS nivel,
-           CAST(nombre AS nvarchar(200)) AS ruta
-    FROM dbo.generos
-    WHERE genero_padre_id IS NULL
-
-    UNION ALL
-
-    SELECT g.genero_id, g.nombre, g.genero_padre_id,
-           a.nivel + 1,
-           CAST(a.ruta + N' > ' + g.nombre AS nvarchar(200))
-    FROM dbo.generos AS g
-    JOIN arbol AS a ON g.genero_padre_id = a.genero_id
-)
-SELECT genero_id, nombre, nivel, ruta
-FROM arbol
-ORDER BY ruta;
-```
-
-![ej12 subconsulta](images/clase12/ej12-subconsulta.png)
+No existe una traducción directa y general a subconsultas para este patrón recursivo. La recursividad requiere una CTE; una tabla derivada no puede referenciarse a sí misma dentro de la misma consulta.
 
 ## Ejemplo 13. CTE recursiva para generar fechas y `MAXRECURSION`
 
