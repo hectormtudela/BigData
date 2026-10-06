@@ -325,8 +325,8 @@ SELECT * FROM dbo.vw_demo_artistas WHERE artista_id <= 2;
 **Paso 3.** Refrescar los metadatos de la vista:
 
 ```sql
-EXEC sp_refreshview N'dbo.vw_demo_artistas';
-SELECT * FROM dbo.vw_demo_artistas WHERE artista_id <= 2;
+  EXEC sp_refreshview N'dbo.vw_demo_artistas';
+  SELECT * FROM dbo.vw_demo_artistas WHERE artista_id <= 2;
 ```
 
 ![ej8 paso3](images/clase13/ej8-paso3.png)
@@ -392,6 +392,8 @@ SET plan_suscripcion = N'Premium'
 WHERE nombre_usuario = N'nachox';
 ```
 
+>La vista solo permite ver usuarios cuyo plan es Free. Al hacer el UPDATE y cambiar a Premium, nachox dejaría de cumplir la condición de la vista. Como tiene WITH CHECK OPTION, SQL Server impide cualquier modificación que haga que una fila deje de cumplir el filtro de la vista.
+
 ![ej9 paso3](images/clase13/ej9-paso3.png)
 
 **Paso 4.** Los cambios que mantienen la fila dentro de la vista sí se permiten:
@@ -416,6 +418,8 @@ SET titulo = N'Perreo Lunar (Remix)'
 WHERE titulo = N'Perreo Lunar';
 ```
 
+> las vistas que contienen `GROUP BY` o funciones de agregación no se pueden modificar directamente mediante `UPDATE`.
+
 ![ej10 paso1](images/clase13/ej10-paso1.png)
 
 **Paso 2.** Intentar cambiar a la vez el título (tabla `canciones`) y el artista (tabla `artistas`) a través de `vw_reproducciones_detalle`:
@@ -425,6 +429,8 @@ UPDATE dbo.vw_reproducciones_detalle
 SET titulo = N'Perreo Lunar (Remix)', artista = N'MC Brisa & Nébula'
 WHERE reproduccion_id = 1;
 ```
+
+> Una vista con `JOIN` puede ser actualizable en algunos casos, pero no puedes modificar mediante ella columnas que pertenecen a varias tablas.
 
 ![ej10 paso2](images/clase13/ej10-paso2.png)
 
@@ -443,6 +449,8 @@ SELECT * FROM dbo.canciones;
 GO
 ```
 
+> SCHEMABINDING exige que las dependencias de la vista estén definidas de forma explícita, por eso SELECT * no está permitido.
+
 ![ej11 paso1](images/clase13/ej11-paso1.png)
 
 **Paso 2.** Segundo intento, con columnas explícitas pero el nombre de la tabla sin esquema:
@@ -454,6 +462,8 @@ SELECT cancion_id, titulo
 FROM canciones;
 GO
 ```
+
+> SCHEMABINDING exige que las tablas referenciadas estén especificadas con su esquema (dbo.tabla).
 
 ![ej11 paso2](images/clase13/ej11-paso2.png)
 
@@ -475,6 +485,8 @@ GO
 ```sql
 ALTER TABLE dbo.canciones ALTER COLUMN titulo nvarchar(200) NOT NULL;
 ```
+
+> SCHEMABINDING protege la estructura de las tablas utilizadas por la vista frente a cambios que puedan romperla.
 
 ![ej11 paso4](images/clase13/ej11-paso4.png)
 
