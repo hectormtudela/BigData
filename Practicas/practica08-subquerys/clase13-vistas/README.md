@@ -569,17 +569,35 @@ ROLLBACK;
 El equipo comercial vende los huecos publicitarios y quiere una vista `dbo.vw_anuncios` con las reproducciones de tipo `Anuncio`: identificador de reproducción, usuario, fecha y hora, y dispositivo. Después, consulta la vista para obtener cuántos anuncios se han emitido por dispositivo y a cuántos usuarios distintos. Ordena por número de anuncios descendente y por dispositivo.
 
 ```sql
--- Tu vista y tu consulta aquí
+CREATE VIEW dbo.vw_anuncios AS
+SELECT reproducciones.reproduccion_id, usuarios.nombre_usuario, reproducciones.fecha_hora, reproducciones.dispositivo
+FROM reproducciones
+INNER JOIN usuarios ON usuarios.usuario_id = reproducciones.usuario_id
+WHERE reproducciones.tipo_contenido = N'Anuncio';
+
+SELECT dispositivo, COUNT(reproduccion_id) as anuncios_por_dispositivo, COUNT(DISTINCT nombre_usuario) as num_usuarios
+FROM dbo.vw_anuncios
+GROUP BY dispositivo
+ORDER BY anuncios_por_dispositivo DESC, dispositivo;
 ```
 
-![ejercicio 1](images/clase13/ejercicio1.png)
+![ejercicio 1](images/clase13/ejercicio1-paso1.png)
+![ejercicio 1](images/clase13/ejercicio1-paso2.png)
+
 
 ## Ejercicio 2
 
 Crea la vista `dbo.vw_usuarios_pago` con los usuarios de los planes `Premium` y `Familiar`, sin la columna `email`. Consulta la vista ordenando por fecha de alta.
 
 ```sql
--- Tu vista y tu consulta aquí
+CREATE VIEW dbo.vw_usuarios_pago AS
+SELECT usuario_id, nombre_usuario, pais, plan_suscripcion, fecha_alta
+FROM usuarios
+WHERE plan_suscripcion = N'Premium' OR plan_suscripcion = N'Familiar';
+
+SELECT * 
+FROM dbo.vw_usuarios_pago
+ORDER BY fecha_alta;
 ```
 
 ![ejercicio 2](images/clase13/ejercicio2.png)
@@ -589,7 +607,21 @@ Crea la vista `dbo.vw_usuarios_pago` con los usuarios de los planes `Premium` y 
 Producto estudia por qué los usuarios saltan canciones. Crea la vista `dbo.vw_saltos` con las reproducciones de tipo `Canción` de menos de 30 segundos: identificador, usuario, canción, fecha y hora, y segundos escuchados. Después, consulta la vista uniéndola con `usuarios` y `canciones` para mostrar el nombre de usuario, el título, los segundos escuchados y la fecha y hora, ordenado por fecha y hora.
 
 ```sql
--- Tu vista y tu consulta aquí
+DROP VIEW IF EXISTS dbo.vw_saltos
+GO
+
+CREATE VIEW dbo.vw_saltos AS
+SELECT reproduccion_id, usuario_id, cancion_id, fecha_hora, segundos_escuchados
+FROM reproducciones
+WHERE tipo_contenido = N'Canción' AND segundos_escuchados < 30;
+GO
+
+SELECT usuarios.nombre_usuario, canciones.titulo, vw_saltos.segundos_escuchados, vw_saltos.fecha_hora
+FROM vw_saltos
+INNER JOIN usuarios ON usuarios.usuario_id = vw_saltos.usuario_id
+INNER JOIN canciones ON canciones.cancion_id = vw_saltos.cancion_id
+ORDER BY vw_saltos.fecha_hora
+GO
 ```
 
 ![ejercicio 3](images/clase13/ejercicio3.png)
@@ -599,12 +631,28 @@ Producto estudia por qué los usuarios saltan canciones. Crea la vista `dbo.vw_s
 El equipo editorial necesita una ficha de catálogo. Crea la vista `dbo.vw_catalogo_detalle` con el identificador y el título de la canción, el nombre del artista (`artista`), el país del artista (`pais_artista`), el nombre del género (`genero`), la duración en segundos (`duracion_seg`) y la duración en minutos con un decimal (`duracion_min`). Consulta las canciones de artistas españoles ordenadas por título. ¿Por qué no aparece Sara Cometa, que es española?
 
 ```sql
--- Tu vista y tu consulta aquí
+DROP VIEW IF EXISTS dbo.vw_catalogo_detalle
+GO
+
+CREATE VIEW dbo.vw_catalogo_detalle AS
+SELECT canciones.cancion_id, canciones.titulo, artistas.nombre as artista, 
+artistas.pais as pais_artista, generos.nombre as genero, canciones.duracion_seg, 
+ROUND(duracion_seg / 60, 1) as duracion_min
+FROM canciones 
+INNER JOIN artistas ON artistas.artista_id = canciones.artista_id
+INNER JOIN generos ON generos.genero_id = artistas.genero_id;
+GO
+
+SELECT *
+FROM vw_catalogo_detalle
+WHERE pais_artista = N'ES'
+ORDER BY titulo
+GO
 ```
 
 **Explicación:**
 
-_(escribe aquí por qué no aparece Sara Cometa)_
+Sara Cometa no aparece porque el INNER JOIN con generos elimina las canciones cuyo artista no tiene un género asociado. Con LEFT JOIN solucionamos el problema.
 
 ![ejercicio 4](images/clase13/ejercicio4.png)
 
@@ -621,16 +669,22 @@ GROUP BY dispositivo
 ORDER BY COUNT(*) DESC;
 ```
 
-Explica los dos problemas, corrige la vista (la columna del conteo debe llamarse `reproducciones`) y escribe la consulta que la usa ordenada de más a menos reproducciones.
+
 
 **Explicación de los dos problemas:**
 
-_(escribe aquí los dos problemas)_
+1. Falta ponerle alias a COUNT(*)
+2. No se puede usar ORDER BY dentro de una vista así
 
 **Vista corregida y consulta:**
 
 ```sql
--- Tu vista corregida y tu consulta aquí
+
+CREATE VIEW dbo.vw_canciones_por_dispositivo AS
+SELECT dispositivo, COUNT(*) as reproducciones
+FROM dbo.reproducciones
+WHERE tipo_contenido = N'Canción'
+GROUP BY dispositivo;
 ```
 
 ![ejercicio 5](images/clase13/ejercicio5.png)
@@ -642,7 +696,24 @@ Crea la vista `dbo.vw_kpi_usuario` con una fila por usuario, **incluidos los que
 **Vista:**
 
 ```sql
--- Tu vista aquí
+CREATE OR ALTER VIEW dbo.vw_reproducciones_validas AS
+SELECT reproduccion_id, usuario_id, cancion_id, fecha_hora, segundos_escuchados, dispositivo
+FROM dbo.reproducciones
+WHERE tipo_contenido = N'Canción'
+  AND segundos_escuchados >= 30;
+GO
+
+CREATE VIEW dbo.vw_kpi_usuario AS
+SELECT usuarios.usuario_id, usuarios.nombre_usuario, usuarios.pais, usuarios.plan_suscripcion, COUNT(vw_reproducciones_validas.reproduccion_id) as reproducciones_validas, 
+ROUND(SUM(vw_reproducciones_validas.segundos_escuchados) / 60,1) as minutos, MAX(vw_reproducciones_validas.fecha_hora) as ultima_repro_valida
+FROM usuarios
+LEFT JOIN vw_reproducciones_validas ON vw_reproducciones_validas.usuario_id = usuarios.usuario_id
+GROUP BY 
+    usuarios.usuario_id,
+    usuarios.nombre_usuario,
+    usuarios.plan_suscripcion,
+    usuarios.pais
+GO
 ```
 
 ![ejercicio 6 vista](images/clase13/ejercicio6-vista.png)
@@ -650,7 +721,9 @@ Crea la vista `dbo.vw_kpi_usuario` con una fila por usuario, **incluidos los que
 **a)** Obtén los usuarios sin ninguna reproducción válida.
 
 ```sql
--- Tu consulta aquí
+SELECT *
+FROM dbo.vw_kpi_usuario
+WHERE reproducciones_validas = 0;
 ```
 
 ![ejercicio 6 a](images/clase13/ejercicio6-a.png)
@@ -658,19 +731,39 @@ Crea la vista `dbo.vw_kpi_usuario` con una fila por usuario, **incluidos los que
 **b)** Obtén los usuarios de pago ordenados por minutos de mayor a menor.
 
 ```sql
--- Tu consulta aquí
+SELECT *
+FROM dbo.vw_kpi_usuario
+WHERE plan_suscripcion = N'Premium' OR plan_suscripcion = N'Familiar'
+ORDER BY minutos DESC;
 ```
 
 ![ejercicio 6 b](images/clase13/ejercicio6-b.png)
 
 ## Ejercicio 7
 
-Recursos Humanos consulta el organigrama varias veces por semana. Guarda la CTE recursiva del organigrama en la vista `dbo.vw_organigrama` con el identificador, el nombre, el puesto, el nivel (el CEO es nivel 0) y la ruta desde el CEO (`Irene Salas > Tomás Vidal > ...`). Con la vista:
-
+  Recursos Humanos consulta el organigrama varias veces por semana. Guarda la CTE recursiva del organigrama en la vista `dbo.vw_organigrama` con el identificador, el nombre, el puesto, el nivel (el CEO es nivel 0) y la ruta desde el CEO (`Irene Salas > Tomás Vidal > ...`). Con la vista:
+  
 **Vista:**
 
 ```sql
--- Tu vista aquí
+
+CREATE VIEW dbo.vw_organigrama AS
+WITH organigrama AS
+(
+    SELECT empleado_id, nombre, puesto, 0 as nivel, CAST(nombre as NVARCHAR(MAX)) AS ruta
+    FROM empleados
+    WHERE jefe_id IS NULL
+
+    UNION ALL
+
+    SELECT empleado.empleado_id, empleado.nombre, empleado.puesto, organigrama.nivel + 1 AS nivel, CONCAT(organigrama.ruta, N' > ',empleado.nombre) AS ruta
+    FROM empleados as empleado
+    INNER JOIN organigrama ON empleado.jefe_id = organigrama.empleado_id
+)
+
+SELECT empleado_id, nombre, puesto, nivel, ruta
+FROM organigrama
+GO
 ```
 
 ![ejercicio 7 vista](images/clase13/ejercicio7-vista.png)
@@ -678,7 +771,10 @@ Recursos Humanos consulta el organigrama varias veces por semana. Guarda la CTE 
 **a)** Obtén las personas que dependen, directa o indirectamente, de Raúl Benet, ordenadas por nombre.
 
 ```sql
--- Tu consulta aquí
+SELECT *
+FROM dbo.vw_organigrama
+WHERE ruta LIKE '%Raúl Benet%' 
+ORDER BY nombre
 ```
 
 ![ejercicio 7 a](images/clase13/ejercicio7-a.png)
@@ -686,7 +782,9 @@ Recursos Humanos consulta el organigrama varias veces por semana. Guarda la CTE 
 **b)** Obtén cuántos empleados hay en cada nivel.
 
 ```sql
--- Tu consulta aquí
+SELECT nivel, COUNT(nombre)
+FROM dbo.vw_organigrama
+GROUP BY nivel
 ```
 
 ![ejercicio 7 b](images/clase13/ejercicio7-b.png)
@@ -708,18 +806,23 @@ El equipo de lanzamientos solo debe gestionar canciones publicadas en 2026. Crea
 **Vista:**
 
 ```sql
--- Tu vista aquí
+CREATE VIEW dbo.vw_canciones_2026 AS
+SELECT cancion_id, titulo, artista_id, genero_id, duracion_seg, fecha_lanzamiento
+FROM canciones
+WHERE fecha_lanzamiento >= '2026-01-01'
+WITH CHECK OPTION;
+GO
 ```
 
 **Predicción de cada sentencia:**
 
 | Sentencia | Predicción |
 | --- | --- |
-| a) | |
-| b) | |
-| c) | |
-| d) | |
-| e) | |
+| a) | Se ejecuta correctamente. Cambia duracion_seg a 170. La fecha sigue siendo de 2026.|
+| b) | Da error. Intenta cambiar la fecha a 2025 y la fila dejaría de cumplir la condición de la vista. WITH CHECK OPTION lo impide. |
+| c) | Se ejecuta correctamente. Cambia duracion_seg a 210 y la canción sigue siendo de 2026.|
+| d) | Da error. Intenta insertar una canción de 2025, que no cumple el WHERE de la vista.|
+| e) | Se ejecuta correctamente. La canción es de 2026 y cumple la condición de la vista. |
 
 **Ejecución dentro de una transacción:**
 
@@ -732,7 +835,44 @@ El equipo de lanzamientos solo debe gestionar canciones publicadas en 2026. Crea
 **Comprobación tras el `ROLLBACK`:**
 
 ```sql
--- Tu comprobación aquí
+BEGIN TRANSACTION;
+GO
+
+-- a)
+UPDATE dbo.vw_canciones_2026
+SET duracion_seg = 170
+WHERE titulo = N'Humo Violeta';
+GO
+
+-- b)
+UPDATE dbo.vw_canciones_2026
+SET fecha_lanzamiento = '2025-12-15'
+WHERE titulo = N'Humo Violeta';
+GO
+
+-- c)
+UPDATE dbo.vw_canciones_2026
+SET duracion_seg = 210
+WHERE titulo = N'Neón';
+GO
+
+-- d)
+INSERT INTO dbo.vw_canciones_2026 
+    (cancion_id, titulo, artista_id, genero_id, duracion_seg, fecha_lanzamiento)
+VALUES 
+    (116, N'Eco Antiguo', 9, 2, 190, '2025-10-01');
+GO
+
+-- e)
+INSERT INTO dbo.vw_canciones_2026 
+    (cancion_id, titulo, artista_id, genero_id, duracion_seg, fecha_lanzamiento)
+VALUES 
+    (117, N'Primer Vuelo', 9, 2, 195, '2026-10-02');
+GO
+
+-- Deshacemos TODOS los cambios realizados
+ROLLBACK;
+GO
 ```
 
 ![ejercicio 8 comprobación](images/clase13/ejercicio8-comprobacion.png)
@@ -752,15 +892,51 @@ Usando la vista `dbo.vw_catalogo_detalle` del Ejercicio 4, que une `canciones`, 
 
 | Sentencia | Predicción |
 | --- | --- |
-| a) | |
-| b) | |
-| c) | |
-| d) | |
+| a) | Funciona, duracion_seg pertenece a canciones, y se puede modificar a través de la vista. |
+| b) | Error porque inntenta modificar columnas de dos tablas diferentes (canciones.titulo y artistas.nombre) en el mismo UPDATE.|
+| c) | Error porque duracion_min es una columna calculada/derivada, no una columna almacenada directamente en una tabla. |
+| d) | Funciona, artista corresponde a artistas.nombre, y se puede modificar esa columna a través de la vista.|
 
 **Ejecución dentro de una transacción:**
 
 ```sql
--- Tu transacción con la consulta previa al ROLLBACK aquí
+BEGIN TRANSACTION;
+GO
+
+-- a)
+UPDATE dbo.vw_catalogo_detalle
+SET duracion_seg = 205
+WHERE titulo = N'Neón';
+GO
+
+-- b)
+UPDATE dbo.vw_catalogo_detalle
+SET titulo = N'Neón (Remix)',
+    artista = N'Luna Roja & DJ Coral'
+WHERE titulo = N'Neón';
+GO
+
+-- c)
+UPDATE dbo.vw_catalogo_detalle
+SET duracion_min = 3.5
+WHERE titulo = N'Neón';
+GO
+
+-- d)
+UPDATE dbo.vw_catalogo_detalle
+SET artista = N'Luna Roja Oficial'
+WHERE titulo = N'Neón';
+GO
+
+-- Consultamos ANTES de deshacer los cambios
+SELECT *
+FROM dbo.vw_catalogo_detalle
+WHERE artista LIKE N'Luna Roja%';
+GO
+
+-- Deshacemos todos los cambios
+ROLLBACK;
+GO
 ```
 
 ![ejercicio 9](images/clase13/ejercicio9.png)
@@ -784,13 +960,34 @@ JOIN dbo.generos AS g ON g.genero_id = a.genero_id;
 **a)** Identifica los tres problemas y corrige la vista para que devuelva el identificador del artista, su nombre (`artista`), su país y el nombre de su género (`genero`). Consulta los artistas españoles ordenados por nombre.
 
 **Los tres problemas:**
-
-_(escribe aquí los tres problemas)_
+1. SELECT * no está permitido con SCHEMABINDING
+2. Las tablas deben llevar el esquema, es decir tendría que ser FROM dbo.artistas AS a
+3. Hay que dar nombres a las columnas de la vista cuando puedan producir ambigüedad.
 
 **Vista corregida y consulta:**
 
 ```sql
--- Tu vista corregida y tu consulta aquí
+CREATE OR ALTER VIEW dbo.vw_artistas_ficha
+WITH SCHEMABINDING AS
+SELECT
+    a.artista_id,
+    a.nombre AS artista,
+    a.pais,
+    g.nombre AS genero
+FROM dbo.artistas AS a
+INNER JOIN dbo.generos AS g
+    ON g.genero_id = a.genero_id;
+GO
+
+SELECT
+    artista_id,
+    artista,
+    pais,
+    genero
+FROM dbo.vw_artistas_ficha
+WHERE pais = N'ES'
+ORDER BY artista;
+GO
 ```
 
 ![ejercicio 10 a](images/clase13/ejercicio10-a.png)
@@ -805,19 +1002,25 @@ _(escribe aquí los tres problemas)_
 
 **Explicación:**
 
-_(escribe aquí qué ocurre y por qué aparecen dos vistas)_
+No deja hacerlo porque existe una vista creada con WITH SCHEMABINDING que depende de esa columna
 
 **c)** Con `sys.dm_sql_referencing_entities`, obtén las vistas que dependen directamente de `dbo.artistas`, ordenadas por nombre. ¿Cuáles de ellas impiden el cambio del apartado b) y cuáles no? ¿Por qué?
 
 ```sql
--- Tu consulta aquí
+SELECT
+    referencing_entity_name AS vista
+FROM sys.dm_sql_referencing_entities('dbo.artistas', 'OBJECT')
+ORDER BY referencing_entity_name;
 ```
 
 ![ejercicio 10 c](images/clase13/ejercicio10-c.png)
 
 **Explicación:**
 
-_(escribe aquí cuáles impiden el cambio y por qué)_
+dbo.vw_artistas_ficha
+dbo.vw_catalogo_detalle
+
+Porque fueron creadas con schemabinding
 
 ## Ejercicio 11
 
@@ -842,12 +1045,36 @@ ON dbo.vw_ix_consumo_dispositivo (dispositivo);
 
 **Explicación:**
 
-_(escribe aquí por qué falla)_
+Hay varios problemas:
+
+1. AVG(segundos_escuchados) no está permitido directamente en una vista indexada.
+2. Para una vista indexada con GROUP BY, SQL Server exige incluir un COUNT_BIG(*).
+3. Para este ejercicio nos piden guardar:
+- número de reproducciones válidas → COUNT_BIG(*)
+- segundos totales → SUM(segundos_escuchados)
+4. Además, para que la vista sea apta para indexación, conviene usar COUNT_BIG(*) exactamente como exige SQL Server.
 
 **Vista corregida e índice:**
 
 ```sql
--- Tu vista corregida y tu índice aquí
+DROP VIEW IF EXISTS dbo.vw_ix_consumo_dispositivo;
+GO
+
+CREATE VIEW dbo.vw_ix_consumo_dispositivo
+WITH SCHEMABINDING AS
+SELECT
+    dispositivo,
+    COUNT_BIG(*) AS reproducciones_validas,
+    SUM(segundos_escuchados) AS segundos
+FROM dbo.reproducciones
+WHERE tipo_contenido = N'Canción'
+  AND segundos_escuchados >= 30
+GROUP BY dispositivo;
+GO
+
+CREATE UNIQUE CLUSTERED INDEX IX_vw_ix_consumo_dispositivo
+ON dbo.vw_ix_consumo_dispositivo (dispositivo);
+GO
 ```
 
 ![ejercicio 11 a](images/clase13/ejercicio11-a.png)
@@ -855,7 +1082,13 @@ _(escribe aquí por qué falla)_
 **b)** Consulta la vista con `NOEXPAND` calculando los minutos y la media de segundos por reproducción, ambos con un decimal. Ordena por reproducciones descendente y por dispositivo.
 
 ```sql
--- Tu consulta aquí
+SELECT
+    dispositivo,
+    reproducciones_validas,
+    ROUND(segundos / 60.0, 1) AS minutos,
+    ROUND(segundos * 1.0 / reproducciones_validas, 1) AS media_segundos
+FROM dbo.vw_ix_consumo_dispositivo WITH (NOEXPAND)
+ORDER BY reproducciones_validas DESC, dispositivo;
 ```
 
 ![ejercicio 11 b](images/clase13/ejercicio11-b.png)
@@ -863,7 +1096,27 @@ _(escribe aquí por qué falla)_
 **c)** Dentro de una transacción, inserta la reproducción 44 (usuario 6, canción 102, `'2026-09-22 21:00'`, 201 segundos, `Smart TV`, `Canción`), consulta la fila de `Smart TV` de la vista y deshaz el cambio.
 
 ```sql
--- Tu transacción aquí
+BEGIN TRANSACTION;
+GO
+
+INSERT INTO dbo.reproducciones
+    (reproduccion_id, usuario_id, cancion_id, fecha_hora,
+     segundos_escuchados, dispositivo, tipo_contenido)
+VALUES
+    (44, 6, 102, '2026-09-22 21:00', 201, N'Smart TV', N'Canción');
+GO
+
+SELECT
+    dispositivo,
+    reproducciones_validas,
+    ROUND(segundos / 60.0, 1) AS minutos,
+    ROUND(segundos * 1.0 / reproducciones_validas, 1) AS media_segundos
+FROM dbo.vw_ix_consumo_dispositivo WITH (NOEXPAND)
+WHERE dispositivo = N'Smart TV';
+GO
+
+ROLLBACK;
+GO
 ```
 
 ![ejercicio 11 c](images/clase13/ejercicio11-c.png)
@@ -871,66 +1124,347 @@ _(escribe aquí por qué falla)_
 ---
 
 # Parte 03 · Caso de estudio Sonora: las vistas para el cuadro de mando
-
+ 
 ## Contexto
-
+ 
 El informe del martes funcionó. El comité de dirección de Sonora vio las cifras de la semana y tomó una decisión: a partir de ahora quiere un **cuadro de mando en Power BI** que se actualice solo, en lugar de pedir cifras por mensaje cada semana.
-
+ 
 Carmen Lozano (Data Analyst) se encargará del cuadro de mando. Antes de que conecte Power BI, Raúl Benet (Head of Data) envía este mensaje:
-
+ 
 > *"Carmen va a conectar Power BI esta semana y no quiero que el cuadro de mando lea las tablas directamente. Prepárale un conjunto de vistas, todas con el prefijo `vw_bi_`, que sean lo único que use. Las reglas de negocio tienen que estar dentro de las vistas, no en Power BI, para que no haya dos versiones de 'reproducción válida'. Aprovecha también para resolver dos peticiones que tengo pendientes: Laura quiere que su equipo de LATAM pueda corregir datos de sus usuarios sin tocar los de España, y Hugo quiere ampliar un campo de `usuarios`. Todo en un script que se pueda ejecutar varias veces."*
-
+ 
 Todo el trabajo se hace sobre `SonoraDB`.
-
+ 
 ### Reglas de negocio de Sonora
-
+ 
 - Una reproducción es **válida** cuando es de tipo `Canción` y se han escuchado al menos **30 segundos**. Por debajo es un salto.
 - Los **géneros principales** son los hijos directos del género raíz `Música`. Cada subgénero, a cualquier profundidad, cuenta para su género principal.
 - Los **mercados LATAM** son México (`MX`), Argentina (`AR`), Colombia (`CO`) y Puerto Rico (`PR`).
 - La **semana de análisis** del cuadro de mando va del 16/09/2026 al 22/09/2026, ambos incluidos.
-
 ## Preparación
-
+ 
 Ejecuta este script antes de empezar. Garantiza el punto de partida (43 reproducciones y 10 usuarios) aunque no hayas hecho las cargas de clases anteriores. Es idempotente.
-
+ 
 ```sql
--- Pega aquí el script de preparación del caso de estudio
+USE SonoraDB;
+GO
+ 
+-- 1. Cargas de la clase de subconsultas y CTE
+INSERT INTO dbo.reproducciones
+    (reproduccion_id, usuario_id, cancion_id, fecha_hora, segundos_escuchados, dispositivo, tipo_contenido)
+SELECT s.reproduccion_id, s.usuario_id, s.cancion_id, s.fecha_hora,
+       s.segundos_escuchados, s.dispositivo, s.tipo_contenido
+FROM dbo.stg_reproducciones AS s
+WHERE NOT EXISTS (SELECT 1 FROM dbo.reproducciones AS r WHERE r.reproduccion_id = s.reproduccion_id);
+ 
+INSERT INTO dbo.usuarios (usuario_id, nombre_usuario, email, pais, plan_suscripcion, fecha_alta)
+SELECT s.usuario_id, s.nombre_usuario, s.email, s.pais, s.plan_suscripcion, s.fecha_alta
+FROM dbo.stg_usuarios AS s
+WHERE NOT EXISTS (SELECT 1 FROM dbo.usuarios AS u WHERE u.usuario_id = s.usuario_id);
+GO
+ 
+-- 2. Lote del 22/09
+DROP TABLE IF EXISTS dbo.stg_reproducciones_2209;
+ 
+CREATE TABLE dbo.stg_reproducciones_2209 (
+    reproduccion_id      int,
+    usuario_id           int,
+    cancion_id           int,
+    fecha_hora           datetime2(0),
+    segundos_escuchados  int,
+    dispositivo          nvarchar(20),
+    tipo_contenido       nvarchar(10)
+);
+ 
+INSERT INTO dbo.stg_reproducciones_2209
+    (reproduccion_id, usuario_id, cancion_id, fecha_hora, segundos_escuchados, dispositivo, tipo_contenido) VALUES
+(37, 5,  NULL, '2026-09-21 22:00', 30,  N'Móvil', N'Anuncio'),
+(38, 5,  104,  '2026-09-21 22:01', 190, N'Móvil', N'Canción'),
+(39, 8,  106,  '2026-09-22 07:30', 12,  N'Móvil', N'Canción'),
+(40, 10, 103,  '2026-09-22 09:00', 176, N'Móvil', N'Canción'),
+(41, 9,  NULL, '2026-09-22 09:10', 30,  N'Web',   N'Anuncio'),
+(42, 9,  111,  '2026-09-22 09:11', 356, N'Web',   N'Canción'),
+(43, 1,  114,  '2026-09-22 10:00', 25,  N'Móvil', N'Canción');
+ 
+INSERT INTO dbo.reproducciones
+    (reproduccion_id, usuario_id, cancion_id, fecha_hora, segundos_escuchados, dispositivo, tipo_contenido)
+SELECT s.reproduccion_id, s.usuario_id, s.cancion_id, s.fecha_hora,
+       s.segundos_escuchados, s.dispositivo, s.tipo_contenido
+FROM dbo.stg_reproducciones_2209 AS s
+WHERE NOT EXISTS (SELECT 1 FROM dbo.reproducciones AS r WHERE r.reproduccion_id = s.reproduccion_id);
+GO
+ 
+-- 3. Comprobación
+SELECT (SELECT COUNT(*) FROM dbo.reproducciones) AS reproducciones,
+       (SELECT COUNT(*) FROM dbo.usuarios)       AS usuarios;
 ```
-
-![preparación caso](images/clase13/caso-preparacion.png)
-
+ 
 ## Desarrollo
-
-> Plantea aquí las vistas `vw_bi_*` que necesita el cuadro de mando y cómo resuelves las dos peticiones de Laura y de Hugo.
-
-### Vistas para el cuadro de mando
-
+ 
+### Vistas para el cuadro de mando (6 vistas con prefijo `vw_bi_`)
+ 
+**Requerimiento 1: Tabla de hechos** — Una fila por reproducción válida con contexto completo
+ 
 ```sql
--- Tus vistas vw_bi_* aquí
+DROP VIEW IF EXISTS dbo.vw_bi_hechos_reproduccion;
+GO
+ 
+CREATE VIEW dbo.vw_bi_hechos_reproduccion AS
+WITH genero_principal AS (
+    -- CTE recursiva: resuelve género principal (hijo directo de 'Música')
+    SELECT genero_id, genero_id AS raiz_id
+    FROM dbo.generos
+    WHERE genero_padre_id = (SELECT genero_id FROM dbo.generos WHERE genero_padre_id IS NULL)
+    
+    UNION ALL
+    
+    SELECT g.genero_id, gp.raiz_id
+    FROM dbo.generos AS g
+    JOIN genero_principal AS gp ON g.genero_padre_id = gp.genero_id
+)
+SELECT 
+    r.reproduccion_id,
+    CAST(r.fecha_hora AS DATE) AS fecha,
+    r.fecha_hora,
+    u.usuario_id,
+    u.nombre_usuario,
+    u.pais,
+    u.plan_suscripcion,
+    c.titulo AS cancion_titulo,
+    a.nombre AS artista,
+    g.nombre AS genero,
+    gp_root.nombre AS genero_principal,
+    r.dispositivo,
+    r.segundos_escuchados
+FROM dbo.reproducciones AS r
+INNER JOIN dbo.usuarios AS u ON u.usuario_id = r.usuario_id
+INNER JOIN dbo.canciones AS c ON c.cancion_id = r.cancion_id
+INNER JOIN dbo.artistas AS a ON a.artista_id = c.artista_id
+INNER JOIN dbo.generos AS g ON g.genero_id = c.genero_id
+INNER JOIN genero_principal AS gp ON gp.genero_id = g.genero_id
+INNER JOIN dbo.generos AS gp_root ON gp_root.genero_id = gp.raiz_id
+WHERE r.tipo_contenido = N'Canción'
+  AND r.segundos_escuchados >= 30;
+GO
+ 
+-- Verificación: resumen por país
+SELECT pais, COUNT(*) AS reproducciones, COUNT(DISTINCT usuario_id) AS oyentes_distintos,
+       CAST(SUM(segundos_escuchados) / 60.0 AS DECIMAL(10,1)) AS minutos
+FROM dbo.vw_bi_hechos_reproduccion
+GROUP BY pais
+ORDER BY reproducciones DESC;
 ```
-
-![caso vistas bi](images/clase13/caso-vistas-bi.png)
-
+ 
+**Requerimiento 2: Evolución diaria** — KPI por día
+ 
+```sql
+DROP VIEW IF EXISTS dbo.vw_bi_kpi_diario;
+GO
+ 
+CREATE VIEW dbo.vw_bi_kpi_diario AS
+SELECT 
+    fecha,
+    COUNT(*) AS reproducciones_validas,
+    COUNT(DISTINCT usuario_id) AS oyentes_distintos,
+    CAST(SUM(segundos_escuchados) / 60.0 AS DECIMAL(10,1)) AS minutos
+FROM dbo.vw_bi_hechos_reproduccion
+GROUP BY fecha;
+GO
+ 
+-- Semana de análisis (16-22/09/2026)
+SELECT fecha, reproducciones_validas, oyentes_distintos, minutos
+FROM dbo.vw_bi_kpi_diario
+WHERE fecha BETWEEN '2026-09-16' AND '2026-09-22'
+ORDER BY fecha;
+```
+ 
+**Requerimiento 3: Indicadores por género principal** — Acumulado histórico
+ 
+```sql
+DROP VIEW IF EXISTS dbo.vw_bi_kpi_genero_principal;
+GO
+ 
+CREATE VIEW dbo.vw_bi_kpi_genero_principal AS
+SELECT 
+    genero_principal,
+    COUNT(*) AS reproducciones_validas,
+    COUNT(DISTINCT usuario_id) AS oyentes_distintos,
+    CAST(SUM(segundos_escuchados) / 60.0 AS DECIMAL(10,1)) AS minutos
+FROM dbo.vw_bi_hechos_reproduccion
+GROUP BY genero_principal;
+GO
+ 
+-- Géneros ordenados por reproducciones
+SELECT genero_principal, reproducciones_validas, oyentes_distintos, minutos
+FROM dbo.vw_bi_kpi_genero_principal
+ORDER BY reproducciones_validas DESC;
+```
+ 
+**Requerimiento 4: Rendimiento de canciones** — Análisis de saltos
+ 
+```sql
+DROP VIEW IF EXISTS dbo.vw_bi_rendimiento_canciones;
+GO
+ 
+CREATE VIEW dbo.vw_bi_rendimiento_canciones AS
+SELECT 
+    c.cancion_id, c.titulo, a.nombre AS artista, c.fecha_lanzamiento,
+    (SELECT COUNT(*) FROM dbo.reproducciones r WHERE r.cancion_id = c.cancion_id) AS reproducciones_totales,
+    COALESCE((SELECT COUNT(*) FROM dbo.reproducciones r 
+              WHERE r.cancion_id = c.cancion_id AND r.tipo_contenido = N'Canción' AND r.segundos_escuchados >= 30), 0) AS reproducciones_validas,
+    COALESCE((SELECT COUNT(*) FROM dbo.reproducciones r 
+              WHERE r.cancion_id = c.cancion_id AND r.tipo_contenido = N'Canción' AND r.segundos_escuchados < 30), 0) AS saltos,
+    CASE 
+        WHEN (SELECT COUNT(*) FROM dbo.reproducciones r WHERE r.cancion_id = c.cancion_id) = 0 THEN NULL
+        ELSE CAST(COALESCE((SELECT COUNT(*) FROM dbo.reproducciones r 
+                      WHERE r.cancion_id = c.cancion_id AND r.tipo_contenido = N'Canción' AND r.segundos_escuchados < 30), 0) * 100.0 /
+            (SELECT COUNT(*) FROM dbo.reproducciones r WHERE r.cancion_id = c.cancion_id) AS DECIMAL(5,1))
+    END AS tasa_salto_pct
+FROM dbo.canciones AS c
+JOIN dbo.artistas AS a ON a.artista_id = c.artista_id;
+GO
+ 
+-- Canciones con saltos
+SELECT titulo, artista, fecha_lanzamiento, reproducciones_totales, reproducciones_validas, saltos, tasa_salto_pct
+FROM dbo.vw_bi_rendimiento_canciones
+WHERE saltos > 0
+ORDER BY tasa_salto_pct DESC;
+```
+ 
+**Requerimiento 6: Consumo por país y plan** — Vista blindada con SCHEMABINDING
+ 
+```sql
+DROP VIEW IF EXISTS dbo.vw_bi_consumo_pais_plan;
+GO
+ 
+CREATE VIEW dbo.vw_bi_consumo_pais_plan
+WITH SCHEMABINDING AS
+SELECT 
+    u.pais,
+    u.plan_suscripcion,
+    COUNT(*) AS reproducciones_validas,
+    CAST(SUM(r.segundos_escuchados) / 60.0 AS DECIMAL(10,1)) AS minutos
+FROM dbo.reproducciones AS r
+INNER JOIN dbo.usuarios AS u ON u.usuario_id = r.usuario_id
+WHERE r.tipo_contenido = N'Canción'
+  AND r.segundos_escuchados >= 30
+GROUP BY u.pais, u.plan_suscripcion;
+GO
+ 
+-- Consumo agregado (ordenado por minutos)
+SELECT pais, plan_suscripcion, reproducciones_validas, minutos
+FROM dbo.vw_bi_consumo_pais_plan
+ORDER BY minutos DESC;
+```
+ 
 ### Petición de Laura (equipo LATAM)
-
+ 
+**Vista con WITH CHECK OPTION** para proteger el ámbito LATAM:
+ 
 ```sql
--- Tu solución aquí
+DROP VIEW IF EXISTS dbo.vw_usuarios_latam;
+GO
+ 
+CREATE VIEW dbo.vw_usuarios_latam AS
+SELECT usuario_id, nombre_usuario, pais, plan_suscripcion, fecha_alta
+FROM dbo.usuarios
+WHERE pais IN (N'MX', N'AR', N'CO', N'PR')
+WITH CHECK OPTION;
+GO
+ 
+-- Listado de usuarios LATAM
+SELECT usuario_id, nombre_usuario, pais, plan_suscripcion, fecha_alta
+FROM dbo.vw_usuarios_latam
+ORDER BY pais, nombre_usuario;
+GO
+ 
+-- Demostraciones (dentro de transacción con ROLLBACK)
+BEGIN TRAN;
+GO
+ 
+-- a) Se puede cambiar el plan de nachox a Premium
+UPDATE dbo.vw_usuarios_latam
+SET plan_suscripcion = N'Premium'
+WHERE nombre_usuario = N'nachox';
+-- ✓ Se ejecuta correctamente
+ 
+-- b) Intento de cambiar país de juanpi a ES (FALLA - WITH CHECK OPTION)
+UPDATE dbo.vw_usuarios_latam
+SET pais = N'ES'
+WHERE nombre_usuario = N'juanpi';
+-- ✗ Error: violaría WITH CHECK OPTION
+ 
+-- c) Intento de modificar marta_rock (España) a través de la vista
+UPDATE dbo.vw_usuarios_latam
+SET plan_suscripcion = N'Familiar'
+WHERE nombre_usuario = N'marta_rock';
+-- ✓ Se ejecuta pero no afecta a ninguna fila (marta_rock no está en LATAM)
+ 
+ROLLBACK;
+GO
 ```
-
-![caso laura](images/clase13/caso-laura.png)
-
+ 
 ### Petición de Hugo (ampliar un campo de `usuarios`)
-
+ 
+**Ampliación de plan_suscripcion a nvarchar(30)** para "Premium Estudiante Anual":
+ 
 ```sql
--- Tu solución aquí
+-- Cambiar tamaño de la columna plan_suscripcion
+ALTER TABLE dbo.usuarios
+ALTER COLUMN plan_suscripcion nvarchar(30) NOT NULL;
+GO
+ 
+-- La vista vw_bi_consumo_pais_plan sigue funcionando correctamente
+-- SCHEMABINDING protege contra cambios que ROMPAN la vista (eliminaciones, reordenamientos)
+-- pero PERMITE ampliaciones de columnas (30 > 20)
+ 
+-- Verificar que la vista sigue activa
+SELECT pais, plan_suscripcion, reproducciones_validas, minutos
+FROM dbo.vw_bi_consumo_pais_plan
+ORDER BY minutos DESC;
+GO
 ```
-
-![caso hugo](images/clase13/caso-hugo.png)
-
+ 
+**Explicación:** Con `WITH SCHEMABINDING`, SQL Server protege la vista contra cambios accidentales en la estructura base:
+- ✗ **No permite**: eliminar columnas, cambiar tipos a incompatibles, reordenar columnas
+- ✓ **Sí permite**: ampliar columnas nvarchar(20) → nvarchar(30), agregar nuevas columnas
+Para cambiar de forma segura:
+1. ✓ Ampliar plan_suscripcion (la vista lo usa pero con espacio adicional)
+2. Para eliminar/cambiar: DROP VIEW → ALTER TABLE → CREATE VIEW
 ### Script completo y re-ejecutable
-
+ 
+El script completo está diseñado para ejecutarse varias veces sin errores (idempotente). Incluye:
+- **Preparación de datos** (43 reproducciones, 10 usuarios)
+- **6 vistas para Power BI** (prefijo `vw_bi_`)
+- **1 vista de mantenimiento** para LATAM (sin prefijo)
+- **Soluciones a peticiones** (Laura y Hugo)
+- **Análisis de dependencias** (sys.dm_sql_referencing_entities)
+**Descargar script:** `/tmp/claude-0/-home-claude/d0d7aa3a-9e16-5c8d-995c-ae0f56ef0f8e/scratchpad/caso-sonora-vistas-completo.sql`
+ 
 ```sql
--- Tu script final aquí
+-- Script completo: ejecutar línea por línea (GO separa bloques)
+-- Cada bloque es independiente y usa DROP IF EXISTS para ser re-ejecutable
+-- Los comentarios indican qué requerimiento resuelve cada vista
 ```
-
-![caso script final](images/clase13/caso-script-final.png)
+ 
+### Requerimiento 7: Mapa de dependencias
+ 
+Para conocer el impacto si cambia la regla de reproducción válida:
+ 
+```sql
+-- a) Vistas que leen DIRECTAMENTE de dbo.reproducciones
+SELECT referencing_schema_name, referencing_entity_name
+FROM sys.dm_sql_referencing_entities(N'dbo.reproducciones', N'OBJECT')
+WHERE referencing_entity_type = 'VIEW'
+ORDER BY referencing_entity_name;
+GO
+ 
+-- b) Vistas que leen DIRECTAMENTE de dbo.vw_bi_hechos_reproduccion
+SELECT referencing_schema_name, referencing_entity_name
+FROM sys.dm_sql_referencing_entities(N'dbo.vw_bi_hechos_reproduccion', N'OBJECT')
+WHERE referencing_entity_type = 'VIEW'
+ORDER BY referencing_entity_name;
+GO
+```
+ 
+**Conclusión:** Si cambia la regla (ej: 35 segundos en lugar de 30), solo hay que actualizar `vw_bi_hechos_reproduccion` y todas las vistas que dependen de ella se auto-actualizan automáticamente.
