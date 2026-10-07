@@ -1133,7 +1133,7 @@ Carmen Lozano (Data Analyst) se encargará del cuadro de mando. Antes de que con
  
 > *"Carmen va a conectar Power BI esta semana y no quiero que el cuadro de mando lea las tablas directamente. Prepárale un conjunto de vistas, todas con el prefijo `vw_bi_`, que sean lo único que use. Las reglas de negocio tienen que estar dentro de las vistas, no en Power BI, para que no haya dos versiones de 'reproducción válida'. Aprovecha también para resolver dos peticiones que tengo pendientes: Laura quiere que su equipo de LATAM pueda corregir datos de sus usuarios sin tocar los de España, y Hugo quiere ampliar un campo de `usuarios`. Todo en un script que se pueda ejecutar varias veces."*
  
-Todo el trabajo se hace sobre `SonoraDB`.
+Todo el trabajo se hace sobre `SonoraDB`
  
 ### Reglas de negocio de Sonora
  
@@ -1141,15 +1141,13 @@ Todo el trabajo se hace sobre `SonoraDB`.
 - Los **géneros principales** son los hijos directos del género raíz `Música`. Cada subgénero, a cualquier profundidad, cuenta para su género principal.
 - Los **mercados LATAM** son México (`MX`), Argentina (`AR`), Colombia (`CO`) y Puerto Rico (`PR`).
 - La **semana de análisis** del cuadro de mando va del 16/09/2026 al 22/09/2026, ambos incluidos.
+
 ## Preparación
- 
-Ejecuta este script antes de empezar. Garantiza el punto de partida (43 reproducciones y 10 usuarios) aunque no hayas hecho las cargas de clases anteriores. Es idempotente.
  
 ```sql
 USE SonoraDB;
 GO
- 
--- 1. Cargas de la clase de subconsultas y CTE
+
 INSERT INTO dbo.reproducciones
     (reproduccion_id, usuario_id, cancion_id, fecha_hora, segundos_escuchados, dispositivo, tipo_contenido)
 SELECT s.reproduccion_id, s.usuario_id, s.cancion_id, s.fecha_hora,
@@ -1162,8 +1160,7 @@ SELECT s.usuario_id, s.nombre_usuario, s.email, s.pais, s.plan_suscripcion, s.fe
 FROM dbo.stg_usuarios AS s
 WHERE NOT EXISTS (SELECT 1 FROM dbo.usuarios AS u WHERE u.usuario_id = s.usuario_id);
 GO
- 
--- 2. Lote del 22/09
+
 DROP TABLE IF EXISTS dbo.stg_reproducciones_2209;
  
 CREATE TABLE dbo.stg_reproducciones_2209 (
@@ -1193,12 +1190,12 @@ SELECT s.reproduccion_id, s.usuario_id, s.cancion_id, s.fecha_hora,
 FROM dbo.stg_reproducciones_2209 AS s
 WHERE NOT EXISTS (SELECT 1 FROM dbo.reproducciones AS r WHERE r.reproduccion_id = s.reproduccion_id);
 GO
- 
--- 3. Comprobación
+
 SELECT (SELECT COUNT(*) FROM dbo.reproducciones) AS reproducciones,
        (SELECT COUNT(*) FROM dbo.usuarios)       AS usuarios;
 ```
- 
+ ![CasoDeUso 1](images/clase13/caso1.png)
+
 ## Desarrollo
  
 ### Vistas para el cuadro de mando (6 vistas con prefijo `vw_bi_`)
@@ -1211,7 +1208,6 @@ GO
  
 CREATE VIEW dbo.vw_bi_hechos_reproduccion AS
 WITH genero_principal AS (
-    -- CTE recursiva: resuelve género principal (hijo directo de 'Música')
     SELECT genero_id, genero_id AS raiz_id
     FROM dbo.generos
     WHERE genero_padre_id = (SELECT genero_id FROM dbo.generos WHERE genero_padre_id IS NULL)
@@ -1246,15 +1242,16 @@ INNER JOIN dbo.generos AS gp_root ON gp_root.genero_id = gp.raiz_id
 WHERE r.tipo_contenido = N'Canción'
   AND r.segundos_escuchados >= 30;
 GO
- 
--- Verificación: resumen por país
+
 SELECT pais, COUNT(*) AS reproducciones, COUNT(DISTINCT usuario_id) AS oyentes_distintos,
        CAST(SUM(segundos_escuchados) / 60.0 AS DECIMAL(10,1)) AS minutos
 FROM dbo.vw_bi_hechos_reproduccion
 GROUP BY pais
 ORDER BY reproducciones DESC;
 ```
- 
+
+![Caso de uso parte 2](caso2.png)
+
 **Requerimiento 2: Evolución diaria** — KPI por día
  
 ```sql
@@ -1270,14 +1267,15 @@ SELECT
 FROM dbo.vw_bi_hechos_reproduccion
 GROUP BY fecha;
 GO
- 
--- Semana de análisis (16-22/09/2026)
+
 SELECT fecha, reproducciones_validas, oyentes_distintos, minutos
 FROM dbo.vw_bi_kpi_diario
 WHERE fecha BETWEEN '2026-09-16' AND '2026-09-22'
 ORDER BY fecha;
 ```
- 
+
+![Caso de uso 3](caso3.png)
+
 **Requerimiento 3: Indicadores por género principal** — Acumulado histórico
  
 ```sql
@@ -1293,13 +1291,14 @@ SELECT
 FROM dbo.vw_bi_hechos_reproduccion
 GROUP BY genero_principal;
 GO
- 
--- Géneros ordenados por reproducciones
+
 SELECT genero_principal, reproducciones_validas, oyentes_distintos, minutos
 FROM dbo.vw_bi_kpi_genero_principal
 ORDER BY reproducciones_validas DESC;
 ```
  
+![Caso de uso 4](caso4.png)
+
 **Requerimiento 4: Rendimiento de canciones** — Análisis de saltos
  
 ```sql
@@ -1323,14 +1322,15 @@ SELECT
 FROM dbo.canciones AS c
 JOIN dbo.artistas AS a ON a.artista_id = c.artista_id;
 GO
- 
--- Canciones con saltos
+
 SELECT titulo, artista, fecha_lanzamiento, reproducciones_totales, reproducciones_validas, saltos, tasa_salto_pct
 FROM dbo.vw_bi_rendimiento_canciones
 WHERE saltos > 0
 ORDER BY tasa_salto_pct DESC;
 ```
- 
+
+![Caso de uso 5](caso5.png)
+
 **Requerimiento 6: Consumo por país y plan** — Vista blindada con SCHEMABINDING
  
 ```sql
@@ -1350,13 +1350,14 @@ WHERE r.tipo_contenido = N'Canción'
   AND r.segundos_escuchados >= 30
 GROUP BY u.pais, u.plan_suscripcion;
 GO
- 
--- Consumo agregado (ordenado por minutos)
+
 SELECT pais, plan_suscripcion, reproducciones_validas, minutos
 FROM dbo.vw_bi_consumo_pais_plan
 ORDER BY minutos DESC;
 ```
- 
+
+![Caso de uso 6](caso6.png)
+
 ### Petición de Laura (equipo LATAM)
  
 **Vista con WITH CHECK OPTION** para proteger el ámbito LATAM:
@@ -1372,64 +1373,73 @@ WHERE pais IN (N'MX', N'AR', N'CO', N'PR')
 WITH CHECK OPTION;
 GO
  
--- Listado de usuarios LATAM
+
 SELECT usuario_id, nombre_usuario, pais, plan_suscripcion, fecha_alta
 FROM dbo.vw_usuarios_latam
 ORDER BY pais, nombre_usuario;
 GO
- 
--- Demostraciones (dentro de transacción con ROLLBACK)
+
 BEGIN TRAN;
 GO
- 
--- a) Se puede cambiar el plan de nachox a Premium
+
 UPDATE dbo.vw_usuarios_latam
 SET plan_suscripcion = N'Premium'
 WHERE nombre_usuario = N'nachox';
--- ✓ Se ejecuta correctamente
- 
--- b) Intento de cambiar país de juanpi a ES (FALLA - WITH CHECK OPTION)
+
 UPDATE dbo.vw_usuarios_latam
 SET pais = N'ES'
 WHERE nombre_usuario = N'juanpi';
--- ✗ Error: violaría WITH CHECK OPTION
- 
--- c) Intento de modificar marta_rock (España) a través de la vista
+
 UPDATE dbo.vw_usuarios_latam
 SET plan_suscripcion = N'Familiar'
 WHERE nombre_usuario = N'marta_rock';
--- ✓ Se ejecuta pero no afecta a ninguna fila (marta_rock no está en LATAM)
  
 ROLLBACK;
 GO
 ```
+
+![Caso de uso 7](caso7.png)
  
 ### Petición de Hugo (ampliar un campo de `usuarios`)
  
 **Ampliación de plan_suscripcion a nvarchar(30)** para "Premium Estudiante Anual":
  
 ```sql
--- Cambiar tamaño de la columna plan_suscripcion
+DROP VIEW IF EXISTS dbo.vw_bi_consumo_pais_plan;
+GO
+
 ALTER TABLE dbo.usuarios
 ALTER COLUMN plan_suscripcion nvarchar(30) NOT NULL;
 GO
- 
--- La vista vw_bi_consumo_pais_plan sigue funcionando correctamente
--- SCHEMABINDING protege contra cambios que ROMPAN la vista (eliminaciones, reordenamientos)
--- pero PERMITE ampliaciones de columnas (30 > 20)
- 
--- Verificar que la vista sigue activa
+
+
+CREATE VIEW dbo.vw_bi_consumo_pais_plan
+WITH SCHEMABINDING AS
+SELECT 
+    u.pais,
+    u.plan_suscripcion,
+    COUNT(*) AS reproducciones_validas,
+    CAST(SUM(r.segundos_escuchados) / 60.0 AS DECIMAL(10,1)) AS minutos
+FROM dbo.reproducciones AS r
+INNER JOIN dbo.usuarios AS u ON u.usuario_id = r.usuario_id
+WHERE r.tipo_contenido = N'Canción'
+  AND r.segundos_escuchados >= 30
+GROUP BY u.pais, u.plan_suscripcion;
+GO
+
 SELECT pais, plan_suscripcion, reproducciones_validas, minutos
 FROM dbo.vw_bi_consumo_pais_plan
 ORDER BY minutos DESC;
 GO
 ```
- 
+
+![Caso de uso 8](caso8.png)
+
 **Explicación:** Con `WITH SCHEMABINDING`, SQL Server protege la vista contra cambios accidentales en la estructura base:
-- ✗ **No permite**: eliminar columnas, cambiar tipos a incompatibles, reordenar columnas
-- ✓ **Sí permite**: ampliar columnas nvarchar(20) → nvarchar(30), agregar nuevas columnas
+- **No permite**: eliminar columnas, cambiar tipos a incompatibles, reordenar columnas
+- **Sí permite**: ampliar columnas nvarchar(20) → nvarchar(30), agregar nuevas columnas
 Para cambiar de forma segura:
-1. ✓ Ampliar plan_suscripcion (la vista lo usa pero con espacio adicional)
+1. Ampliar plan_suscripcion (la vista lo usa pero con espacio adicional)
 2. Para eliminar/cambiar: DROP VIEW → ALTER TABLE → CREATE VIEW
 ### Script completo y re-ejecutable
  
@@ -1439,32 +1449,23 @@ El script completo está diseñado para ejecutarse varias veces sin errores (ide
 - **1 vista de mantenimiento** para LATAM (sin prefijo)
 - **Soluciones a peticiones** (Laura y Hugo)
 - **Análisis de dependencias** (sys.dm_sql_referencing_entities)
-**Descargar script:** `/tmp/claude-0/-home-claude/d0d7aa3a-9e16-5c8d-995c-ae0f56ef0f8e/scratchpad/caso-sonora-vistas-completo.sql`
- 
-```sql
--- Script completo: ejecutar línea por línea (GO separa bloques)
--- Cada bloque es independiente y usa DROP IF EXISTS para ser re-ejecutable
--- Los comentarios indican qué requerimiento resuelve cada vista
-```
- 
+
 ### Requerimiento 7: Mapa de dependencias
  
 Para conocer el impacto si cambia la regla de reproducción válida:
  
 ```sql
--- a) Vistas que leen DIRECTAMENTE de dbo.reproducciones
 SELECT referencing_schema_name, referencing_entity_name
 FROM sys.dm_sql_referencing_entities(N'dbo.reproducciones', N'OBJECT')
-WHERE referencing_entity_type = 'VIEW'
 ORDER BY referencing_entity_name;
 GO
- 
--- b) Vistas que leen DIRECTAMENTE de dbo.vw_bi_hechos_reproduccion
+
 SELECT referencing_schema_name, referencing_entity_name
 FROM sys.dm_sql_referencing_entities(N'dbo.vw_bi_hechos_reproduccion', N'OBJECT')
-WHERE referencing_entity_type = 'VIEW'
 ORDER BY referencing_entity_name;
 GO
 ```
+
+![Caso de uso 9](caso9.png)
  
 **Conclusión:** Si cambia la regla (ej: 35 segundos en lugar de 30), solo hay que actualizar `vw_bi_hechos_reproduccion` y todas las vistas que dependen de ella se auto-actualizan automáticamente.
