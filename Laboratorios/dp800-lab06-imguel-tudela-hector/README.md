@@ -37,7 +37,7 @@ Investigar consultas lentas en Azure SQL Database usando **planes de ejecución*
 
 El despliegue terminó correctamente el 07/10/2026 y creó cinco recursos: el servidor, la base de datos, la cadena de conexión por defecto y las dos reglas de firewall (`ClientIp-2026-10-7_21-14-20` y `AllowAllWindowsAzureIps`).
 
-![crear bbdd](image.png)
+![crear bbdd](images/image.png)
 ![crear bbdd 2](images/image-1.png)
 ![crear bbdd 3](images/image-2.png)
 ![crear bbdd 4](images/image-3.png)
