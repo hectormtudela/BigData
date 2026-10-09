@@ -103,3 +103,9 @@ Modificación Realizada
 Se añadió la columna Notes a la tabla InventoryLog editando el archivo Tables/InventoryLog.sql:
 
 ![Añadir notes](image-1.png)
+
+Después de que ha terminado el workflow he ejecutado la consulta pedida en Azure SQL:
+
+![alt text](image-2.png)
+
+Finalmente he limpiado tanto el repositorio como la SQL Database en Azure
