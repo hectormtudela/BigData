@@ -159,7 +159,7 @@ SELECT (SELECT COUNT(*) FROM dbo.reproducciones)         AS reproducciones,
        (SELECT COUNT(*) FROM dbo.stg_reproducciones_app) AS lote_app;
 ```
 
-![alt text](image-19.png)
+![alt text](images-c15/image-19.png)
 
 
 ---
@@ -222,7 +222,7 @@ END;
 GO
 ```
 
-![alt text](image.png)
+![alt text](images-c15/image.png)
 
 **Paso 2.** Ejecutarlo:
 
@@ -230,7 +230,7 @@ GO
 EXEC dbo.usp_top_canciones;
 ```
 
-![alt text](image-1.png)
+![alt text](images-c15/image-1.png)
 
 **Paso 3.** Comprobar dónde ha quedado guardado (Object Explorer: *SonoraDB > Programmability > Stored Procedures*, o con la consulta):
 
@@ -241,7 +241,7 @@ WHERE ROUTINE_TYPE = N'PROCEDURE'
 ORDER BY ROUTINE_NAME;
 ```
 
-![alt text](image-2.png)
+![alt text](images-c15/image-2.png)
 
 ---
 
@@ -258,7 +258,7 @@ END;
 GO
 ```
 
-![alt text](image-3.png)
+![alt text](images-c15/image-3.png)
 
 **Paso 2.** Modificarlo con `CREATE OR ALTER` (añade el artista):
 
@@ -284,7 +284,7 @@ GO
 EXEC dbo.usp_top_canciones;
 ```
 
-![alt text](image-4.png)
+![alt text](images-c15/image-4.png)
 
 **Paso 3.** Ver el código guardado:
 
@@ -292,7 +292,7 @@ EXEC dbo.usp_top_canciones;
 EXEC sp_helptext N'dbo.usp_top_canciones';
 ```
 
-![alt text](image-5.png)
+![alt text](images-c15/image-5.png)
 
 **Paso 4.** Procedimiento de prueba, bien escrito:
 
@@ -307,7 +307,7 @@ GO
 EXEC dbo.usp_prueba_go;
 ```
 
-![alt text](image-6.png)
+![alt text](images-c15/image-6.png)
 
 **Paso 5.** El mismo script **sin el `GO`** intermedio (el `EXEC` queda guardado *dentro* del procedimiento, que se llama a sí mismo):
 
@@ -321,7 +321,7 @@ END;
 EXEC dbo.usp_prueba_go;
 ```
 
-![alt text](image-7.png)
+![alt text](images-c15/image-7.png)
 
 **Paso 6.** Ejecutarlo (se repite hasta el nivel 32 y da **Msg 217**):
 
@@ -329,7 +329,7 @@ EXEC dbo.usp_prueba_go;
 EXEC dbo.usp_prueba_go;
 ```
 
-![alt text](image-8.png)
+![alt text](images-c15/image-8.png)
 
 **Paso 7.** Borrar el procedimiento de prueba:
 
@@ -337,7 +337,7 @@ EXEC dbo.usp_prueba_go;
 DROP PROCEDURE IF EXISTS dbo.usp_prueba_go;
 ```
 
-![alt text](image-9.png)
+![alt text](images-c15/image-9.png)
 
 ---
 
@@ -400,7 +400,7 @@ END;
 GO
 ```
 
-![alt text](image-10.png)
+![alt text](images-c15/image-10.png)
 
 **Paso 2.** Llamada por posición (semana de análisis):
 
@@ -408,7 +408,7 @@ GO
 EXEC dbo.usp_top_canciones '2026-09-16', '2026-09-23';
 ```
 
-![alt text](image-11.png)
+![alt text](images-c15/image-11.png)
 
 **Paso 3.** Llamada por nombre (14 y 15 de septiembre, parámetros en otro orden):
 
@@ -416,7 +416,7 @@ EXEC dbo.usp_top_canciones '2026-09-16', '2026-09-23';
 EXEC dbo.usp_top_canciones @hasta = '2026-09-16', @desde = '2026-09-14';
 ```
 
-![alt text](image-12.png)
+![alt text](images-c15/image-12.png)
 
 **Paso 4.** Olvidar un parámetro obligatorio (**Msg 201**):
 
@@ -424,7 +424,7 @@ EXEC dbo.usp_top_canciones @hasta = '2026-09-16', @desde = '2026-09-14';
 EXEC dbo.usp_top_canciones '2026-09-16';
 ```
 
-![alt text](image-13.png)
+![alt text](images-c15/image-13.png)
 
 ---
 
@@ -458,7 +458,7 @@ END;
 GO
 ```
 
-![alt text](image-14.png)
+![alt text](images-c15/image-14.png)
 
 **Paso 2.** La llamada de antes sigue funcionando (mismo resultado que el Ejemplo 3):
 
@@ -466,7 +466,7 @@ GO
 EXEC dbo.usp_top_canciones @desde = '2026-09-16', @hasta = '2026-09-23';
 ```
 
-![alt text](image-15.png)
+![alt text](images-c15/image-15.png)
 
 **Paso 3.** Cinco canciones:
 
@@ -474,7 +474,7 @@ EXEC dbo.usp_top_canciones @desde = '2026-09-16', @hasta = '2026-09-23';
 EXEC dbo.usp_top_canciones @desde = '2026-09-16', @hasta = '2026-09-23', @top = 5;
 ```
 
-![alt text](image-16.png)
+![alt text](images-c15/image-16.png)
 
 **Paso 4.** Solo plan Free (se salta `@top`):
 
@@ -482,7 +482,7 @@ EXEC dbo.usp_top_canciones @desde = '2026-09-16', @hasta = '2026-09-23', @top = 
 EXEC dbo.usp_top_canciones @desde = '2026-09-16', @hasta = '2026-09-23', @plan = N'Free';
 ```
 
-![alt text](image-17.png)
+![alt text](images-c15/image-17.png)
 
 ---
 
@@ -511,7 +511,7 @@ END;
 GO
 ```
 
-![alt text](image-18.png)
+![alt text](images-c15/image-18.png)
 
 **Paso 2.** Llamarlo recogiendo los resultados (bloque completo de una vez):
 
@@ -527,7 +527,7 @@ EXEC dbo.usp_cifras_periodo
 SELECT @n AS reproducciones, @min AS minutos;
 ```
 
-![alt text](image-20.png)
+![alt text](images-c15/image-20.png)
 
 **Paso 3.** La misma llamada **sin** `OUTPUT` (no hay error, pero devuelve `NULL`):
 
@@ -543,7 +543,7 @@ EXEC dbo.usp_cifras_periodo
 SELECT @n AS reproducciones, @min AS minutos;
 ```
 
-![alt text](image-21.png)
+![alt text](images-c15/image-21.png)
 
 **Paso 4.** Usar los valores devueltos (dos llamadas y una comparación):
 
@@ -565,7 +565,7 @@ SELECT @n_semana AS repro_semana,
        CAST(@min_previo / 2 AS decimal(5,1)) AS minutos_dia_previos;
 ```
 
-![alt text](image-22.png)
+![alt text](images-c15/image-22.png)
 
 ---
 
@@ -626,13 +626,13 @@ SET @total = (SELECT COUNT(*) FROM dbo.reproducciones WHERE fecha_hora >= @inici
 SELECT @inicio AS inicio, @total AS reproducciones_desde_inicio;
 ```
 
-![alt text](image-23.png)
+![alt text](images-c15/image-23.png)
 
 ```sql
 SELECT @inicio AS inicio, @total AS reproducciones_desde_inicio;
 ```
 
-![alt text](image-24.png)
+![alt text](images-c15/image-24.png)
 
 **Paso 2.** Crear la tabla resumen:
 
@@ -648,7 +648,7 @@ CREATE TABLE dbo.resumen_diario (
 GO
 ```
 
-![alt text](image-25.png)
+![alt text](images-c15/image-25.png)
 
 **Paso 3.** Crear el procedimiento:
 
@@ -687,7 +687,7 @@ END;
 GO
 ```
 
-![alt text](image-26.png)
+![alt text](images-c15/image-26.png)
 
 **Paso 4.** Ejecutarlo para la semana de análisis (borradas 0, insertadas 7):
 
@@ -695,7 +695,7 @@ GO
 EXEC dbo.usp_refrescar_resumen_diario @desde = '2026-09-16', @hasta = '2026-09-23';
 ```
 
-![alt text](image-27.png)
+![alt text](images-c15/image-27.png)
 
 **Paso 5.** Ejecutarlo otra vez con los mismos parámetros (borradas 7, insertadas 7):
 
@@ -703,7 +703,7 @@ EXEC dbo.usp_refrescar_resumen_diario @desde = '2026-09-16', @hasta = '2026-09-2
 EXEC dbo.usp_refrescar_resumen_diario @desde = '2026-09-16', @hasta = '2026-09-23';
 ```
 
-![alt text](image-28.png)
+![alt text](images-c15/image-28.png)
 
 **Paso 6.** Ver el resumen:
 
@@ -713,7 +713,7 @@ FROM dbo.resumen_diario
 ORDER BY dia;
 ```
 
-![alt text](image-29.png)
+![alt text](images-c15/image-29.png)
 
 ---
 
@@ -729,7 +729,7 @@ IF @filas_nuevas > 0
     PRINT N'Lanzando la carga...';
 ```
 
-![alt text](image-30.png)
+![alt text](images-c15/image-30.png)
 
 **Paso 2.** Modificar el procedimiento: valida, informa con `PRINT` y devuelve un código con `RETURN`:
 
@@ -779,7 +779,7 @@ END;
 GO
 ```
 
-![alt text](image-31.png)
+![alt text](images-c15/image-31.png)
 
 **Paso 3.** Fechas al revés, recogiendo el código de retorno (estado = 1):
 
@@ -791,7 +791,7 @@ EXEC @estado = dbo.usp_refrescar_resumen_diario @desde = '2026-09-23', @hasta = 
 SELECT @estado AS estado;
 ```
 
-![alt text](image-32.png)
+![alt text](images-c15/image-32.png)
 
 **Paso 4.** Semana de análisis y semana sin datos (estado = 0 las dos veces):
 
@@ -805,7 +805,7 @@ EXEC @estado = dbo.usp_refrescar_resumen_diario @desde = '2026-10-05', @hasta = 
 SELECT @estado AS estado;
 ```
 
-![alt text](image-33.png)
+![alt text](images-c15/image-33.png)
 
 ---
 
@@ -840,7 +840,7 @@ END;
 GO
 ```
 
-![alt text](image-34.png)
+![alt text](images-c15/image-34.png)
 
 **Paso 2.** Ejecutarlo (del 14/09 al 23/09 incluido):
 
@@ -848,7 +848,7 @@ GO
 EXEC dbo.usp_reconstruir_resumen_diario @desde = '2026-09-14', @hasta = '2026-09-24';
 ```
 
-![alt text](image-35.png)
+![alt text](images-c15/image-35.png)
 
 **Paso 3.** Ver el resumen completo (9 días, del 14 al 22/09):
 
@@ -858,7 +858,7 @@ FROM dbo.resumen_diario
 ORDER BY dia;
 ```
 
-![alt text](image-36.png)
+![alt text](images-c15/image-36.png)
 
 ---
 
@@ -901,7 +901,7 @@ INSERT INTO #prueba (id) VALUES (2);
 SELECT id FROM #prueba ORDER BY id;
 ```
 
-![alt text](image-37.png)
+![alt text](images-c15/image-37.png)
 
 **Paso 2.** Lo mismo dentro de un `TRY` (el `CATCH` captura, la tercera no se ejecuta; queda solo el id 1):
 
@@ -924,7 +924,7 @@ END CATCH;
 SELECT id FROM #prueba ORDER BY id;
 ```
 
-![alt text](image-38.png)
+![alt text](images-c15/image-38.png)
 
 ---
 
@@ -973,7 +973,7 @@ END;
 GO
 ```
 
-![alt text](image-39.png)
+![alt text](images-c15/image-39.png)
 
 **Paso 2.** Llamarlo con las fechas al revés (**Msg 50001** en rojo):
 
@@ -981,7 +981,7 @@ GO
 EXEC dbo.usp_refrescar_resumen_diario @desde = '2026-09-23', @hasta = '2026-09-16';
 ```
 
-![alt text](image-40.png)
+![alt text](images-c15/image-40.png)
 
 **Paso 3.** Capturarlo desde fuera con otro `TRY ... CATCH`:
 
@@ -998,7 +998,7 @@ BEGIN CATCH
 END CATCH;
 ```
 
-![alt text](image-41.png)
+![alt text](images-c15/image-41.png)
 
 **Paso 4.** El error que se oculta (el `CATCH` no relanza: nada en rojo, la ejecución parece correcta):
 
@@ -1011,7 +1011,7 @@ BEGIN CATCH
 END CATCH;
 ```
 
-![alt text](image-42.png)
+![alt text](images-c15/image-42.png)
 
 **Paso 5.** La versión correcta: hacer lo necesario y **volver a lanzar**:
 
@@ -1026,7 +1026,7 @@ BEGIN CATCH
 END CATCH;
 ```
 
-![alt text](image-43.png)
+![alt text](images-c15/image-43.png)
 
 ---
 
@@ -1081,7 +1081,7 @@ CREATE TABLE dbo.historial_planes (
 GO
 ```
 
-![alt text](image-44.png)
+![alt text](images-c15/image-44.png)
 
 **Paso 2.** El procedimiento de Hugo (sin `XACT_ABORT` ni `TRY ... CATCH`):
 
@@ -1114,7 +1114,7 @@ END;
 GO
 ```
 
-![alt text](image-45.png)
+![alt text](images-c15/image-45.png)
 
 **Paso 3.** Cambio con el plan mal escrito (**Msg 547** por el `CHECK`):
 
@@ -1122,7 +1122,7 @@ GO
 EXEC dbo.usp_cambiar_plan @nombre_usuario = N'marta_rock', @plan_nuevo = N'Premiun';
 ```
 
-![alt text](image-46.png)
+![alt text](images-c15/image-46.png)
 
 **Paso 4.** Comprobar cómo ha quedado (marta_rock = `Premiun`, historial = 0 filas):
 
@@ -1134,7 +1134,7 @@ WHERE nombre_usuario = N'marta_rock';
 SELECT COUNT(*) AS cambios_en_historial FROM dbo.historial_planes;
 ```
 
-![alt text](image-47.png)
+![alt text](images-c15/image-47.png)
 
 **Qué ha ocurrido:** el `UPDATE` funciona, el `INSERT` falla por el `CHECK` (solo se anula esa instrucción), la ejecución continúa y llega al `COMMIT`, que confirma el `UPDATE`. Resultado: un plan inexistente y sin rastro en el historial.
 
@@ -1146,7 +1146,7 @@ SET plan_suscripcion = N'Free'
 WHERE nombre_usuario = N'marta_rock';
 ```
 
-![alt text](image-48.png)
+![alt text](images-c15/image-48.png)
 
 ---
 
@@ -1197,7 +1197,7 @@ END;
 GO
 ```
 
-![alt text](image-49.png)
+![alt text](images-c15/image-49.png)
 
 **Paso 2.** Repetir la llamada con el plan mal escrito (mismo **Msg 547**, pero ahora no cambia nada: marta_rock sigue en `Free`, historial = 0):
 
@@ -1205,7 +1205,7 @@ GO
 EXEC dbo.usp_cambiar_plan @nombre_usuario = N'marta_rock', @plan_nuevo = N'Premiun';
 ```
 
-![alt text](image-50.png)
+![alt text](images-c15/image-50.png)
 
 ```sql
 SELECT nombre_usuario, plan_suscripcion
@@ -1215,7 +1215,7 @@ WHERE nombre_usuario = N'marta_rock';
 SELECT COUNT(*) AS cambios_en_historial FROM dbo.historial_planes;
 ```
 
-![alt text](image-51.png)
+![alt text](images-c15/image-51.png)
 
 **Paso 3.** Usuario que no existe (**Msg 50002**, antes del `BEGIN TRAN`):
 
@@ -1223,7 +1223,7 @@ SELECT COUNT(*) AS cambios_en_historial FROM dbo.historial_planes;
 EXEC dbo.usp_cambiar_plan @nombre_usuario = N'marta_pop', @plan_nuevo = N'Premium';
 ```
 
-![alt text](image-52.png)
+![alt text](images-c15/image-52.png)
 
 **Paso 4.** El cambio correcto:
 
@@ -1239,7 +1239,7 @@ FROM dbo.historial_planes
 ORDER BY cambio_id;
 ```
 
-![alt text](image-53.png)
+![alt text](images-c15/image-53.png)
 
 **Paso 5.** Devolver a marta_rock a su plan para conservar el punto de partida:
 
@@ -1247,7 +1247,7 @@ ORDER BY cambio_id;
 EXEC dbo.usp_cambiar_plan @nombre_usuario = N'marta_rock', @plan_nuevo = N'Free';
 ```
 
-![alt text](image-54.png)
+![alt text](images-c15/image-54.png)
 
 ---
 
@@ -1297,7 +1297,7 @@ BEGIN
 END;
 ```
 
-![alt text](image-55.png)
+![alt text](images-c15/image-55.png)
 
 ### Ejemplo 13. La tabla de log y una primera carga que deja rastro
 
@@ -1321,7 +1321,7 @@ CREATE TABLE dbo.log_cargas (
 GO
 ```
 
-![alt text](image-56.png)
+![alt text](images-c15/image-56.png)
 
 **Paso 2.** Primera versión del procedimiento (la carga de siempre con `NOT EXISTS`, envuelta en el log):
 
@@ -1372,7 +1372,7 @@ END;
 GO
 ```
 
-![alt text](image-57.png)
+![alt text](images-c15/image-57.png)
 
 **Paso 3.** Ejecutar la carga y consultar el log (leídas 6, insertadas 4, `OK`; reproducciones = 47):
 
@@ -1386,7 +1386,7 @@ ORDER BY log_id;
 SELECT COUNT(*) AS reproducciones FROM dbo.reproducciones;
 ```
 
-![alt text](image-58.png)
+![alt text](images-c15/image-58.png)
 
 ---
 
@@ -1404,7 +1404,7 @@ ORDER BY log_id;
 SELECT COUNT(*) AS reproducciones FROM dbo.reproducciones;
 ```
 
-![alt text](image-59.png)
+![alt text](images-c15/image-59.png)
 
 **Paso 2.** Qué la hace idempotente:
 
@@ -1434,7 +1434,7 @@ INSERT INTO dbo.stg_reproducciones_app
 (54, 10, 113, '2026-09-24 18:15', 158, N'Móvil',      N'Canción');
 ```
 
-![alt text](image-60.png)
+![alt text](images-c15/image-60.png)
 
 **Paso 2.** Ejecutar la carga (**Msg 547**, clave ajena):
 
@@ -1442,7 +1442,7 @@ INSERT INTO dbo.stg_reproducciones_app
 EXEC dbo.usp_cargar_reproducciones;
 ```
 
-![alt text](image-61.png)
+![alt text](images-c15/image-61.png)
 
 **Paso 3.** Consultar el log y el destino (fila 3: leídas 8, `Error`, con mensaje; reproducciones sigue en 47):
 
@@ -1454,7 +1454,7 @@ ORDER BY log_id;
 SELECT COUNT(*) AS reproducciones FROM dbo.reproducciones;
 ```
 
-![alt text](image-62.png)
+![alt text](images-c15/image-62.png)
 
 **Qué ha ocurrido:** el procedimiento falla *bien* (no deja nada a medias, lo anota y avisa), pero por tres filas defectuosas se quedan fuera cuatro correctas. Eso se arregla validando antes de cargar (Ejemplo 16).
 
@@ -1486,7 +1486,7 @@ CREATE TABLE dbo.rechazos_carga (
 GO
 ```
 
-![alt text](image-63.png)
+![alt text](images-c15/image-63.png)
 
 **Paso 2.** Procedimiento completo:
 
@@ -1581,7 +1581,7 @@ END;
 GO
 ```
 
-![alt text](image-64.png)
+![alt text](images-c15/image-64.png)
 
 **Paso 3.** Ejecutar con el mismo lote que falló en el Ejemplo 15:
 
@@ -1599,7 +1599,7 @@ ORDER BY log_id, reproduccion_id;
 SELECT COUNT(*) AS reproducciones FROM dbo.reproducciones;
 ```
 
-![alt text](image-65.png)
+![alt text](images-c15/image-65.png)
 
 **Paso 4.** Prueba de idempotencia (fila 5: insertadas 0, rechazadas 3; reproducciones sigue en 51):
 
@@ -1614,7 +1614,7 @@ ORDER BY log_id;
 SELECT COUNT(*) AS reproducciones FROM dbo.reproducciones;
 ```
 
-![alt text](image-66.png)
+![alt text](images-c15/image-66.png)
 
 ---
 
@@ -1649,7 +1649,7 @@ GRANT EXECUTE ON OBJECT::dbo.usp_cargar_reproducciones TO svc_carga;
 GO
 ```
 
-![alt text](image-67.png)
+![alt text](images-c15/image-67.png)
 
 **Paso 2.** Lanzar la carga como `svc_carga`:
 
@@ -1667,7 +1667,7 @@ WHERE log_id >= 5
 ORDER BY log_id;
 ```
 
-![alt text](image-68.png)
+![alt text](images-c15/image-68.png)
 
 **Paso 3.** Intentar a mano lo que no debería poder (tres **Msg 229**: `SELECT` sobre `reproducciones`, `DELETE` sobre `log_cargas`, `EXECUTE` sobre `usp_cambiar_plan`):
 
@@ -1684,7 +1684,7 @@ REVERT;
 GO
 ```
 
-![alt text](image-69.png)
+![alt text](images-c15/image-69.png)
 
 ### ¿Qué herramienta uso en cada caso?
 
@@ -1726,7 +1726,7 @@ GO
 EXEC dbo.usp_usuarios_por_plan;
 ```
 
-![alt text](image-70.png)
+![alt text](images-c15/image-70.png)
 
 ---
 
@@ -1753,7 +1753,7 @@ EXEC dbo.usp_canciones_de_artista @artista = N'MC Brisa';
 EXEC dbo.usp_canciones_de_artista @artista = N'Los Planetas';
 ```
 
-![alt text](image-71.png)
+![alt text](images-c15/image-71.png)
 
 ---
 
@@ -1789,7 +1789,7 @@ GO
 - **d)** Error **Msg 119**: tras pasar `@desde` por nombre, el resto también debe ir por nombre.
 - **e)** Sin error y **0 filas**: las fechas están al revés y el rango es imposible.
 
-![alt text](image-72.png)
+![alt text](images-c15/image-72.png)
 
 ---
 
@@ -1817,7 +1817,7 @@ EXEC dbo.usp_altas_desde @desde = '2026-01-01';
 EXEC dbo.usp_altas_desde @desde = '2026-01-01', @pais = 'ES';
 ```
 
-![alt text](image-73.png)
+![alt text](images-c15/image-73.png)
 
 ---
 
@@ -1857,7 +1857,7 @@ EXEC dbo.usp_actividad_usuario @nombre_usuario = N'fantasma', @reproducciones = 
 SELECT @rep AS reproducciones, @min AS minutos;
 ```
 
-![alt text](image-74.png)
+![alt text](images-c15/image-74.png)
 
 **Explicación:** `vale_indie` (existe, sin reproducciones) y `fantasma` (no existe) devuelven lo mismo: `0` y `0.0`. Un `COUNT(*)` de cero filas es 0 sin error; desde fuera no se pueden distinguir.
 
@@ -1921,7 +1921,7 @@ SELECT @estado AS estado_fantasma;
 
 Esperado: lucia.m 12.1 Intensivo; marta_rock 7.2 Habitual; sofi.trap 5.6 Ocasional; vale_indie 0.0 Sin actividad; fantasma → mensaje `Usuario no encontrado: fantasma` y estado 1.
 
-![alt text](image-75.png)
+![alt text](images-c15/image-75.png)
 
 ---
 
@@ -1970,7 +1970,7 @@ GO
 EXEC dbo.usp_cifras_por_dia @desde = '2026-09-20', @hasta = '2026-09-25';
 ```
 
-![alt text](image-76.png)
+![alt text](images-c15/image-76.png)
 
 ---
 
@@ -2015,7 +2015,7 @@ SELECT paso, texto FROM #pasos ORDER BY paso;
 
 **¿Qué cambia con `THROW;` justo antes de `END CATCH;`?** Se relanza el error 515 y el lote se corta ahí: el paso 7 y el `SELECT` final no se ejecutan (en pantalla solo se ve el error). `#pasos` conserva los pasos 1, 4 y 6.
 
-![alt text](image-77.png)
+![alt text](images-c15/image-77.png)
 
 ---
 
@@ -2049,7 +2049,7 @@ END;
 GO
 ```
 
-![alt text](image-78.png)
+![alt text](images-c15/image-78.png)
 
 Un error lanzado con `THROW` sin `TRY` corta el lote, así que cada llamada va en su propio lote:
 
@@ -2076,7 +2076,7 @@ DELETE FROM dbo.artistas WHERE artista_id > 9;
 GO
 ```
 
-![alt text](image-79.png)
+![alt text](images-c15/image-79.png)
 
 ---
 
@@ -2124,7 +2124,7 @@ END;
 GO
 ```
 
-![alt text](image-80.png)
+![alt text](images-c15/image-80.png)
 
 **a) Baja de `pau.synth` con motivo no admitido, y recuento:**
 
@@ -2139,7 +2139,7 @@ SELECT (SELECT COUNT(*) FROM dbo.reproducciones) AS reproducciones,
 
 Resultado: **41 reproducciones, 9 usuarios, 0 bajas**. El `DELETE` de reproducciones se ejecuta, el `INSERT` falla por el `CHECK` (**Msg 547**, solo se anula esa instrucción), la ejecución continúa, borra al usuario y el `COMMIT` confirma todo. Se pierde al usuario y sus reproducciones sin dejar constancia de la baja. No hay `XACT_ABORT ON` ni `TRY ... CATCH`.
 
-![alt text](image-81.png)
+![alt text](images-c15/image-81.png)
 
 **b) Recuperar al usuario y sus reproducciones:** ejecutar de nuevo el script del **Punto de partida**.
 
@@ -2188,7 +2188,7 @@ SELECT (SELECT COUNT(*) FROM dbo.reproducciones) AS reproducciones,
 
 Resultado: **43 reproducciones, 10 usuarios, 0 bajas**. El `CHECK` falla, salta al `CATCH`, el `ROLLBACK` deshace el primer `DELETE` y el `THROW` devuelve el error original.
 
-![alt text](image-82.png)
+![alt text](images-c15/image-82.png)
 
 **d) Baja con motivo admitido, recuento y vuelta al punto de partida:**
 
@@ -2205,7 +2205,7 @@ GO
 DELETE FROM dbo.bajas_usuarios;
 ```
 
-![alt text](image-83.png)
+![alt text](images-c15/image-83.png)
 
 ---
 
@@ -2281,7 +2281,7 @@ END;
 GO
 ```
 
-![alt text](image-84.png)
+![alt text](images-c15/image-84.png)
 
 **Pruebas** (cada llamada en su lote, porque la segunda lanza un error):
 
@@ -2300,7 +2300,7 @@ ORDER BY log_id DESC;
 
 Esperado (de la más reciente a la más antigua): `Error` con `Periodo no válido: @desde debe ser anterior a @hasta.` y `OK` con 7 filas insertadas.
 
-![alt text](image-85.png)
+![alt text](images-c15/image-85.png)
 
 **Pregunta adicional:** sin la transacción, si el `INSERT` fallara justo después del `DELETE`, la tabla resumen se quedaría sin los datos de ese periodo y los cuadros de mando mostrarían 0 reproducciones y 0 minutos para esos días.
 
@@ -2339,7 +2339,7 @@ INSERT INTO dbo.log_cargas (proceso, inicio, estado)
 VALUES (N'usp_carga_nocturna', SYSDATETIME(), N'En curso');
 ```
 
-![alt text](image-86.png)
+![alt text](images-c15/image-86.png)
 
 - **A: no es idempotente.** `resumen_diario` tiene `PRIMARY KEY` en `dia`, así que la segunda ejecución falla con **Msg 2627** (en una tabla sin clave habría duplicado filas). Arreglo: borrar el periodo antes de insertar, todo en una transacción:
 
@@ -2368,7 +2368,7 @@ BEGIN CATCH
 END CATCH;
 ```
 
-![alt text](image-87.png)
+![alt text](images-c15/image-87.png)
 
 - **B: no es idempotente.** Cada ejecución suma 5 segundos más (a la segunda, +10 en total). Arreglo: asignar el **valor definitivo** en lugar de un incremento. Hay que sustituir los valores por la duración correcta de cada canción (consúltala antes en `dbo.canciones`):
 
@@ -2386,7 +2386,7 @@ WHERE c.artista_id = 4;
 - **D: sí es idempotente.** La primera ejecución borra las filas; la segunda no encuentra ninguna y no cambia nada.
 - **E: no es idempotente, pero NO debe arreglarse.** Cada ejecución deja su propia fila en el log por diseño: el log mide ejecuciones, no el estado final.
 
-![alt text](image-88.png)
+![alt text](images-c15/image-88.png)
 
 ---
 
@@ -2406,7 +2406,7 @@ CREATE TABLE dbo.rechazos_altas (
 GO
 ```
 
-![alt text](image-89.png)
+![alt text](images-c15/image-89.png)
 
 ```sql
 CREATE OR ALTER PROCEDURE dbo.usp_cargar_usuarios
@@ -2489,7 +2489,7 @@ END;
 GO
 ```
 
-![alt text](image-90.png)
+![alt text](images-c15/image-90.png)
 
 **Pruebas:** dos ejecuciones, log, rechazos y recuento de usuarios; después, limpieza.
 
@@ -2515,7 +2515,7 @@ DELETE FROM dbo.usuarios WHERE usuario_id > 10;
 
 Esperado: primera ejecución leídas 8, insertadas 4, rechazadas 2, `OK`; segunda leídas 8, insertadas 0, rechazadas 2, `OK`. Rechazos: 13 `rober.mx` (*Plan no reconocido*) y 14 `cami_ar` (*Email vacío*), repetidos con el `log_id` de cada ejecución. `usuarios` = 14 tras las dos ejecuciones.
 
-![alt text](image-91.png)
+![alt text](images-c15/image-91.png)
 
 ---
 
@@ -2559,7 +2559,7 @@ IF USER_ID(N'svc_carga') IS NOT NULL
 GO
 ```
 
-![alt text](image-92.png)
+![alt text](images-c15/image-92.png)
 
 ---
 
@@ -2735,13 +2735,7 @@ SELECT (SELECT COUNT(*) FROM dbo.reproducciones) AS reproducciones,
        (SELECT COUNT(*) FROM sys.triggers)       AS triggers;
 ```
 
-**Salida esperada:**
-
-| reproducciones | usuarios | canciones | artistas | triggers |
-| --- | --- | --- | --- | --- |
-| 43 | 10 | 15 | 9 | 0 |
-
-<!-- CAPTURA -->
+![alt text](images-c15/image-93.png)
 
 > **Regla de negocio de siempre:** una reproducción es **válida** cuando es de tipo `Canción` y se han escuchado al menos 30 segundos.
 >
@@ -2805,9 +2799,7 @@ END;
 GO
 ```
 
-Salida: `Commands completed successfully.` (todavía no se ha disparado).
-
-<!-- CAPTURA -->
+![alt text](images-c15/image-94.png)
 
 **Paso 2.** Dar de alta un artista (en la instrucción no aparece el trigger):
 
@@ -2816,9 +2808,7 @@ INSERT INTO dbo.artistas (artista_id, nombre, pais, genero_id)
 VALUES (10, N'Aurora Boreal', 'ES', 11);
 ```
 
-Messages: `>> Trigger disparado en dbo.artistas` y `(1 row affected)`.
-
-<!-- CAPTURA -->
+![alt text](images-c15/image-95.png)
 
 **Paso 3.** Dónde ha quedado guardado: Object Explorer, *SonoraDB > Tables > dbo.artistas > Triggers*, o con el catálogo:
 
@@ -2830,11 +2820,7 @@ SELECT name,
 FROM sys.triggers;
 ```
 
-| name | sobre | is_instead_of_trigger | is_disabled |
-| --- | --- | --- | --- |
-| trg_artistas_aviso | artistas | 0 | 0 |
-
-<!-- CAPTURA -->
+![alt text](images-c15/image-96.png)
 
 ---
 
@@ -2850,7 +2836,7 @@ SET pais = 'PT'
 WHERE artista_id = 999;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-97.png)
 
 **Paso 2.** `UPDATE` de toda la tabla (diez filas, **un solo aviso**):
 
@@ -2859,7 +2845,7 @@ UPDATE dbo.artistas
 SET pais = pais;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-98.png)
 
 **Paso 3.** `INSERT` que falla (**Msg 2627**, el aviso **no aparece**):
 
@@ -2868,7 +2854,7 @@ INSERT INTO dbo.artistas (artista_id, nombre, pais, genero_id)
 VALUES (10, N'Aurora Boreal Bis', 'ES', 11);
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-99.png)
 
 **Paso 4.** Una consulta (no dispara nada; resultado 10):
 
@@ -2876,7 +2862,7 @@ VALUES (10, N'Aurora Boreal Bis', 'ES', 11);
 SELECT COUNT(*) AS artistas FROM dbo.artistas;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-100.png)
 
 **Paso 5.** Borrar el artista de prueba y el trigger:
 
@@ -2888,7 +2874,7 @@ GO
 DROP TRIGGER IF EXISTS dbo.trg_artistas_aviso;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-101.png)
 
 | Instrucción | Filas afectadas | ¿Se dispara? |
 | --- | --- | --- |
@@ -2975,7 +2961,7 @@ END;
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-102.png)
 
 **Paso 2.** `UPDATE` de una fila (dentro de una transacción que se deshace; bloque completo de una vez). Esperado: `deleted` Free, `inserted` Premium:
 
@@ -2993,7 +2979,7 @@ BEGIN TRAN;
 ROLLBACK;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-103.png)
 
 **Paso 3.** `INSERT` (solo `inserted`):
 
@@ -3010,7 +2996,7 @@ BEGIN TRAN;
 ROLLBACK;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-104.png)
 
 **Paso 4.** `DELETE` (solo `deleted`; primero se borran las reproducciones del usuario):
 
@@ -3030,7 +3016,7 @@ BEGIN TRAN;
 ROLLBACK;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-105.png)
 
 **Paso 5.** `UPDATE` de varias filas (los dos usuarios de México: un solo disparo, dos filas en cada tabla):
 
@@ -3048,7 +3034,7 @@ BEGIN TRAN;
 ROLLBACK;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-106.png)
 
 **Paso 6.** Comprobar la tabla espía (0 filas: el `ROLLBACK` también deshizo lo que escribió el trigger) y retirar el montaje:
 
@@ -3060,7 +3046,7 @@ DROP TRIGGER IF EXISTS dbo.trg_usuarios_espia;
 DROP TABLE IF EXISTS dbo.espia_trigger;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-107.png)
 
 > El trigger trabaja dentro de la misma transacción que la instrucción que lo dispara.
 
@@ -3088,7 +3074,7 @@ CREATE TABLE dbo.historial_planes (
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-108.png)
 
 **Paso 2.** El trigger de Hugo (con variables, el error a evitar):
 
@@ -3115,7 +3101,7 @@ END;
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-109.png)
 
 **Paso 3.** La prueba de Hugo (una fila, funciona):
 
@@ -3129,7 +3115,7 @@ FROM dbo.historial_planes
 ORDER BY cambio_id;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-110.png)
 
 **Paso 4.** Campaña de Marketing: tres usuarios Free pasan a Premium, y el historial solo anota uno:
 
@@ -3143,7 +3129,7 @@ FROM dbo.historial_planes
 ORDER BY cambio_id;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-111.png)
 
 **Paso 5.** `UPDATE` que no afecta a nadie (falla con **Msg 515** por culpa del trigger):
 
@@ -3153,7 +3139,7 @@ SET email = N'nadie@mail.com'
 WHERE usuario_id = 999;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-112.png)
 
 **Paso 6.** `UPDATE` que no toca el plan (anota un cambio falso "Premium → Premium"):
 
@@ -3167,7 +3153,7 @@ FROM dbo.historial_planes
 WHERE usuario_id = 1;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-113.png)
 
 | Situación | Qué hace | Qué debería hacer |
 | --- | --- | --- |
@@ -3184,6 +3170,8 @@ WHERE usuario_id IN (2, 5, 7, 9);
 
 DELETE FROM dbo.historial_planes;
 ```
+
+![alt text](images-c15/image-114.png)
 
 > Regla: si en un trigger aparece `SELECT @variable = ... FROM inserted/deleted`, hay un fallo esperando. Se prueba con **una fila, varias filas y ninguna**.
 
@@ -3215,7 +3203,7 @@ END;
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-115.png)
 
 **Paso 2.** Repetir el cambio de marta_rock y la campaña (4 filas en el historial):
 
@@ -3233,7 +3221,7 @@ FROM dbo.historial_planes
 ORDER BY usuario_id;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-116.png)
 
 **Paso 3.** Las tres instrucciones que no deben dejar rastro (el historial sigue con 4):
 
@@ -3272,7 +3260,7 @@ WHERE nombre_usuario = N'alexbeats';
 SELECT COUNT(*) AS cambios_en_historial FROM dbo.historial_planes;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-117.png)
 
 **Paso 5.** Terminar la campaña (los cuatro vuelven a Free; el historial queda con 8 filas):
 
@@ -3286,7 +3274,7 @@ FROM dbo.historial_planes
 ORDER BY usuario_id, cambio_id;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-118.png)
 
 ---
 
@@ -3314,7 +3302,7 @@ END;
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-119.png)
 
 **Paso 2.** Cuenta de Soporte (solo puede ejecutar ese procedimiento):
 
@@ -3326,7 +3314,7 @@ GRANT EXECUTE ON OBJECT::dbo.usp_cambiar_plan TO svc_soporte;
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-120.png)
 
 **Paso 3.** Cambiar un plan como `svc_soporte` (el historial anota `svc_soporte` como autor):
 
@@ -3343,7 +3331,7 @@ FROM dbo.historial_planes
 ORDER BY cambio_id DESC;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-121.png)
 
 **Paso 4.** Intentar falsear o borrar el historial (dos **Msg 229**):
 
@@ -3359,7 +3347,7 @@ REVERT;
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-122.png)
 
 **Paso 5.** Devolver a marta_rock a su plan como `dbo` (el historial queda con 10 filas):
 
@@ -3369,7 +3357,7 @@ EXEC dbo.usp_cambiar_plan @nombre_usuario = N'marta_rock', @plan_nuevo = N'Free'
 SELECT COUNT(*) AS cambios_en_historial FROM dbo.historial_planes;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-123.png)
 
 > Procedimiento y trigger no compiten: el primero es la puerta y el segundo es la cámara.
 
@@ -3406,6 +3394,8 @@ END;
 GO
 ```
 
+![alt text](images-c15/image-124.png)
+
 **Reglas clave:** la pregunta se hace sobre el conjunto (`IF EXISTS` sobre `inserted`/`deleted`); si una fila incumple, se deshace la instrucción entera; en un trigger basta `THROW` (no hace falta `ROLLBACK`); no abrir transacciones propias; un `ROLLBACK` a secas da **Msg 3609**; un trigger solo valida lo que pasa mientras está activo.
 
 ### Ejemplo T7
@@ -3433,7 +3423,7 @@ GO
 SELECT COUNT(*) AS cambios_en_historial FROM dbo.historial_planes;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-125.png)
 
 **Paso 2.** La versión que se explica:
 
@@ -3453,7 +3443,7 @@ END;
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-126.png)
 
 **Paso 3.** Probar a borrar, modificar y borrar algo que no existe (cada prueba en su lote; dos **Msg 50101** y un `(0 rows affected)`):
 
@@ -3473,7 +3463,7 @@ GO
 SELECT COUNT(*) AS cambios_en_historial FROM dbo.historial_planes;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-127.png)
 
 > Este trigger no protege de un `DROP TABLE`: eso lo vigilan los triggers DDL (sección 5).
 
@@ -3502,7 +3492,7 @@ END;
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-128.png)
 
 **Paso 2.** Una reproducción imposible (900 s de una canción de 175; **Msg 50102**, sigue en 43):
 
@@ -3515,7 +3505,7 @@ GO
 SELECT COUNT(*) AS reproducciones FROM dbo.reproducciones;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-129.png)
 
 **Paso 3.** Un lote de tres filas con la imposible (no entra ninguna; sigue en 43):
 
@@ -3530,7 +3520,7 @@ GO
 SELECT COUNT(*) AS reproducciones FROM dbo.reproducciones;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-130.png)
 
 **Paso 4.** El mismo lote sin la fila mala (entran 2; total 45):
 
@@ -3544,7 +3534,7 @@ GO
 SELECT COUNT(*) AS reproducciones FROM dbo.reproducciones;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-131.png)
 
 **Paso 5.** El rechazo dentro de una transacción más grande (se deshace también el `UPDATE` del país):
 
@@ -3569,7 +3559,7 @@ FROM dbo.usuarios
 WHERE nombre_usuario = N'pau.synth';
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-132.png)
 
 **Paso 6.** Cómo lo ve quien llama desde un `TRY ... CATCH` (`ERROR_PROCEDURE()` devuelve el nombre del trigger):
 
@@ -3588,7 +3578,7 @@ BEGIN CATCH
 END CATCH;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-133.png)
 
 **Paso 7.** Retirar las dos reproducciones de prueba:
 
@@ -3596,6 +3586,8 @@ END CATCH;
 DELETE FROM dbo.reproducciones
 WHERE reproduccion_id > 43;
 ```
+
+![alt text](images-c15/image-134.png)
 
 > El trigger es la última línea de defensa, no el filtro: separar filas buenas y malas sigue siendo trabajo del staging del procedimiento.
 
@@ -3629,6 +3621,8 @@ END;
 GO
 ```
 
+![alt text](images-c15/image-135.png)
+
 **Reglas clave:** sobre una vista, `inserted`/`deleted` tienen las columnas de la vista; si escribe en su propia tabla, no se dispara a sí mismo; las restricciones se comprueban sobre lo que hace el trigger; solo un `INSTEAD OF` por tabla y operación; no se puede sobre una vista con `WITH CHECK OPTION`.
 
 ### Ejemplo T9
@@ -3652,7 +3646,7 @@ JOIN dbo.generos   AS g ON g.genero_id  = c.genero_id;
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-136.png)
 
 **Paso 2.** Intentar insertar por la vista (**Msg 4405**):
 
@@ -3661,7 +3655,7 @@ INSERT INTO dbo.v_catalogo (cancion_id, titulo, artista, genero, duracion_seg, f
 VALUES (116, N'Eclipse Parcial', N'Luna Roja', N'Pop', 192, '2026-09-25');
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-137.png)
 
 **Paso 3.** Explicárselo con un trigger `INSTEAD OF`:
 
@@ -3692,7 +3686,7 @@ END;
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-138.png)
 
 **Paso 4.** Dar de alta dos canciones de una vez por la vista:
 
@@ -3708,7 +3702,7 @@ WHERE cancion_id > 115
 ORDER BY cancion_id;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-139.png)
 
 **Paso 5.** Un artista que no existe (**Msg 50110**; canciones sigue en 17):
 
@@ -3720,7 +3714,7 @@ GO
 SELECT COUNT(*) AS canciones FROM dbo.canciones;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-140.png)
 
 **Paso 6.** Retirar las dos canciones de prueba:
 
@@ -3728,6 +3722,8 @@ SELECT COUNT(*) AS canciones FROM dbo.canciones;
 DELETE FROM dbo.canciones
 WHERE cancion_id > 115;
 ```
+
+![alt text](images-c15/image-141.png)
 
 ---
 
@@ -3742,7 +3738,7 @@ DELETE FROM dbo.usuarios
 WHERE nombre_usuario = N'pau.synth';
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-142.png)
 
 **Paso 2.** Tabla de bajas:
 
@@ -3761,7 +3757,7 @@ CREATE TABLE dbo.bajas_usuarios (
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-143.png)
 
 **Paso 3.** El trigger que sustituye al `DELETE`:
 
@@ -3790,7 +3786,7 @@ END;
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-144.png)
 
 **Paso 4.** Repetir el `DELETE` del Paso 1 sin cambiar una coma (tramita la baja: 41 reproducciones, 9 usuarios):
 
@@ -3806,7 +3802,7 @@ SELECT (SELECT COUNT(*) FROM dbo.reproducciones) AS reproducciones,
        (SELECT COUNT(*) FROM dbo.usuarios)       AS usuarios;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-145.png)
 
 **Paso 5.** Recuperar al usuario y sus reproducciones para conservar el punto de partida (43 y 10):
 
@@ -3828,7 +3824,7 @@ SELECT (SELECT COUNT(*) FROM dbo.reproducciones) AS reproducciones,
        (SELECT COUNT(*) FROM dbo.usuarios)       AS usuarios;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-146.png)
 
 > Un trigger es código que se ejecuta sin estar escrito donde se ejecuta: quien lea `DELETE FROM dbo.usuarios ...` no ve que también borra reproducciones.
 
@@ -3868,6 +3864,8 @@ ENABLE TRIGGER trg_ddl_proposito ON DATABASE;
 DROP TRIGGER IF EXISTS trg_ddl_proposito ON DATABASE;
 ```
 
+![alt text](images-c15/image-147.png)
+
 **Reglas clave:** el nombre no lleva esquema; grupos como `DDL_TABLE_EVENTS` y `DDL_VIEW_EVENTS`; las tablas temporales no disparan triggers DDL; un `THROW` deshace la operación; si el trigger falla, fallan todos los `CREATE`/`ALTER`/`DROP` que vigila; las rutas de `EVENTDATA()` distinguen mayúsculas.
 
 ### Ejemplo T11
@@ -3890,7 +3888,7 @@ CREATE TABLE dbo.log_cambios_esquema (
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-148.png)
 
 **Paso 2.** Trigger DDL (en el Object Explorer: *Programmability > Database Triggers*):
 
@@ -3912,7 +3910,7 @@ END;
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-149.png)
 
 **Paso 3.** Una tarde cualquiera (la tabla temporal no deja rastro):
 
@@ -3931,7 +3929,7 @@ DROP TABLE dbo.prueba_esquema;
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-150.png)
 
 **Paso 4.** Leer la bitácora (3 filas: `CREATE_TABLE`, `ALTER_TABLE`, `DROP_TABLE`):
 
@@ -3941,7 +3939,7 @@ FROM dbo.log_cambios_esquema
 ORDER BY cambio_id;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-151.png)
 
 ---
 
@@ -3959,7 +3957,7 @@ INTO dbo.reproducciones_respaldo
 FROM dbo.reproducciones;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-152.png)
 
 **Paso 2.** Trigger que protege las tablas:
 
@@ -3982,7 +3980,7 @@ END;
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-153.png)
 
 **Paso 3.** Intentar borrar la copia (**Msg 50120**; la tabla sigue con 43 filas y el intento no queda en la bitácora):
 
@@ -3998,7 +3996,7 @@ WHERE evento = N'DROP_TABLE'
   AND objeto = N'reproducciones_respaldo';
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-154.png)
 
 **Paso 4.** El resto de tablas se pueden seguir borrando:
 
@@ -4010,7 +4008,7 @@ DROP TABLE dbo.prueba_libre;
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-155.png)
 
 **Paso 5.** Para borrar la copia hay que querer hacerlo (desactivar, borrar, reactivar; `borrados_anotados` = 1):
 
@@ -4030,7 +4028,7 @@ WHERE evento = N'DROP_TABLE'
   AND objeto = N'reproducciones_respaldo';
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-156.png)
 
 ---
 
@@ -4091,7 +4089,7 @@ FROM sys.triggers
 ORDER BY sobre, name;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-157.png)
 
 **Paso 2.** Leer el código de uno de ellos:
 
@@ -4099,7 +4097,7 @@ ORDER BY sobre, name;
 EXEC sp_helptext N'dbo.trg_usuarios_baja';
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-158.png)
 
 **Paso 3.** Traducir tres instrucciones corrientes a lo que hacen de verdad:
 
@@ -4126,7 +4124,7 @@ FROM sys.triggers
 WHERE name = N'trg_usuarios_historial_planes';
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-159.png)
 
 **Paso 2.** Hacer el cambio y volver a activar (el plan cambia; el historial sigue en 10 filas; sin errores ni avisos):
 
@@ -4146,7 +4144,7 @@ WHERE nombre_usuario = N'kiara_perreo';
 SELECT COUNT(*) AS cambios_en_historial FROM dbo.historial_planes;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-160.png)
 
 **Paso 3.** Una semana después, kiara_perreo vuelve a Premium (el historial solo dice Familiar → Premium: falta el primer cambio, y no se puede reconstruir):
 
@@ -4161,7 +4159,7 @@ WHERE usuario_id = 10
 ORDER BY cambio_id;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-161.png)
 
 > Una auditoría con huecos no es una auditoría. Un trigger de auditoría no se desactiva; un mantenimiento que desactive uno de validación se planifica, se anota y se comprueba el inventario al terminar.
 
@@ -4226,7 +4224,7 @@ SELECT artista_id, nombre FROM dbo.altas_artistas;
 DROP TRIGGER IF EXISTS dbo.trg_artistas_alta;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-162.png)
 
 **Explicación:** al hacer el `DELETE`, `altas_artistas` conserva a los dos artistas. El trigger es `AFTER INSERT` y no interviene en los borrados.
 
@@ -4272,7 +4270,7 @@ GO
 DROP TRIGGER IF EXISTS dbo.trg_canciones_aviso;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-163.png)
 
 El aviso aparece **3 veces** (a, b y e):
 
@@ -4362,7 +4360,7 @@ DROP TRIGGER IF EXISTS dbo.trg_usuarios_conteo;
 DROP TABLE IF EXISTS dbo.conteo_trigger;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-164.png)
 
 **Explicación:** un `UPDATE` rellena las dos tablas con el mismo número de filas; un `INSERT` solo `inserted`; un `DELETE` solo `deleted`; y una instrucción que no toca nada dispara el trigger con 0 y 0.
 
@@ -4421,7 +4419,7 @@ UPDATE dbo.empleados SET puesto = N'Data Engineer' WHERE empleado_id IN (5, 6);
 UPDATE dbo.empleados SET jefe_id = 4 WHERE empleado_id = 7;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-165.png)
 
 **Explicación:** solo quedan los empleados 5 y 6 (Data Engineer → Senior Data Engineer). El cambio de jefe no menciona `puesto` (`UPDATE(puesto)` falso) y `SET puesto = puesto` lo menciona pero el `WHERE i.puesto <> d.puesto` descarta todas las filas.
 
@@ -4454,6 +4452,8 @@ END;
 GO
 ```
 
+![alt text](images-c15/image-166.png)
+
 **a)** Una fila:
 
 ```sql
@@ -4466,7 +4466,7 @@ SELECT cancion_id, total FROM dbo.contador_canciones WHERE cancion_id IN (103, 1
 SELECT COUNT(*) AS reproducciones FROM dbo.reproducciones;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-167.png)
 
 Funciona: una sola fila devuelve un único `cancion_id` en la subconsulta. *Perreo Lunar* pasa de 7 a 8.
 
@@ -4485,7 +4485,7 @@ SELECT cancion_id, total FROM dbo.contador_canciones WHERE cancion_id IN (103, 1
 SELECT COUNT(*) AS reproducciones FROM dbo.reproducciones;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-168.png)
 
 Error **Msg 512** (*Subquery returned more than 1 value*): el trigger de Pablo supone una sola fila. Al fallar, la instrucción entera se deshace: `reproducciones` sigue en 44 y los totales no cambian.
 
@@ -4523,9 +4523,7 @@ SELECT cancion_id, total FROM dbo.contador_canciones WHERE cancion_id IN (103, 1
 SELECT COUNT(*) AS reproducciones FROM dbo.reproducciones;
 ```
 
-<!-- CAPTURA -->
-
-Totales: canción 103 = 10, canción 108 = 3, `reproducciones` = 48. El anuncio (`cancion_id` NULL) se ignora.
+![alt text](images-c15/image-169.png)
 
 **d)** Borrar las reproducciones de prueba:
 
@@ -4541,7 +4539,7 @@ DROP TRIGGER IF EXISTS dbo.trg_reproducciones_contador;
 DROP TABLE IF EXISTS dbo.contador_canciones;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-170.png)
 
 El contador sigue marcando **10** para *Perreo Lunar*, pero de verdad tiene **7** reproducciones. El trigger es solo `AFTER INSERT`: no ve los borrados. Mantener totales con triggers obliga a cubrir **todas** las transiciones (`INSERT`, `UPDATE` y `DELETE`) o el total se descuadra sin avisar; por eso un resumen grande es mejor recalcularlo con un procedimiento.
 
@@ -4608,7 +4606,7 @@ GO
 DROP TRIGGER IF EXISTS dbo.trg_artistas_auditoria;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-171.png)
 
 **Salida esperada:** D 10 *Aurora Boreal & Cía*, D 11 *Trío Magnético*, I 10 *Aurora Boreal*, I 11 *Trío Magnético* y U 10 *Aurora Boreal & Cía*. El `UPDATE` sobre el artista 999 no deja nada (ninguna fila afectada).
 
@@ -4634,6 +4632,8 @@ BEGIN
 END;
 GO
 ```
+
+![alt text](images-c15/image-172.png)
 
 Pruebas (cada una en su lote):
 
@@ -4669,7 +4669,7 @@ GO
 DELETE FROM dbo.reproducciones WHERE reproduccion_id > 43;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-173.png)
 
 - **a)** Error **Msg 50130**: la reproducción es anterior al alta. Total: 43.
 - **b)** Error **Msg 50130**: la fila 45 incumple la regla y **tumba también a las dos válidas** (el trigger juzga la instrucción entera). Total: 43.
@@ -4720,7 +4720,7 @@ SELECT @@TRANCOUNT AS transacciones_abiertas,
        (SELECT COUNT(*) FROM dbo.artistas) AS artistas;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-174.png)
 
 **0 transacciones abiertas y 9 artistas.** El trigger falla en el segundo `INSERT`, el error deshace **toda** la transacción (también el primer artista) y termina el lote.
 
@@ -4745,7 +4745,7 @@ GO
 DELETE FROM dbo.artistas WHERE artista_id > 9;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-175.png)
 
 **10 artistas.** Cada instrucción es su propia transacción: el primer artista ya está confirmado cuando falla la reproducción; el error termina el lote, así que el segundo artista no llega a insertarse.
 
@@ -4766,9 +4766,7 @@ BEGIN CATCH
 END CATCH;
 ```
 
-<!-- CAPTURA -->
-
-Esperado: `50130 · dbo.trg_reproducciones_fecha_alta · Hay reproducciones anteriores a la fecha de alta de su usuario.`
+![alt text](images-c15/image-176.png)
 
 ---
 
@@ -4796,6 +4794,8 @@ CREATE TABLE dbo.altas_web_rechazadas (
 GO
 ```
 
+![alt text](images-c15/image-177.png)
+
 **a)** Primer lote, sin trigger:
 
 ```sql
@@ -4808,7 +4808,7 @@ GO
 SELECT COUNT(*) AS filas FROM dbo.altas_web;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-178.png)
 
 Error **Msg 547** (`CHECK`) y **0 filas** en `altas_web`: una sola instrucción es todo o nada, y `Family` o `Premiun` tumban también a la fila correcta.
 
@@ -4856,7 +4856,7 @@ END;
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-179.png)
 
 **c)** Repetir el primer lote, insertar el segundo y consultar:
 
@@ -4876,7 +4876,7 @@ SELECT email, pais, plan_suscripcion FROM dbo.altas_web ORDER BY email;
 SELECT email, pais, plan_suscripcion, motivo FROM dbo.altas_web_rechazadas ORDER BY email;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-180.png)
 
 **`altas_web`:** `ines.wave@mail.com` (CO, Familiar), `lola.pop@mail.com` (ES, Free), `teo.bass@mail.com` (ES, Free).
 **`altas_web_rechazadas`:** `rober.mx@mail.com` (MX, Premiun, *Plan no reconocido*) y `teo.bass@mail.com` (ES, Premium, *Email ya registrado*).
@@ -4897,6 +4897,8 @@ CREATE TABLE dbo.log_vistas (
 );
 GO
 ```
+
+![alt text](images-c15/image-181.png)
 
 **a)** Trigger de base de datos y prueba:
 
@@ -4934,7 +4936,7 @@ FROM dbo.log_vistas
 ORDER BY cambio_id;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-182.png)
 
 Esperado: 3 filas (`CREATE_VIEW`, `ALTER_VIEW`, `DROP_VIEW`, todas sobre `v_prueba_ddl`, usuario `dbo`). El `CREATE OR ALTER VIEW` de una vista ya existente cuenta como `ALTER_VIEW`.
 
@@ -4946,7 +4948,7 @@ Esperado: 3 filas (`CREATE_VIEW`, `ALTER_VIEW`, `DROP_VIEW`, todas sobre `v_prue
 DROP TRIGGER IF EXISTS trg_ddl_vistas ON DATABASE;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-183.png)
 
 ---
 
@@ -4965,7 +4967,7 @@ FROM sys.triggers
 WHERE parent_id = OBJECT_ID(N'dbo.reproducciones');
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-184.png)
 
 **b)** Desactivar y comprobar (`is_disabled` = 1):
 
@@ -4980,7 +4982,7 @@ FROM sys.triggers
 WHERE name = N'trg_reproducciones_fecha_alta';
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-185.png)
 
 **c)** Cargar las dos reproducciones históricas:
 
@@ -4992,7 +4994,7 @@ INSERT INTO dbo.reproducciones
 GO
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-186.png)
 
 **d)** Volver a activar y comprobar:
 
@@ -5005,7 +5007,7 @@ FROM sys.triggers
 WHERE name = N'trg_reproducciones_fecha_alta';
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-187.png)
 
 **No ha protestado:** `ENABLE TRIGGER` no revisa las filas que ya había. Las dos reproducciones incumplen la regla y siguen ahí, sin error ni aviso.
 
@@ -5018,7 +5020,7 @@ JOIN dbo.usuarios AS u ON u.usuario_id = r.usuario_id
 WHERE r.fecha_hora < u.fecha_alta;
 ```
 
-<!-- CAPTURA -->
+![alt text](images-c15/image-188.png)
 
 Esperado: la 51 (`lucia.m`, 2026-08-15, alta 2026-09-01) y la 52 (`kiara_perreo`, 2026-09-10, alta 2026-09-21).
 
@@ -5030,6 +5032,8 @@ Limpieza del ejercicio:
 DELETE FROM dbo.reproducciones WHERE reproduccion_id > 43;
 DROP TRIGGER IF EXISTS dbo.trg_reproducciones_fecha_alta;
 ```
+
+![alt text](images-c15/image-189.png)
 
 ---
 
@@ -5095,3 +5099,5 @@ GO
 -- Comprobación: debe devolver 0 filas
 SELECT name FROM sys.triggers;
 ```
+
+![alt text](images-c15/image-190.png)
