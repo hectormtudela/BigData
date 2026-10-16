@@ -107,7 +107,7 @@ GO
 
 **Resultado esperado:** 140 filas.
 
-📸 *Captura: resultado del COUNT.*
+![alt text](image-6.png)
 
 ### 4.5 Credencial y modelo externo de embeddings
 
@@ -141,8 +141,6 @@ WITH (
 GO
 ```
 
-📸 *Captura: ejecución correcta de ambos scripts.*
-
 ### 4.6 Añadir la columna vectorial y generar embeddings
 
 **Columna vectorial**
@@ -168,6 +166,8 @@ SELECT TOP 1
 FROM dbo.ProductReview r;
 GO
 ```
+
+![alt text](image-7.png)
 
 Si falla, comprobar que el rol de la identidad administrada ya se ha propagado (hasta 5 minutos).
 
@@ -218,7 +218,7 @@ GO
 
 Procesa 30 reseñas por lote con 2 s de pausa y hasta 3 reintentos de 5 s ante límites de tasa. Se concatenan nombre del producto, título y texto para que el embedding capture producto y experiencia. Puede tardar un par de minutos.
 
-📸 *Captura: ejecución del script de lotes.*
+![alt text](image-8.png)
 
 ### 4.7 Verificar e inspeccionar los embeddings
 
@@ -249,7 +249,7 @@ WHERE r.ReviewVector IS NOT NULL;
 GO
 ```
 
-Esperado: 1536 dimensiones, tipo base `float`, ≈ 6148 bytes.
+![alt text](image-9.png)
 
 **Muestra de valores**
 
@@ -265,7 +265,7 @@ GO
 
 El vector es un array JSON de 1536 números; aquí solo se ven los primeros 200 caracteres.
 
-📸 *Capturas: recuento, VECTORPROPERTY y vista previa.*
+![alt text](image-10.png)
 
 ### 4.8 Validar con una búsqueda vectorial básica
 
@@ -289,6 +289,8 @@ ORDER BY Distance;
 GO
 ```
 
+![alt text](image-11.png)
+
 Devuelve reseñas de neumáticos sobre durabilidad y resistencia a pinchazos aunque usen otras palabras. La distancia coseno va de 0 (idéntico) a 2 (opuesto).
 
 **Comparación con búsqueda por palabra clave**
@@ -307,7 +309,7 @@ GO
 
 `LIKE` solo encuentra la palabra exacta "puncture"; la búsqueda vectorial encuentra el concepto.
 
-📸 *Capturas: resultados de ambas búsquedas.*
+![alt text](image-12.png)
 
 ### 4.9 Mantenimiento de embeddings
 
@@ -329,6 +331,8 @@ WHERE r.ReviewID = 124;
 GO
 ```
 
+![alt text](image-13.png)
+
 **2) Cambiar el texto sin actualizar el embedding**
 
 ```sql
@@ -338,6 +342,8 @@ SET ReviewText = 'These tires are the most puncture-resistant tires I have ever 
 WHERE ReviewID = 124;
 GO
 ```
+
+![alt text](image-14.png)
 
 **3) Distancia con el embedding obsoleto**
 
@@ -355,6 +361,8 @@ WHERE r.ReviewID = 124;
 GO
 ```
 
+![alt text](image-15.png)
+
 La distancia sigue siendo pequeña: el vector aún representa los guantes, aunque el texto ya habla de neumáticos. Una búsqueda de guantes devolvería esta reseña por error.
 
 **4) Regenerar el embedding**
@@ -369,6 +377,8 @@ INNER JOIN SalesLT.Product p ON r.ProductID = p.ProductID
 WHERE r.ReviewID = 124;
 GO
 ```
+
+![alt text](image-16.png)
 
 **5) Comprobar la distancia tras regenerar**
 
@@ -385,6 +395,8 @@ FROM dbo.ProductReview r
 WHERE r.ReviewID = 124;
 GO
 ```
+
+![alt text](image-17.png)
 
 Ahora la distancia es mucho mayor: texto y vector vuelven a estar sincronizados. En producción se automatizaría con triggers, Change Tracking, Change Data Capture o un proceso externo (por ejemplo Azure Functions).
 
@@ -407,20 +419,20 @@ WHERE r.ReviewID = 124;
 GO
 ```
 
-📸 *Capturas: DistanceBefore, DistanceAfterTextChange y DistanceAfterRegeneration.*
+![alt text](image-18.png)
 
 ---
 
 ## 5. Resultados obtenidos
 
-| Prueba | Valor observado |
+| Prueba | Valor esperado |
 | --- | --- |
-| Reseñas totales | _(rellenar)_ |
-| Reseñas con embedding | _(rellenar)_ |
-| Dimensiones / tipo base / bytes | _(rellenar)_ |
-| DistanceBefore (reseña 124) | _(rellenar)_ |
-| DistanceAfterTextChange | _(rellenar)_ |
-| DistanceAfterRegeneration | _(rellenar)_ |
+| Reseñas totales | 140 |
+| Reseñas con embedding | 140 (0 sin embedding) |
+| Dimensiones / tipo base / bytes | 1536 / float / ≈ 6148 |
+| DistanceBefore (reseña 124) | Pequeña: el vector representa guantes de invierno |
+| DistanceAfterTextChange | Pequeña, casi igual que la anterior: el embedding está obsoleto |
+| DistanceAfterRegeneration | Mucho mayor: el vector ya representa neumáticos |
 
 ## 6. Conclusiones
 
