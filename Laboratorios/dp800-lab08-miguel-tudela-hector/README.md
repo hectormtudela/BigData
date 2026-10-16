@@ -40,7 +40,7 @@ USE ProductCatalog;
 GO
 ```
 
-![alt text](image.png)
+![alt text](images/image.png)
 
 ### 1.3 Crear tablas y vista
 
@@ -84,7 +84,7 @@ WHERE p.Discontinued = 0;
 GO
 ```
 
-![alt text](image-1.png)
+![alt text](images/image-1.png)
 
 ### 1.4 Insertar datos de ejemplo
 
@@ -106,7 +106,7 @@ INSERT INTO dbo.Products (ProductName, CategoryID, UnitPrice, UnitsInStock) VALU
 GO
 ```
 
-![alt text](image-2.png)
+![alt text](images/image-2.png)
 
 ### 1.5 Verificación
 
@@ -116,7 +116,7 @@ SELECT * FROM dbo.Products;
 SELECT * FROM dbo.ProductCatalogView;
 ```
 
-![alt text](image-3.png)
+![alt text](images/image-3.png)
 
 ---
 
@@ -142,7 +142,7 @@ Abrir una terminal o símbolo del sistema y ejecutar:
 dotnet tool install --global Microsoft.DataApiBuilder
 ```
  
-![alt text](image-4.png)
+![alt text](images/image-4.png)
  
 ### 2.3 Verificar la instalación
  
@@ -152,7 +152,7 @@ dab --version
  
 Debe mostrarse el número de versión, lo que confirma que la CLI está instalada y disponible en el `PATH`.
  
-![alt text](image-5.png)
+![alt text](images/image-5.png)
 
 ---
  
@@ -177,7 +177,7 @@ dab init --database-type mssql --connection-string "@env('DATABASE_CONNECTION_ST
  
 Este comando crea el archivo `dab-config.json`. La sintaxis `@env()` hace que DAB lea la cadena de conexión desde una variable de entorno en tiempo de ejecución, de modo que **no se guardan credenciales en el archivo**.
  
-![alt text](image-7.png)
+![alt text](images/image-7.png)
  
 ### 3.3 Revisar `dab-config.json`
  
@@ -207,7 +207,7 @@ Puntos a comprobar (el archivo real puede tener más propiedades según la versi
 - `entities` vacío por ahora
 
 
-![alt text](image-8.png)  
+![alt text](images/image-8.png)  
 
 ---
  
@@ -237,7 +237,7 @@ dab update Product --permissions "authenticated:*"
  
 Así `Product` permite lectura anónima y todas las acciones (crear, leer, actualizar, borrar) al rol `authenticated`.
  
-![alt text](image-9.png)
+![alt text](images/image-9.png)
  
 ### 4.4 Revisar `dab-config.json`
 
@@ -261,7 +261,7 @@ La sección `entities` debe quedar así (puede variar ligeramente según el ento
 }
 ```
  
-![alt text](image-10.png)
+![alt text](images/image-10.png)
  
 ---
  
@@ -360,7 +360,7 @@ dab add ProductCatalog --source dbo.ProductCatalogView --source.type view --sour
  
 `--source.key-fields` es necesario porque DAB no puede detectar automáticamente las claves primarias de una vista.
  
-![alt text](image-11.png)
+![alt text](images/image-11.png)
  
 ### 6.2 Verificar `dab-config.json`
  
@@ -382,7 +382,7 @@ Debe aparecer una nueva entidad `ProductCatalog` de tipo `view`, con la clave `P
  
 > En DAB 2.1.5 el archivo generado puede variar ligeramente (por ejemplo, la clave puede aparecer como `primary-key` dentro de `fields`).
  
-![alt text](image-12.png)
+![alt text](images/image-12.png)
 
 ---
 
@@ -438,7 +438,7 @@ $env:DATABASE_CONNECTION_STRING="Server=<tu-servidor>.database.windows.net;Datab
 dab start
 ```
  
-![alt text](image-13.png)
+![alt text](images/image-13.png)
  
 ### 7.4 Probar el endpoint REST
  
@@ -446,7 +446,7 @@ En el navegador, abrir `http://localhost:5000/api/Product` (usar el puerto que i
  
 Debe devolver un JSON con los productos usando los nombres mapeados: `id`, `name`, `price`, `stockQuantity` e `isDiscontinued`.
  
-![alt text](image-14.png)
+![alt text](images/image-14.png)
  
 ### 7.5 Probar GraphQL
  
@@ -469,9 +469,9 @@ query {
  
 La respuesta incluye cada producto con el nombre de su categoría, lo que demuestra que la relación configurada funciona.
  
-![alt text](image-15.png)
+![alt text](images/image-15.png)
  
-![alt text](image-16.png)
+![alt text](images/image-16.png)
 
 ### 7.6 Parar el servidor
  
@@ -491,7 +491,7 @@ Parar `dab start` con `Ctrl+C` si sigue en ejecución (si no, puede dar error al
 Remove-Item Env:DATABASE_CONNECTION_STRING
 ```
  
-![alt text](image-17.png)
+![alt text](images/image-17.png)
 
 ### 8.2 Eliminar la base de datos
  
@@ -502,7 +502,7 @@ DROP DATABASE IF EXISTS ProductCatalog;
 GO
 ```
  
-![alt text](image-18.png)
+![alt text](images/image-18.png)
  
 ### 8.3 Eliminar el directorio del proyecto
  
