@@ -1,9 +1,5 @@
 # Laboratorio 08 – Integrar soluciones SQL con servicios de Azure (DP-800)
 
-**Autor:** Héctor Miguel Tudela
-**Fecha de inicio:** 15/10/2026
-**Enunciado:** [Integrate SQL solutions with Azure services](https://microsoftlearning.github.io/mslearn-sql-developer/Instructions/Labs/08-integrate-sql-solutions-azure-services.html)
-
 ## Objetivo
 
 Crear una configuración de **Data API Builder (DAB)** para una base de datos de catálogo de productos (`ProductCatalog`), exponer tablas y vistas como entidades mediante endpoints **REST** y **GraphQL**, y verificar que la API funciona correctamente.
