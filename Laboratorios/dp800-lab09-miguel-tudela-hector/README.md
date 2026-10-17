@@ -52,7 +52,7 @@ Crear una referencia a un modelo externo (Azure OpenAI), generar embeddings a pa
 10. En **Data source** → **Use existing data** = **Sample** (crea AdventureWorksLT).
 11. **Review + create** → **Create** y esperar al despliegue.
 
-![Recurso desplegado](image.png)
+![Recurso desplegado](images/image.png)
 
 ### 4.2 Crear el proyecto de Foundry y desplegar los modelos
 
@@ -61,7 +61,7 @@ Crear una referencia a un modelo externo (Azure OpenAI), generar embeddings a pa
 1. Ir a [Microsoft Foundry](https://ai.azure.com) (con el interruptor **New Foundry** activado).
 2. Crear proyecto `proj-sqlailab`, en **Advanced options** usar la misma suscripción y grupo de recursos que la base de datos y una región con modelos de Azure OpenAI → **Create**.
 
-![alt text](image-1.png)
+![alt text](images/image-1.png)
 
 **Modelos**
 
@@ -69,7 +69,7 @@ Crear una referencia a un modelo externo (Azure OpenAI), generar embeddings a pa
 2. **Discover** → buscar `text-embedding-3-small` → **Deploy** → **Default settings** → mismo proyecto.
 3. **Build** → **Models** para comprobar que aparecen ambos despliegues.
 
-![alt text](image-2.png)
+![alt text](images/image-2.png)
 
 **Endpoint**
 
@@ -77,7 +77,7 @@ Crear una referencia a un modelo externo (Azure OpenAI), generar embeddings a pa
 2. **Resource Management** → **Keys and Endpoint** → pestaña **OpenAI** (no la de Foundry).
 3. Anotar el endpoint, por ejemplo `https://proj-sqlailab-resource.openai.azure.com/`. El nombre necesario es `proj-sqlailab-resource`.
 
-![alt text](image-3.png)
+![alt text](images/image-3.png)
 
 ### 4.3 Configurar el acceso con identidad administrada
 
@@ -90,9 +90,9 @@ Crear una referencia a un modelo externo (Azure OpenAI), generar embeddings a pa
 
 > La asignación puede tardar hasta 5 minutos en surtir efecto.
 
-![alt text](image-4.png)
+![alt text](images/image-4.png)
 
-![alt text](image-5.png)
+![alt text](images/image-5.png)
 
 ### 4.4 Crear la tabla ProductReview
 
@@ -107,7 +107,7 @@ GO
 
 **Resultado esperado:** 140 filas.
 
-![alt text](image-6.png)
+![alt text](images/image-6.png)
 
 ### 4.5 Credencial y modelo externo de embeddings
 
@@ -167,7 +167,7 @@ FROM dbo.ProductReview r;
 GO
 ```
 
-![alt text](image-7.png)
+![alt text](images/image-7.png)
 
 Si falla, comprobar que el rol de la identidad administrada ya se ha propagado (hasta 5 minutos).
 
@@ -218,7 +218,7 @@ GO
 
 Procesa 30 reseñas por lote con 2 s de pausa y hasta 3 reintentos de 5 s ante límites de tasa. Se concatenan nombre del producto, título y texto para que el embedding capture producto y experiencia. Puede tardar un par de minutos.
 
-![alt text](image-8.png)
+![alt text](images/image-8.png)
 
 ### 4.7 Verificar e inspeccionar los embeddings
 
@@ -249,7 +249,7 @@ WHERE r.ReviewVector IS NOT NULL;
 GO
 ```
 
-![alt text](image-9.png)
+![alt text](images/image-9.png)
 
 **Muestra de valores**
 
@@ -265,7 +265,7 @@ GO
 
 El vector es un array JSON de 1536 números; aquí solo se ven los primeros 200 caracteres.
 
-![alt text](image-10.png)
+![alt text](images/image-10.png)
 
 ### 4.8 Validar con una búsqueda vectorial básica
 
@@ -289,7 +289,7 @@ ORDER BY Distance;
 GO
 ```
 
-![alt text](image-11.png)
+![alt text](images/image-11.png)
 
 Devuelve reseñas de neumáticos sobre durabilidad y resistencia a pinchazos aunque usen otras palabras. La distancia coseno va de 0 (idéntico) a 2 (opuesto).
 
@@ -309,7 +309,7 @@ GO
 
 `LIKE` solo encuentra la palabra exacta "puncture"; la búsqueda vectorial encuentra el concepto.
 
-![alt text](image-12.png)
+![alt text](images/image-12.png)
 
 ### 4.9 Mantenimiento de embeddings
 
@@ -331,7 +331,7 @@ WHERE r.ReviewID = 124;
 GO
 ```
 
-![alt text](image-13.png)
+![alt text](images/image-13.png)
 
 **2) Cambiar el texto sin actualizar el embedding**
 
@@ -343,7 +343,7 @@ WHERE ReviewID = 124;
 GO
 ```
 
-![alt text](image-14.png)
+![alt text](images/image-14.png)
 
 **3) Distancia con el embedding obsoleto**
 
@@ -361,7 +361,7 @@ WHERE r.ReviewID = 124;
 GO
 ```
 
-![alt text](image-15.png)
+![alt text](images/image-15.png)
 
 La distancia sigue siendo pequeña: el vector aún representa los guantes, aunque el texto ya habla de neumáticos. Una búsqueda de guantes devolvería esta reseña por error.
 
@@ -378,7 +378,7 @@ WHERE r.ReviewID = 124;
 GO
 ```
 
-![alt text](image-16.png)
+![alt text](images/image-16.png)
 
 **5) Comprobar la distancia tras regenerar**
 
@@ -396,7 +396,7 @@ WHERE r.ReviewID = 124;
 GO
 ```
 
-![alt text](image-17.png)
+![alt text](images/image-17.png)
 
 Ahora la distancia es mucho mayor: texto y vector vuelven a estar sincronizados. En producción se automatizaría con triggers, Change Tracking, Change Data Capture o un proceso externo (por ejemplo Azure Functions).
 
@@ -419,7 +419,7 @@ WHERE r.ReviewID = 124;
 GO
 ```
 
-![alt text](image-18.png)
+![alt text](images/image-18.png)
 
 ---
 
