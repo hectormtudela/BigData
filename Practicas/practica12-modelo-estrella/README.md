@@ -1655,6 +1655,8 @@ LEFT JOIN silver.erp_loc_a101 la
 GO
 ```
 
+![alt text](image-30.png)
+
 > 💡 **¿Por qué `LEFT JOIN`?** La tabla maestra es la de clientes del CRM. Si un cliente no tuviera datos en el ERP, con un `INNER JOIN` desaparecería del DWH. Con `LEFT JOIN` lo conservamos y sus columnas del ERP quedan a `NULL`.
 
 > 💡 **`DROP VIEW` + `CREATE VIEW`.** Igual que con las tablas, el script comprueba si la vista existe (`'V'` = vista) y la elimina antes de crearla. Así se puede ejecutar el script entero cada vez que cambies una vista.
@@ -1725,6 +1727,8 @@ LEFT JOIN gold.dim_customers cu
     ON sd.sls_cust_id = cu.customer_id;
 GO
 ```
+
+![alt text](image-31.png)
 
 Observa el **orden de las columnas**: primero las claves, después las fechas y por último las métricas. Es la convención habitual en las tablas de hechos y facilita su lectura.
 
@@ -1801,6 +1805,8 @@ SELECT
     (SELECT COUNT(*) FROM gold.fact_sales)          AS filas_gold;     -- 60.398
 ```
 
+![alt text](image-32.png)
+
 > ⚠️ **Sobre las claves subrogadas en vistas.** `ROW_NUMBER()` se recalcula en cada consulta. Es válido aquí porque el orden es determinista y no hay historificación. En un entorno productivo, las dimensiones suelen materializarse en tablas con una columna `IDENTITY` para que las claves sean estables entre cargas.
 
 ---
@@ -1818,7 +1824,7 @@ EXEC silver.load_silver;   -- 2. Bronze → Silver
 -- 3. Gold no se carga: son vistas y reflejan Silver al instante
 ```
 
-Negocio quiere los datos actualizados cada mañana antes de que empiece la jornada. Para no depender de que alguien ejecute los procedimientos a mano, creamos un **trabajo de SQL Server Agent** con dos pasos encadenados y una programación diaria.
+![alt text](image-33.png)
 
 ### 10.1 Crear el trabajo con T-SQL
 
@@ -1881,6 +1887,8 @@ EXEC dbo.sp_add_jobserver
     @server_name = N'(local)';
 GO
 ```
+
+![alt text](image-34.png)
 
 > 🧠 **Por qué dos pasos y no uno.** Si Bronze falla (por ejemplo, porque falta un CSV), no tiene sentido ejecutar Silver: transformaría datos incompletos. Con `@on_fail_action = 2` el trabajo se detiene en el paso que falla y el historial nos dice exactamente dónde.
 
@@ -1965,9 +1973,7 @@ SELECT
 FROM gold.fact_sales;
 ```
 
-| ventas_totales | unidades_vendidas | pedidos | clientes_con_compras |
-| --- | --- | --- | --- |
-| 29.356.250 | 60.423 | 27.659 | 18.484 |
+![alt text](image-35.png)
 
 ### 11.2 Rendimiento de productos: ventas por categoría
 
@@ -1982,11 +1988,7 @@ GROUP BY p.category
 ORDER BY ventas DESC;
 ```
 
-| category | ventas | pct_total |
-| --- | --- | --- |
-| Bikes | 28.316.272 | 96,46 |
-| Accessories | 700.262 | 2,39 |
-| Clothing | 339.716 | 1,16 |
+![alt text](image-36.png)
 
 > 📊 **Lectura de negocio.** Las bicicletas generan más del 96 % de la facturación. La empresa depende casi por completo de una sola categoría.
 
@@ -2003,15 +2005,7 @@ GROUP BY c.country
 ORDER BY ventas DESC;
 ```
 
-| country | clientes | ventas |
-| --- | --- | --- |
-| United States | 7.482 | 9.162.327 |
-| Australia | 3.591 | 9.060.172 |
-| United Kingdom | 1.913 | 3.391.376 |
-| Germany | 1.780 | 2.894.066 |
-| France | 1.810 | 2.643.751 |
-| Canada | 1.571 | 1.977.738 |
-| n/a | 337 | 226.820 |
+![alt text](image-37.png)
 
 > 📊 **Lectura de negocio.** Australia, con menos de la mitad de clientes que Estados Unidos, factura prácticamente lo mismo. Merece un análisis del ticket medio por país.
 
@@ -2028,13 +2022,7 @@ GROUP BY YEAR(order_date)
 ORDER BY anio;
 ```
 
-| anio | ventas | clientes |
-| --- | --- | --- |
-| 2010 | 43.419 | 14 |
-| 2011 | 7.075.088 | 2.216 |
-| 2012 | 5.842.231 | 3.255 |
-| 2013 | 16.344.878 | 17.427 |
-| 2014 | 45.642 | 834 |
+![alt text](image-38.png)
 
 > ⚠️ **Cuidado con la interpretación.** 2010 y 2014 **no son años completos**: los datos empiezan a finales de diciembre de 2010 y terminan en enero de 2014. Compararlos con el resto llevaría a conclusiones falsas. Es un buen ejemplo de por qué el analista debe conocer el alcance de los datos. Además, la consulta excluye las 19 ventas sin fecha de pedido (`order_date` nula), así que la suma de los años es algo menor que el total de la 11.1.
 
@@ -2051,7 +2039,7 @@ GROUP BY p.product_name, p.subcategory
 ORDER BY ventas DESC;
 ```
 
-Los cinco primeros son variantes de la **Mountain-200**, encabezados por *Mountain-200 Black- 46* con 1.373.454.
+![alt text](image-39.png)
 
 ### 11.6 Perfil de clientes
 
@@ -2065,14 +2053,7 @@ GROUP BY gender, marital_status
 ORDER BY gender, marital_status;
 ```
 
-| gender | marital_status | clientes |
-| --- | --- | --- |
-| Female | Married | 4.743 |
-| Female | Single | 4.385 |
-| Male | Married | 5.260 |
-| Male | Single | 4.081 |
-| n/a | Married | 8 |
-| n/a | Single | 7 |
+![alt text](image-40.png)
 
 > 📊 **Lectura de negocio.** Gracias a la integración con el ERP, Marketing pasa de no conocer el género de una cuarta parte de los clientes a desconocerlo solo en 15. La base de clientes está equilibrada, con algo más de clientes casados que solteros.
 
@@ -2086,7 +2067,7 @@ WHERE sales_amount IS NULL
    OR sales_amount != quantity * price;
 ```
 
-**Resultado esperado:** `0`. En origen había 35 líneas con importes o precios nulos, negativos o que no cuadraban. Ahora el Controller puede usar `sales_amount` sin hacer comprobaciones propias.
+![alt text](image-41.png)
 
 ---
 
@@ -2114,33 +2095,6 @@ Ejemplo de entrada del **catálogo de datos** para `gold.dim_customers`:
 | marital_status | NVARCHAR(50) | Estado civil: `Married`, `Single` o `n/a` |
 | gender | NVARCHAR(50) | Género: `Male`, `Female` o `n/a`. Prioridad CRM, si no ERP |
 | birthdate | DATE | Fecha de nacimiento (`YYYY-MM-DD`) |
-
-> ⚠️ **La documentación también hay que mantenerla.** En el `data_catalog.md` del proyecto, la columna de mantenimiento de `gold.dim_products` se llama `maintenance_required`, pero en el modelo de datos (`data_model.png`) y en la vista se llama `maintenance`. Es un desajuste típico entre documentación y código. Cuando cambies una vista, actualiza también el catálogo en el mismo commit.
-
-Y en cada hito, un commit con un mensaje que explique **qué** se hizo:
-
-```bash
-git add scripts/silver/
-git commit -m "Silver: limpieza de clientes, productos y ventas + procedimiento load_silver"
-```
-
-> 🤖 **Prompt para generar el catálogo con IA.** Copia el código de tus vistas Gold y pega este prompt:
->
-> ```
-> Actúa como ingeniero de datos senior. A partir del código SQL de estas vistas de la capa Gold
-> de un Data Warehouse, genera un catálogo de datos en Markdown. Para cada vista indica su
-> propósito en una frase y una tabla con: nombre de columna, tipo de dato, descripción de
-> negocio clara y un ejemplo de valor. Indica también de qué tabla Silver procede cada columna.
-> [PEGA AQUÍ EL CÓDIGO DE LAS VISTAS]
-> ```
->
-> Revisa siempre el resultado: la IA no conoce las reglas de negocio que acordaste con los usuarios.
-
----
-
-## Sección 13: Ejercicios propuestos (enunciado y solución)
-
-Cada ejercicio incluye su **enunciado** y, a continuación, su **solución**.
 
 ---
 
