@@ -525,16 +525,9 @@ SELECT 'erp_loc_a101',               COUNT(*)          FROM bronze.erp_loc_a101 
 SELECT 'erp_px_cat_g1v2',            COUNT(*)          FROM bronze.erp_px_cat_g1v2;
 ```
 
-**Resultado esperado:**
+![alt text](image-5.png)
+![alt text](image-6.png)
 
-| tabla | filas |
-| --- | --- |
-| crm_cust_info | 18.494 |
-| crm_prd_info | 397 |
-| crm_sales_details | 60.398 |
-| erp_cust_az12 | 18.484 |
-| erp_loc_a101 | 18.484 |
-| erp_px_cat_g1v2 | 37 |
 
 > 🔍 **Fíjate en el bloque `CATCH`.** Cuando algo falla (por ejemplo, falta un CSV), el procedimiento muestra el error con `PRINT`, pero **no lo vuelve a lanzar**. Para quien lo ejecuta, el procedimiento termina "con éxito" aunque la carga haya fallado. Mientras lo ejecutes tú a mano y leas los mensajes no es un problema, pero sí lo será cuando lo programemos en la Sección 10. Allí veremos cómo corregirlo con una sola línea.
 >
@@ -658,6 +651,8 @@ CREATE TABLE silver.erp_px_cat_g1v2 (
 GO
 ```
 
+![alt text](image-7.png)
+
 ### 8.2 Catálogo de técnicas de transformación
 
 Estas son las técnicas que vamos a aplicar. Todas aparecen en el mapa de métodos ETL del proyecto:
@@ -685,17 +680,13 @@ GROUP BY cst_id
 HAVING COUNT(*) > 1 OR cst_id IS NULL;
 ```
 
-Devuelve **6 filas**: **5 clientes duplicados** y un grupo con `cst_id` nulo que reúne **4 filas sin identificador**. Veamos uno de los duplicados:
+![alt text](image-8.png)
 
 ```sql
 SELECT * FROM bronze.crm_cust_info WHERE cst_id = 29466 ORDER BY cst_create_date;
 ```
 
-| cst_id | cst_key | cst_firstname | cst_lastname | cst_marital_status | cst_gndr | cst_create_date |
-| --- | --- | --- | --- | --- | --- | --- |
-| 29466 | AW00029466 | NULL | NULL | NULL | NULL | 2026-01-25 |
-| 29466 | AW00029466 | Lance | Jimenez | M | NULL | 2026-01-26 |
-| 29466 | AW00029466 | Lance | Jimenez | M | M | 2026-01-27 |
+![alt text](image-9.png)
 
 El registro **más reciente es el más completo**. Esa será nuestra regla: por cada cliente, nos quedamos con la fila de `cst_create_date` más reciente.
 
@@ -708,6 +699,8 @@ SELECT cst_lastname  FROM bronze.crm_cust_info WHERE cst_lastname  != TRIM(cst_l
 SELECT DISTINCT cst_marital_status FROM bronze.crm_cust_info;  -- M, S, NULL
 SELECT DISTINCT cst_gndr           FROM bronze.crm_cust_info;  -- M, F, NULL
 ```
+
+![alt text](image-10.png)
 
 > ⚠️ **SQL Server no ve los espacios finales al comparar.** Al comparar textos con `=` o `!=`, SQL Server ignora los espacios **al final** (`'Yang '` es igual a `'Yang'`). Por eso la consulta anterior solo detecta los espacios **al principio**. Para ver todos, compara la longitud en bytes, que sí cuenta los espacios finales:
 >
@@ -758,6 +751,8 @@ FROM (
 WHERE flag_last = 1; -- Select the most recent record per customer
 ```
 
+![alt text](image-11.png)
+
 > 🧠 **¿Por qué `UPPER(TRIM(...))` si los datos ya vienen en mayúsculas?** Programamos a la defensiva: si mañana el CRM envía `' m'`, la regla sigue funcionando. Y usamos `'n/a'` en vez de `NULL` para que los informes muestren un valor explícito en lugar de un hueco.
 
 **Comprobar.** Repite las consultas de detección contra `silver.crm_cust_info`: no deben devolver filas.
@@ -780,10 +775,7 @@ SELECT prd_key,
 FROM bronze.crm_prd_info;
 ```
 
-| prd_key | parte_categoria | parte_producto |
-| --- | --- | --- |
-| CO-RF-FR-R92B-58 | CO-RF | FR-R92B-58 |
-| AC-HE-HL-U509-R | AC-HE | HL-U509-R |
+![alt text](image-12.png)
 
 En el ERP la categoría es `CO_RF` (con guion bajo), y en ventas el producto es `FR-R92B-58`. Separar la clave nos permitirá **unir ambos sistemas**.
 
@@ -803,13 +795,7 @@ FROM bronze.crm_prd_info
 WHERE prd_end_dt < prd_start_dt;                   -- 200 filas
 ```
 
-Ese último resultado es grave. Mira el histórico de un mismo producto:
-
-| prd_key | prd_start_dt | prd_end_dt |
-| --- | --- | --- |
-| AC-HE-HL-U509-R | 2011-07-01 | 2007-12-28 ❌ |
-| AC-HE-HL-U509-R | 2012-07-01 | 2008-12-27 ❌ |
-| AC-HE-HL-U509-R | 2013-07-01 | NULL |
+![alt text](image-13.png)
 
 Como en Bronze estas columnas son `DATETIME`, SSMS mostrará también la hora (`2011-07-01 00:00:00.000`). Aquí la omitimos para leer mejor.
 
@@ -861,12 +847,7 @@ FROM bronze.crm_prd_info;
 
 > 💡 **Detalle técnico.** Recuerda que en Bronze `prd_start_dt` es `DATETIME`. Con `DATETIME` se puede restar un número, que se interpreta en días: `LEAD(prd_start_dt) ... - 1` es el día anterior al inicio de la siguiente versión. Después, `CAST(... AS DATE)` quita la hora. Con el tipo `DATE` esa resta daría error y habría que usar `DATEADD(DAY, -1, ...)`.
 
-| Resultado esperado en Silver | Valor |
-| --- | --- |
-| Filas | 397 |
-| Productos con `prd_end_dt < prd_start_dt` | 0 |
-| Versiones vigentes (`prd_end_dt IS NULL`) | 295 |
-| `prd_line` | Road 162 · Mountain 112 · Other Sales 54 · Touring 52 · n/a 17 |
+![alt text](image-14.png)
 
 ### 8.5 `crm_sales_details`: ventas
 
@@ -879,11 +860,7 @@ WHERE sls_order_dt <= 0 OR LEN(sls_order_dt) != 8
 GROUP BY sls_order_dt;
 ```
 
-| sls_order_dt | filas |
-| --- | --- |
-| 0 | 17 |
-| 5489 | 1 |
-| 32154 | 1 |
+![alt text](image-15.png)
 
 Repite la consulta con `sls_ship_dt` y `sls_due_dt` (están limpias) y comprueba también la lógica temporal:
 
@@ -891,6 +868,8 @@ Repite la consulta con `sls_ship_dt` y `sls_due_dt` (están limpias) y comprueba
 SELECT * FROM bronze.crm_sales_details
 WHERE sls_order_dt > sls_ship_dt OR sls_order_dt > sls_due_dt;   -- 0 filas
 ```
+
+![alt text](image-16.png)
 
 **Detectar importes incoherentes.** La regla de negocio es **Ventas = Cantidad × Precio**:
 
@@ -902,6 +881,8 @@ WHERE sls_sales != sls_quantity * sls_price
    OR sls_sales <= 0    OR sls_quantity <= 0    OR sls_price <= 0
 ORDER BY sls_sales, sls_quantity, sls_price;
 ```
+
+![alt text](image-17.png)
 
 Aparecen ventas nulas, precios nulos, **precios negativos** y ventas que no cuadran con cantidad × precio.
 
@@ -956,6 +937,8 @@ SELECT
 FROM bronze.crm_sales_details;
 ```
 
+![alt text](image-18.png)
+
 > 🧠 **Doble `CAST`.** En SQL Server no se puede convertir directamente un `INT` a `DATE`. Primero pasamos el número a texto (`'20101229'`) y luego el texto a fecha. `CAST(... AS VARCHAR)` sin longitud usa 30 caracteres, de sobra para 8 dígitos. `NULLIF(sls_quantity, 0)` evita un error de división por cero si algún día llega una cantidad 0.
 
 | Resultado esperado en Silver | Valor |
@@ -981,6 +964,8 @@ WHERE bdate < '1924-01-01' OR bdate > GETDATE();       -- Hay cumpleaños en 204
 SELECT DISTINCT '[' + gen + ']' AS gen FROM bronze.erp_cust_az12;
 -- [Male], [Female], [M], [F], [ ], NULL
 ```
+
+![alt text](image-19.png)
 
 > 🗣️ **Decisión de negocio.** Las fechas **futuras** son imposibles: las convertimos en `NULL`. Las **muy antiguas** (clientes de más de 100 años) son sospechosas, pero posibles; las mantenemos y las señalamos al responsable del ERP.
 
@@ -1011,12 +996,7 @@ SELECT
 FROM bronze.erp_cust_az12;
 ```
 
-| Resultado esperado en Silver | Valor |
-| --- | --- |
-| Filas | 18.484 |
-| `cid` que no existen en `silver.crm_cust_info` | 0 |
-| Fechas de nacimiento futuras | 0 (16 convertidas en `NULL`) |
-| `gen` | Male 8.612 · Female 8.396 · n/a 1.476 |
+![alt text](image-20.png)
 
 Comprueba la integración con el CRM:
 
@@ -1025,6 +1005,8 @@ SELECT cid FROM silver.erp_cust_az12
 WHERE cid NOT IN (SELECT cst_key FROM silver.crm_cust_info);   -- 0 filas
 ```
 
+![alt text](image-21.png)
+
 ### 8.7 `erp_loc_a101`: país del cliente
 
 **Detectar.**
@@ -1032,6 +1014,8 @@ WHERE cid NOT IN (SELECT cst_key FROM silver.crm_cust_info);   -- 0 filas
 ```sql
 SELECT DISTINCT cntry FROM bronze.erp_loc_a101 ORDER BY cntry;
 ```
+
+![alt text](image-22.png)
 
 Un mismo país aparece escrito de varias formas: `United States`, `USA` y `US`; `Germany` y `DE`. Además hay valores vacíos y con solo espacios. Y la clave lleva un guion: `AW-00011000`.
 
@@ -1057,15 +1041,7 @@ FROM bronze.erp_loc_a101;
 
 **Resultado esperado** de `SELECT cntry, COUNT(*) FROM silver.erp_loc_a101 GROUP BY cntry`:
 
-| cntry | clientes |
-| --- | --- |
-| United States | 7.482 |
-| Australia | 3.591 |
-| United Kingdom | 1.913 |
-| France | 1.810 |
-| Germany | 1.780 |
-| Canada | 1.571 |
-| n/a | 337 |
+![alt text](image-23.png)
 
 ### 8.8 `erp_px_cat_g1v2`: categorías de producto
 
@@ -1078,7 +1054,7 @@ WHERE cat != TRIM(cat) OR subcat != TRIM(subcat) OR maintenance != TRIM(maintena
 SELECT DISTINCT maintenance FROM bronze.erp_px_cat_g1v2;   -- Yes, No
 ```
 
-Esta tabla ya está limpia. **No todas las tablas necesitan transformaciones**, y está bien comprobarlo y documentarlo.
+![alt text](image-24.png)
 
 ```sql
 -- Extracto de scripts/silver/proc_load_silver.sql
@@ -1097,6 +1073,8 @@ SELECT
 FROM bronze.erp_px_cat_g1v2;
 ```
 
+![alt text](image-25.png)
+
 Antes de pasar a Gold, una comprobación de integración que nos dará una sorpresa:
 
 ```sql
@@ -1104,6 +1082,8 @@ SELECT DISTINCT cat_id
 FROM silver.crm_prd_info
 WHERE cat_id NOT IN (SELECT id FROM silver.erp_px_cat_g1v2);   -- CO_PE
 ```
+
+![alt text](image-26.png)
 
 La categoría `CO_PE` (pedales) existe en el CRM pero **no en el catálogo del ERP**. Lo dejamos como está y lo veremos reflejado en la capa Gold.
 
@@ -1146,7 +1126,7 @@ BEGIN
 		PRINT '------------------------------------------------';
 
 		-- Loading silver.crm_cust_info
-        SET @start_time = GETDATE();
+        SET @start_time = GETDATE();    
 		PRINT '>> Truncating Table: silver.crm_cust_info';
 		TRUNCATE TABLE silver.crm_cust_info;
 		PRINT '>> Inserting Data Into: silver.crm_cust_info';
@@ -1377,16 +1357,7 @@ END
 EXEC silver.load_silver;
 ```
 
-**Resultado esperado tras la carga:**
-
-| Tabla Silver | Filas | Qué cambió respecto a Bronze |
-| --- | --- | --- |
-| crm_cust_info | 18.484 | −10 filas: 4 sin id y 6 duplicados eliminados |
-| crm_prd_info | 397 | Claves separadas y fechas de fin regeneradas |
-| crm_sales_details | 60.398 | Fechas convertidas y 23 importes corregidos |
-| erp_cust_az12 | 18.484 | Prefijo `NAS` eliminado, 16 fechas futuras anuladas |
-| erp_loc_a101 | 18.484 | Guion eliminado, países estandarizados |
-| erp_px_cat_g1v2 | 37 | Sin cambios |
+![alt text](image-27.png)
 
 ### 8.10 Validar la capa Silver con `quality_checks_silver.sql`
 
@@ -1561,26 +1532,7 @@ SELECT DISTINCT
 FROM silver.erp_px_cat_g1v2;
 ```
 
-**Resultado esperado** al ejecutarlo sobre las tablas de esta clase:
-
-| Tabla | Comprobación | Resultado esperado |
-| --- | --- | --- |
-| crm_cust_info | Clave primaria nula o duplicada | Sin filas |
-| crm_cust_info | Espacios en `cst_key` | Sin filas |
-| crm_cust_info | Valores de `cst_marital_status` | `Married`, `Single` |
-| crm_prd_info | Clave primaria nula o duplicada | Sin filas |
-| crm_prd_info | Espacios en `prd_nm` | Sin filas |
-| crm_prd_info | Coste nulo o negativo | Sin filas |
-| crm_prd_info | Valores de `prd_line` | `Mountain`, `n/a`, `Other Sales`, `Road`, `Touring` |
-| crm_prd_info | Fecha de fin anterior a la de inicio | Sin filas |
-| crm_sales_details | Fechas de vencimiento no válidas (sobre **Bronze**) | Sin filas |
-| crm_sales_details | Pedido posterior al envío o al vencimiento | Sin filas |
-| crm_sales_details | Ventas ≠ cantidad × precio, nulos o negativos | Sin filas |
-| erp_cust_az12 | Fechas de nacimiento fuera de rango | ⚠️ **15 filas**, de 1916 a 1923 (ver nota) |
-| erp_cust_az12 | Valores de `gen` | `Female`, `Male`, `n/a` |
-| erp_loc_a101 | Valores de `cntry` | `Australia`, `Canada`, `France`, `Germany`, `n/a`, `United Kingdom`, `United States` |
-| erp_px_cat_g1v2 | Espacios en categorías | Sin filas |
-| erp_px_cat_g1v2 | Valores de `maintenance` | `No`, `Yes` |
+![alt text](image-28.png)
 
 > 🔍 **Las 15 fechas de nacimiento anteriores a 1924 no son un error de la carga.** En la Sección 8.6 decidimos convertir en `NULL` solo las fechas **futuras** y conservar las muy antiguas, porque son sospechosas pero posibles. El control las sigue mostrando a propósito: un control de calidad no siempre tiene que devolver 0 filas. A veces su función es **señalar un problema conocido** para que alguien lo revise con el responsable del ERP.
 
@@ -1650,6 +1602,8 @@ LEFT JOIN silver.erp_cust_az12 ca ON ci.cst_key = ca.cid
 ORDER BY 1, 2;
 ```
 
+![alt text](image-29.png)
+
 Hay clientes con `Female` en el CRM y `Male` en el ERP, y muchos con `n/a` en el CRM pero informados en el ERP.
 
 > 🗣️ **Regla de negocio acordada.** El **CRM es el sistema maestro** para el género. Solo si el CRM no lo tiene (`n/a`), usamos el valor del ERP.
@@ -1700,6 +1654,8 @@ LEFT JOIN silver.erp_loc_a101 la
     ON ci.cst_key = la.cid;
 GO
 ```
+
+![alt text](image-30.png)
 
 > 💡 **¿Por qué `LEFT JOIN`?** La tabla maestra es la de clientes del CRM. Si un cliente no tuviera datos en el ERP, con un `INNER JOIN` desaparecería del DWH. Con `LEFT JOIN` lo conservamos y sus columnas del ERP quedan a `NULL`.
 
@@ -1771,6 +1727,8 @@ LEFT JOIN gold.dim_customers cu
     ON sd.sls_cust_id = cu.customer_id;
 GO
 ```
+
+![alt text](image-31.png)
 
 Observa el **orden de las columnas**: primero las claves, después las fechas y por último las métricas. Es la convención habitual en las tablas de hechos y facilita su lectura.
 
@@ -1847,6 +1805,8 @@ SELECT
     (SELECT COUNT(*) FROM gold.fact_sales)          AS filas_gold;     -- 60.398
 ```
 
+![alt text](image-32.png)
+
 > ⚠️ **Sobre las claves subrogadas en vistas.** `ROW_NUMBER()` se recalcula en cada consulta. Es válido aquí porque el orden es determinista y no hay historificación. En un entorno productivo, las dimensiones suelen materializarse en tablas con una columna `IDENTITY` para que las claves sean estables entre cargas.
 
 ---
@@ -1864,7 +1824,7 @@ EXEC silver.load_silver;   -- 2. Bronze → Silver
 -- 3. Gold no se carga: son vistas y reflejan Silver al instante
 ```
 
-Negocio quiere los datos actualizados cada mañana antes de que empiece la jornada. Para no depender de que alguien ejecute los procedimientos a mano, creamos un **trabajo de SQL Server Agent** con dos pasos encadenados y una programación diaria.
+![alt text](image-33.png)
 
 ### 10.1 Crear el trabajo con T-SQL
 
@@ -1927,6 +1887,8 @@ EXEC dbo.sp_add_jobserver
     @server_name = N'(local)';
 GO
 ```
+
+![alt text](image-34.png)
 
 > 🧠 **Por qué dos pasos y no uno.** Si Bronze falla (por ejemplo, porque falta un CSV), no tiene sentido ejecutar Silver: transformaría datos incompletos. Con `@on_fail_action = 2` el trabajo se detiene en el paso que falla y el historial nos dice exactamente dónde.
 
@@ -2011,9 +1973,7 @@ SELECT
 FROM gold.fact_sales;
 ```
 
-| ventas_totales | unidades_vendidas | pedidos | clientes_con_compras |
-| --- | --- | --- | --- |
-| 29.356.250 | 60.423 | 27.659 | 18.484 |
+![alt text](image-35.png)
 
 ### 11.2 Rendimiento de productos: ventas por categoría
 
@@ -2028,11 +1988,7 @@ GROUP BY p.category
 ORDER BY ventas DESC;
 ```
 
-| category | ventas | pct_total |
-| --- | --- | --- |
-| Bikes | 28.316.272 | 96,46 |
-| Accessories | 700.262 | 2,39 |
-| Clothing | 339.716 | 1,16 |
+![alt text](image-36.png)
 
 > 📊 **Lectura de negocio.** Las bicicletas generan más del 96 % de la facturación. La empresa depende casi por completo de una sola categoría.
 
@@ -2049,15 +2005,7 @@ GROUP BY c.country
 ORDER BY ventas DESC;
 ```
 
-| country | clientes | ventas |
-| --- | --- | --- |
-| United States | 7.482 | 9.162.327 |
-| Australia | 3.591 | 9.060.172 |
-| United Kingdom | 1.913 | 3.391.376 |
-| Germany | 1.780 | 2.894.066 |
-| France | 1.810 | 2.643.751 |
-| Canada | 1.571 | 1.977.738 |
-| n/a | 337 | 226.820 |
+![alt text](image-37.png)
 
 > 📊 **Lectura de negocio.** Australia, con menos de la mitad de clientes que Estados Unidos, factura prácticamente lo mismo. Merece un análisis del ticket medio por país.
 
@@ -2074,13 +2022,7 @@ GROUP BY YEAR(order_date)
 ORDER BY anio;
 ```
 
-| anio | ventas | clientes |
-| --- | --- | --- |
-| 2010 | 43.419 | 14 |
-| 2011 | 7.075.088 | 2.216 |
-| 2012 | 5.842.231 | 3.255 |
-| 2013 | 16.344.878 | 17.427 |
-| 2014 | 45.642 | 834 |
+![alt text](image-38.png)
 
 > ⚠️ **Cuidado con la interpretación.** 2010 y 2014 **no son años completos**: los datos empiezan a finales de diciembre de 2010 y terminan en enero de 2014. Compararlos con el resto llevaría a conclusiones falsas. Es un buen ejemplo de por qué el analista debe conocer el alcance de los datos. Además, la consulta excluye las 19 ventas sin fecha de pedido (`order_date` nula), así que la suma de los años es algo menor que el total de la 11.1.
 
@@ -2097,7 +2039,7 @@ GROUP BY p.product_name, p.subcategory
 ORDER BY ventas DESC;
 ```
 
-Los cinco primeros son variantes de la **Mountain-200**, encabezados por *Mountain-200 Black- 46* con 1.373.454.
+![alt text](image-39.png)
 
 ### 11.6 Perfil de clientes
 
@@ -2111,14 +2053,7 @@ GROUP BY gender, marital_status
 ORDER BY gender, marital_status;
 ```
 
-| gender | marital_status | clientes |
-| --- | --- | --- |
-| Female | Married | 4.743 |
-| Female | Single | 4.385 |
-| Male | Married | 5.260 |
-| Male | Single | 4.081 |
-| n/a | Married | 8 |
-| n/a | Single | 7 |
+![alt text](image-40.png)
 
 > 📊 **Lectura de negocio.** Gracias a la integración con el ERP, Marketing pasa de no conocer el género de una cuarta parte de los clientes a desconocerlo solo en 15. La base de clientes está equilibrada, con algo más de clientes casados que solteros.
 
@@ -2132,7 +2067,7 @@ WHERE sales_amount IS NULL
    OR sales_amount != quantity * price;
 ```
 
-**Resultado esperado:** `0`. En origen había 35 líneas con importes o precios nulos, negativos o que no cuadraban. Ahora el Controller puede usar `sales_amount` sin hacer comprobaciones propias.
+![alt text](image-41.png)
 
 ---
 
@@ -2160,33 +2095,6 @@ Ejemplo de entrada del **catálogo de datos** para `gold.dim_customers`:
 | marital_status | NVARCHAR(50) | Estado civil: `Married`, `Single` o `n/a` |
 | gender | NVARCHAR(50) | Género: `Male`, `Female` o `n/a`. Prioridad CRM, si no ERP |
 | birthdate | DATE | Fecha de nacimiento (`YYYY-MM-DD`) |
-
-> ⚠️ **La documentación también hay que mantenerla.** En el `data_catalog.md` del proyecto, la columna de mantenimiento de `gold.dim_products` se llama `maintenance_required`, pero en el modelo de datos (`data_model.png`) y en la vista se llama `maintenance`. Es un desajuste típico entre documentación y código. Cuando cambies una vista, actualiza también el catálogo en el mismo commit.
-
-Y en cada hito, un commit con un mensaje que explique **qué** se hizo:
-
-```bash
-git add scripts/silver/
-git commit -m "Silver: limpieza de clientes, productos y ventas + procedimiento load_silver"
-```
-
-> 🤖 **Prompt para generar el catálogo con IA.** Copia el código de tus vistas Gold y pega este prompt:
->
-> ```
-> Actúa como ingeniero de datos senior. A partir del código SQL de estas vistas de la capa Gold
-> de un Data Warehouse, genera un catálogo de datos en Markdown. Para cada vista indica su
-> propósito en una frase y una tabla con: nombre de columna, tipo de dato, descripción de
-> negocio clara y un ejemplo de valor. Indica también de qué tabla Silver procede cada columna.
-> [PEGA AQUÍ EL CÓDIGO DE LAS VISTAS]
-> ```
->
-> Revisa siempre el resultado: la IA no conoce las reglas de negocio que acordaste con los usuarios.
-
----
-
-## Sección 13: Ejercicios propuestos (enunciado y solución)
-
-Cada ejercicio incluye su **enunciado** y, a continuación, su **solución**.
 
 ---
 
