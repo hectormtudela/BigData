@@ -23,9 +23,9 @@ Se creó una nueva base de datos en Azure SQL con la configuración básica de d
 - **Autenticación:** SQL Authentication
 
 > **Evidencia Paso 1:**  
-> ![Revisar bbdd](image.png)
-> ![revisar bbdd2](image-1.png)
-> ![bbdd creada](image-2.png)
+> ![Revisar bbdd](images/image.png)
+> ![revisar bbdd2](images/image-1.png)
+> ![bbdd creada](images/image-2.png)
 
 ### Paso 2: Crear el esquema de prueba y usuarios
 Nos conectamos a la base de datos a través de nuestra herramienta cliente y ejecutamos el script inicial para crear la tabla de pacientes (`Patients`) y los usuarios de prueba (`Doctor` y `Receptionist`).
@@ -56,7 +56,7 @@ GRANT SELECT ON Patients TO Receptionist;
 ```
 
 > **Evidencia Paso 2:**  
-> ![Creacion de esquema de prueba y usuarios](image-3.png)
+> ![Creacion de esquema de prueba y usuarios](images/image-3.png)
 
 ### Paso 3: Enmascaramiento Dinámico de Datos (DDM)
 Para cumplir con la normativa de privacidad, configuramos el enmascaramiento de datos para que el recepcionista no pueda ver el número de seguro social (SSN) completo ni el email real de los pacientes.
@@ -76,9 +76,9 @@ REVERT;
 ```
 
 > **Evidencia Paso 3:**  
-> ![Mascara a Employees](image-4.png)
-> ![Máscara a Customers](image-5.png)
-> ![Prueba Unmasked](image-6.png)
+> ![Mascara a Employees](images/image-4.png)
+> ![Máscara a Customers](images/image-5.png)
+> ![Prueba Unmasked](images/image-6.png)
 
 
 ### Paso 4: Seguridad a Nivel de Fila (RLS)
@@ -107,7 +107,7 @@ GO
 ```
 
 > **Evidencia Paso 4:**  
-> ![RLS](image-7.png)
+> ![RLS](images/image-7.png)
 
 ---
 

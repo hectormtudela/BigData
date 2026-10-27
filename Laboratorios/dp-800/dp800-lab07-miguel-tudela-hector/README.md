@@ -90,7 +90,7 @@ FROM INFORMATION_SCHEMA.TABLES
 WHERE TABLE_NAME = 'InventoryLog';
 ```
 
-![alt text](image.png)
+![alt text](images/image.png)
 
 ## Modificación de Esquema y Verificación del Ciclo Completo
 
@@ -102,10 +102,10 @@ Los proyectos de bases de datos SQL funcionan de forma declarativa. En lugar de 
 Modificación Realizada
 Se añadió la columna Notes a la tabla InventoryLog editando el archivo Tables/InventoryLog.sql:
 
-![Añadir notes](image-1.png)
+![Añadir notes](images/image-1.png)
 
 Después de que ha terminado el workflow he ejecutado la consulta pedida en Azure SQL:
 
-![alt text](image-2.png)
+![alt text](images/image-2.png)
 
 Finalmente he limpiado tanto el repositorio como la SQL Database en Azure
