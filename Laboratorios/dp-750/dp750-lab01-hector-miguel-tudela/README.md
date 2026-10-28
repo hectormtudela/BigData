@@ -121,8 +121,6 @@ Contenido del fichero (10 rutas):
 
 En **Catalog**, expandir **adb-dp750 → default → lab_data** y comprobar que aparece `routes.csv`.
 
-![5.3 - routes.csv dentro del volumen](images/ej1-07-routes-en-catalog.png)
-
 La ruta del fichero dentro del volumen sigue el formato `/Volumes/<catálogo>/<esquema>/<volumen>/<fichero>`:
 
 ```
