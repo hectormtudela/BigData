@@ -62,7 +62,15 @@ El equipo necesita un clúster compartido para desarrollo interactivo.
 
 > **Access mode Standard:** varios usuarios pueden compartir el clúster con aislamiento entre ellos y gobierno de Unity Catalog. El modo *Dedicated* (antes *Single user*) asigna el clúster a un único usuario o grupo.
 
-![4.1 - Formulario con Simple form en OFF](images/ej1-01-formulario-general.png)
+
+![1793464690830](images/1793464690830.png)
+
+Debido a que en mi suscripción no está 
+
+> No ha sido posible crear el clúster all-purpose por falta de cuota de vCPU en la suscripción. La suscripción es Azure for Students y el workspace adb-dp750 está en la región France Central. En Suscripciones → Uso y cuotas las familias de VM Standard DDSv5 y Standard EDSv5 aparecen con 0 de 0 vCPU, y al solicitar aumento Azure indica que la familia EDSv5 está “Unavailable in this region”. Por eso, en el formulario de Crear cómputo, el desplegable de Tipo de worker aparece deshabilitado y se muestra el aviso “Estimado disponible: 0, solicitado: 36”.
+
+Se ha documentado la configuración que se habría aplicado (Runtime LTS, workers optimizados en memoria serie E, autoescalado 1-3, auto-terminación 15 min, Photon, modo de acceso Estándar) y se adjuntan las capturas de la limitación. Como el Ejercicio 2 (instalar faker a nivel de clúster) depende de ese clúster, tampoco se ha podido realizar. Los Ejercicios 3 y 4 se han completado con compute Serverless, que no requiere cuota de vCPU, instalando faker a nivel de notebook con %pip. 
+
 
 ### 4.2 Rendimiento y runtime
 
@@ -75,12 +83,6 @@ El equipo necesita un clúster compartido para desarrollo interactivo.
 | **Photon Acceleration** | Activado | Motor vectorizado en C++ que acelera SQL y DataFrames |
 
 Pulsar **Create compute** y esperar a que el estado sea **Running** (varios minutos).
-
-![4.2 - Runtime, worker type y autoscaling](images/ej1-02-runtime-workers.png)
-
-![4.2 - Auto termination y Photon](images/ej1-03-autoterminacion-photon.png)
-
-![4.2 - Clúster en estado Running](images/ej1-04-cluster-running.png)
 
 ### 4.3 Configuración aplicada
 
@@ -97,8 +99,6 @@ Pulsar **Create compute** y esperar a que el estado sea **Running** (varios minu
 
 ## 5. Ejercicio 2 – Instalar una librería a nivel de clúster
 
-[faker](https://faker.readthedocs.io/) genera datos falsos realistas (nombres, direcciones, fechas…) para pruebas, sin usar datos reales de pacientes.
-
 1. **Compute** → `healthbridge-dev` → pestaña **Libraries** → **Install new**.
 2. Configurar:
 
@@ -109,8 +109,6 @@ Pulsar **Create compute** y esperar a que el estado sea **Running** (varios minu
 
 3. **Install** y esperar a que el estado sea **Installed**.
 
-![5 - Librería faker instalada en el clúster](images/ej2-01-faker-installed.png)
-
 - **Fijar la versión** (`==40.8.0`) garantiza que todo el equipo y todas las ejecuciones del pipeline usan exactamente la misma librería (reproducibilidad).
 - Las librerías de clúster **se reinstalan automáticamente** cada vez que el clúster arranca y están disponibles para **todos los notebooks** conectados a él.
 
@@ -120,8 +118,6 @@ El resto de ejercicios usa Serverless, así que el clúster ya no hace falta:
 
 1. **Compute** → `healthbridge-dev`.
 2. **Terminate** para pararlo, o **⋮ → Delete** para eliminarlo.
-
-![5.1 - Clúster terminado/eliminado](images/ej2-02-cluster-terminado.png)
 
 > Eliminarlo evita que alguien lo vuelva a arrancar por error y genere costes.
 
