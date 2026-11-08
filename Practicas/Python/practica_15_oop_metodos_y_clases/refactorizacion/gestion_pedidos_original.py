@@ -1,3 +1,5 @@
+# Código heredado del ejercicio R1 (NO lo modifiques). Tu versión OOP va en gestion_pedidos_oop.py
+# El enunciado completo está al principio de gestion_pedidos_oop.py
 # gestion_pedidos.py · versión heredada (2017). "Funciona, no tocar".
 p_cod = ["AG-01", "RF-02", "ZM-03", "CV-04", "VN-05"]
 p_nom = ["Agua 1,5L pack 6", "Refresco cola pack 12", "Zumo naranja 1L", "Cerveza pack 24", "Vino tinto crianza"]
