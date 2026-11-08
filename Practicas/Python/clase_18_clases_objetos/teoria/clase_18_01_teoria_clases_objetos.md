@@ -1056,12 +1056,6 @@ print(archivo.tamano_mb)
 print(archivo.es_grande)
 ```
 
-**Paso a paso:**
-
-17. `self.nombre` se obtiene partiendo la ruta por `/` y tomando el último elemento.
-18. `self.extension` reutiliza un atributo ya creado (`self.nombre`) y lo normaliza a minúsculas.
-19. `self.tamano_mb` convierte bytes a megabytes (1 MB = 1024 × 1024 bytes).
-20. `self.es_grande` depende de otro atributo calculado. El orden de las líneas importa: no se puede usar `self.tamano_mb` antes de haberlo creado.
 **Salida esperada:**
 
 ```plain text
@@ -1323,7 +1317,7 @@ class NombreDeLaClase:
 
 ### Ejemplo 5.1 · Constante compartida y contador de objetos
 
-> 💡 💡 Una cadena logística monitoriza la temperatura de sus almacenes mediante sensores. Crea una clase `Sensor` que combine **atributos de clase**, compartidos por todos los sensores, con **atributos de instancia**, propios de cada uno.
+> 💡 Una cadena logística monitoriza la temperatura de sus almacenes mediante sensores. Crea una clase `Sensor` que combine **atributos de clase**, compartidos por todos los sensores, con **atributos de instancia**, propios de cada uno.
 
 ---
 
@@ -1365,7 +1359,7 @@ Sensores registrados: 3
 
 ### Ejemplo 5.2 · Un objeto puede «tapar» el atributo de clase
 
-> 💡 💡 Un equipo de calidad de datos define un **umbral máximo de nulos** que se aplica por defecto a todas las columnas, aunque algunas columnas concretas pueden tolerar más. En este ejercicio vas a comprobar qué ocurre cuando un objeto **"tapa"** un atributo de clase con uno propio.
+> 💡 Un equipo de calidad de datos define un **umbral máximo de nulos** que se aplica por defecto a todas las columnas, aunque algunas columnas concretas pueden tolerar más. En este ejercicio vas a comprobar qué ocurre cuando un objeto **"tapa"** un atributo de clase con uno propio.
 
 > 📄 `clase_18_clases_objetos/teoria/ejemplo_5_2_regla_calidad.py`
 
@@ -1642,7 +1636,7 @@ class Contenedor:
 
 ### Ejemplo 7.1 · Referencias compartidas
 
-> 💡 💡 Un programa de fidelización gestiona los puntos que acumula cada cliente. En este ejercicio vas a comprobar que una variable **no contiene** el objeto, sino una **referencia** a él, y qué consecuencias tiene esto al asignar variables y al pasar objetos a funciones.
+> 💡 Un programa de fidelización gestiona los puntos que acumula cada cliente. En este ejercicio vas a comprobar que una variable **no contiene** el objeto, sino una **referencia** a él, y qué consecuencias tiene esto al asignar variables y al pasar objetos a funciones.
 
 > 📄 `clase_18_clases_objetos/teoria/ejemplo_7_1_referencias.py`
 
@@ -1688,7 +1682,7 @@ True
 
 ### Ejemplo 7.2 · Procesar una lista de objetos
 
-> 💡 💡 Una empresa de paquetería necesita analizar los envíos del día. Crea una clase `Envio` y procesa una **lista de objetos** de esa clase para obtener distintos indicadores.
+> 💡 Una empresa de paquetería necesita analizar los envíos del día. Crea una clase `Envio` y procesa una **lista de objetos** de esa clase para obtener distintos indicadores.
 
 > 📄 `clase_18_clases_objetos/teoria/ejemplo_7_2_envios.py`
 

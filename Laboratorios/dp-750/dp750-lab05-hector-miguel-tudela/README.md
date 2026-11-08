@@ -12,7 +12,7 @@
    `https://raw.githubusercontent.com/MicrosoftLearning/DP-750T00-Implement-Data-Engineering-Solutions-using-Azure-Databricks/refs/heads/main/Allfiles/05-govern-unity-catalog-objects.ipynb`
 3. Abrir el notebook y seleccionar **Serverless** en el selector de compute.
 
-📸 **Captura:** notebook importado con **Serverless** visible en el selector de compute.
+![1.](images/README-1793897323730.png)
 
 ---
 
@@ -21,8 +21,8 @@
 1. Ejecutar la primera celda (Python): crea `automotive_catalog` usando el storage root del catálogo por defecto.
 2. Ejecutar la segunda celda (`%sql`): crea el esquema `governance_lab` y las tablas `customer_registrations` y `vehicle_telemetry`.
 
-📸 **Captura:** primera celda ejecutada con la línea `Storage root: abfss://...` impresa.
-📸 **Captura:** segunda celda ejecutada sin errores (último INSERT con `num_inserted_rows = 6`).
+![alt text](images/README-1793898056837.png)
+![alt text](images/README-1793898085106.png)
 
 ---
 
@@ -31,15 +31,15 @@
 1. **Catalog** → **automotive_catalog** → **governance_lab** → **vehicle_telemetry**.
 2. Pestaña **Lineage** → **See Lineage Graph**.
 
-📸 **Captura:** grafo de linaje de `vehicle_telemetry`.
+![alt text](images/README-1793898241405.png)
 
 3. Seleccionar una columna (p. ej. `vehicle_id`) para ver el linaje a nivel de columna. El nodo `service_records` puede no existir porque el notebook no lo crea; en ese caso usar una columna de `vehicle_telemetry`.
 
-📸 **Captura:** linaje de la columna seleccionada.
+![alt text](images/README-1793898482929.png)
 
 4. En `vehicle_telemetry`, pestaña **History**.
 
-📸 **Captura:** pestaña History con las versiones. Repetir al final del ejercicio 3, cuando ya haya DELETE y VACUUM.
+![alt text](images/README-1793898682705.png)
 
 ---
 
@@ -53,7 +53,7 @@ ALTER TABLE automotive_catalog.governance_lab.customer_registrations
 SET TAGS ('domain' = 'customer', 'data_classification' = 'confidential');
 ```
 
-📸 **Captura:** celda ejecutada con éxito.
+![alt text](images/README-1793898715000.png)
 
 ### Tarea 2.2: tags de columna
 
@@ -68,7 +68,7 @@ ALTER COLUMN driver_license_no SET TAGS ('pii' = 'driver_license');
 
 Si la celda no admite dos sentencias, separarlas en dos celdas.
 
-📸 **Captura:** las dos sentencias ejecutadas con éxito.
+![alt text](images/README-1793898767299.png)
 
 ### Tarea 2.3: verificar
 
@@ -88,8 +88,8 @@ WHERE catalog_name = 'automotive_catalog'
   AND table_name = 'customer_registrations';
 ```
 
-📸 **Captura:** resultado de `table_tags` con `domain = customer` y `data_classification = confidential`.
-📸 **Captura:** resultado de `column_tags` con `email` → `pii = email` y `driver_license_no` → `pii = driver_license`.
+![alt text](images/README-1793898867841.png)
+![alt text](images/README-1793898881657.png)
 
 ---
 
@@ -113,7 +113,9 @@ Comprobación opcional:
 SHOW TBLPROPERTIES automotive_catalog.governance_lab.vehicle_telemetry;
 ```
 
-📸 **Captura:** celda ejecutada y, si se ejecuta, `SHOW TBLPROPERTIES` con las dos propiedades a 14 days.
+![alt text](images/README-1793898910595.png)
+
+![alt text](images/README-1793898941091.png)
 
 ### Tarea 3.2: borrado GDPR (derecho de supresión)
 
@@ -123,20 +125,23 @@ DELETE FROM automotive_catalog.governance_lab.vehicle_telemetry
 WHERE vehicle_id = 'VH-003';
 ```
 
+![alt text](images/README-1793899150237.png)
+
 ```sql
 %sql
 SELECT * FROM automotive_catalog.governance_lab.vehicle_telemetry
 WHERE vehicle_id = 'VH-003';
 ```
 
+![alt text](images/README-1793899172915.png)
+
 ```sql
 %sql
 SELECT * FROM automotive_catalog.governance_lab.vehicle_telemetry;
 ```
 
-📸 **Captura:** DELETE con `num_affected_rows = 1`.
-📸 **Captura:** consulta de `VH-003` devolviendo **0 filas**.
-📸 **Captura (opcional):** tabla completa con 5 filas.
+![alt text](images/README-1793899188798.png)
+
 
 ### Tarea 3.3: VACUUM
 
@@ -147,7 +152,7 @@ VACUUM automotive_catalog.governance_lab.vehicle_telemetry RETAIN 168 HOURS;
 
 En Serverless no se puede bajar de 168 horas (7 días). No borrará archivos porque son recientes, y es lo esperado.
 
-📸 **Captura:** VACUUM ejecutado con éxito.
+![alt text](images/README-1793899247577.png)
 
 ### Tarea 3.4: Predictive Optimization
 
@@ -158,6 +163,8 @@ ALTER SCHEMA automotive_catalog.governance_lab ENABLE PREDICTIVE OPTIMIZATION;
 
 Si da error de permisos o de función no habilitada, es una limitación de la cuenta (se habilita a nivel de cuenta o metastore). Documentar el error con captura.
 
+![alt text](images/README-1793899279599.png)
+
 Comprobación:
 
 ```sql
@@ -165,7 +172,7 @@ Comprobación:
 DESCRIBE SCHEMA EXTENDED automotive_catalog.governance_lab;
 ```
 
-📸 **Captura:** celda ejecutada y la línea de predictive optimization en `DESCRIBE SCHEMA EXTENDED`.
+![alt text](images/README-1793899296471.png)
 
 ---
 
@@ -185,7 +192,9 @@ ORDER BY events DESC;
 
 Si sale vacío: puede haber retraso de unos minutos en el registro de linaje, o `system.access` puede no estar habilitado.
 
-📸 **Captura:** resultado de la consulta (aunque salga vacío, mostrar consulta y resultado).
+![alt text](images/README-1793899433248.png)
+
+![alt text](images/README-1793899448081.png)
 
 ### Tarea 4.2: historial de vehicle_telemetry
 
@@ -194,7 +203,7 @@ Si sale vacío: puede haber retraso de unos minutos en el registro de linaje, o 
 DESCRIBE HISTORY automotive_catalog.governance_lab.vehicle_telemetry;
 ```
 
-📸 **Captura:** historial con la fila `DELETE` y su número de versión. Si se ejecutó el VACUUM, aparecerán también `VACUUM START` y `VACUUM END`.
+![alt text](images/README-1793899516484.png)
 
 ---
 
@@ -212,8 +221,7 @@ WHERE request_params.full_name_arg = 'automotive_catalog.governance_lab.customer
 ORDER BY event_time DESC;
 ```
 
-📸 **Captura:** resultado con el email del usuario y las acciones `createTable` / `getTable`.
-
+![alt text](images/README-1793899581469.png)
 ### Tarea 5.2: cambios de permisos
 
 Para generar al menos un evento (opcional, recomendable):
@@ -240,8 +248,7 @@ WHERE service_name = 'unityCatalog'
 ORDER BY event_time DESC;
 ```
 
-📸 **Captura:** GRANT ejecutado (si se hizo).
-📸 **Captura:** resultado de la consulta de permisos (aunque salga vacío, mostrar consulta y resultado).
+![alt text](images/README-1793899584341.png)
 
 ### Tarea 5.3: resumen de actividad por usuario
 
@@ -255,7 +262,7 @@ GROUP BY user_identity.email
 ORDER BY event_count DESC;
 ```
 
-📸 **Captura:** resultado con el usuario y su número de eventos.
+![alt text](images/README-1793899586306.png)
 
 ---
 
