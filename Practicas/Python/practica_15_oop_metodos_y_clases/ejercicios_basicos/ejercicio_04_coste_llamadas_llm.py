@@ -1,13 +1,4 @@
-"""
-Práctica 15 · Ejercicio B4 - Coste de las llamadas a un LLM · IA Generativa
-Nivel: básico
-Regla: sin herencia ni polimorfismo (usa composición). Solo biblioteca estándar.
-"""
-
-# ======================================================================
-# ENUNCIADO (copiado tal cual del profesor)
-# ======================================================================
-# ### Ejercicio B4 - Coste de las llamadas a un LLM · IA Generativa
+# Ejercicio B4 - Coste de las llamadas a un LLM · IA Generativa
 #
 # Finanzas quiere saber cuánto cuesta cada llamada al proveedor de modelos de lenguaje. El proveedor cobra en dólares **por cada millón de tokens**, con un precio distinto para los tokens de entrada y los de salida. Crea la clase `LlamadaLLM`:
 #
@@ -22,40 +13,41 @@ Regla: sin herencia ni polimorfismo (usa composición). Solo biblioteca estánda
 # - Método `coste()`: devuelve el coste en dólares redondeado a **6 decimales**.
 # - Método `tokens_totales()`.
 # - `__repr__` con el formato `LlamadaLLM(modelo-lite, 1500 tokens, $0.00048)`.
-# **Código de prueba:**
-#
-# ```python
-# llamadas = [
-#     LlamadaLLM("modelo-lite", 1200, 300),
-#     LlamadaLLM("modelo-pro", 1200, 300),
-#     LlamadaLLM("modelo-lite", 8000, 1500),
-#     LlamadaLLM("modelo-pro", 25000, 4000),
-# ]
-# for llamada in llamadas:
-#     print(llamada)
-# print("Llamadas registradas:", LlamadaLLM.total_llamadas)
-# print(f"Coste total: ${round(sum([l.coste() for l in llamadas]), 6)}")
-# coste_pro = sum([l.coste() for l in llamadas if l.modelo == "modelo-pro"])
-# print("Peso de modelo-pro:", round(100 * coste_pro / sum([l.coste() for l in llamadas]), 1), "%")
-# ```
-#
-# **Salida esperada:**
-#
-# ```plain text
-# LlamadaLLM(modelo-lite, 1500 tokens, $0.00048)
-# LlamadaLLM(modelo-pro, 1500 tokens, $0.0072)
-# LlamadaLLM(modelo-lite, 9500 tokens, $0.0028)
-# LlamadaLLM(modelo-pro, 29000 tokens, $0.123)
-# Llamadas registradas: 4
-# Coste total: $0.13348
-# Peso de modelo-pro: 97.5 %
-# ```
 
-# ===== ESCRIBE AQUÍ TU SOLUCIÓN =====
+# Solución:
+
+class LlamadaLLM:
+    """Una llamada al proveedor de modelos de lenguaje y su coste en dólares."""
+
+    PRECIOS = {
+        "modelo-lite": (0.20, 0.80),
+        "modelo-pro": (3.00, 12.00),
+    }
+    total_llamadas = 0
+
+    def __init__(self, modelo, tokens_entrada, tokens_salida):
+        self.modelo = modelo
+        self.tokens_entrada = tokens_entrada
+        self.tokens_salida = tokens_salida
+        LlamadaLLM.total_llamadas += 1
+
+    def coste(self):
+        """Coste en dólares, redondeado a 6 decimales."""
+        precio_entrada, precio_salida = LlamadaLLM.PRECIOS[self.modelo]
+        coste = (
+            self.tokens_entrada * precio_entrada + self.tokens_salida * precio_salida
+        ) / 1_000_000
+        return round(coste, 6)
+
+    def tokens_totales(self):
+        """Tokens de entrada + tokens de salida."""
+        return self.tokens_entrada + self.tokens_salida
+
+    def __repr__(self):
+        return f"LlamadaLLM({self.modelo}, {self.tokens_totales()} tokens, ${self.coste()})"
 
 
-
-# ===== Código de prueba del enunciado =====
+# Código de prueba del enunciado
 llamadas = [
     LlamadaLLM("modelo-lite", 1200, 300),
     LlamadaLLM("modelo-pro", 1200, 300),

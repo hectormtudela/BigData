@@ -1,13 +1,4 @@
-"""
-Práctica 15 · Ejercicio B3 - Plantilla de prompt reutilizable · IA Generativa
-Nivel: básico
-Regla: sin herencia ni polimorfismo (usa composición). Solo biblioteca estándar.
-"""
-
-# ======================================================================
-# ENUNCIADO (copiado tal cual del profesor)
-# ======================================================================
-# ### Ejercicio B3 - Plantilla de prompt reutilizable · IA Generativa
+# Ejercicio B3 - Plantilla de prompt reutilizable · IA Generativa
 #
 # El equipo de atención al cliente de una cadena de electrónica usa un LLM para clasificar reseñas. Cada analista escribe el prompt a mano y los resultados son inconsistentes. Crea la clase `PlantillaPrompt` para que todos usen la misma estructura:
 #
@@ -21,47 +12,41 @@ Regla: sin herencia ni polimorfismo (usa composición). Solo biblioteca estánda
 # 5. `Entrada: """<entrada>"""`
 # - `__repr__` con el formato `PlantillaPrompt(rol='analista de experiencia de cliente', restricciones=2)`.
 # Pista: construye una lista de líneas y únelas con `"\n".join(lineas)`.
-#
-# **Código de prueba:**
-#
-# ```python
-# clasificador = PlantillaPrompt(
-#     "analista de experiencia de cliente",
-#     "clasifica el sentimiento de la reseña como POSITIVO, NEUTRO o NEGATIVO",
-#     "JSON con las claves sentimiento y motivo",
-# )
-# clasificador.agregar_restriccion("No inventes información que no aparezca en la reseña")
-# clasificador.agregar_restriccion("El motivo debe tener como máximo 15 palabras")
-# print(repr(clasificador))
-# print(clasificador.construir("El portátil llegó en 24 h pero la batería dura la mitad de lo anunciado."))
-# print("---")
-# resumen = PlantillaPrompt("redactor técnico", "resume la incidencia en una frase")
-# print(resumen.construir("El TPV de la tienda 14 no imprime tickets desde las 10:00."))
-# ```
-#
-# **Salida esperada:**
-#
-# ```plain text
-# PlantillaPrompt(rol='analista de experiencia de cliente', restricciones=2)
-# Actúa como analista de experiencia de cliente.
-# Tarea: clasifica el sentimiento de la reseña como POSITIVO, NEUTRO o NEGATIVO
-# Restricciones:
-# - No inventes información que no aparezca en la reseña
-# - El motivo debe tener como máximo 15 palabras
-# Formato de salida: JSON con las claves sentimiento y motivo
-# Entrada: """El portátil llegó en 24 h pero la batería dura la mitad de lo anunciado."""
-# ---
-# Actúa como redactor técnico.
-# Tarea: resume la incidencia en una frase
-# Formato de salida: texto libre
-# Entrada: """El TPV de la tienda 14 no imprime tickets desde las 10:00."""
-# ```
 
-# ===== ESCRIBE AQUÍ TU SOLUCIÓN =====
+# Solución:
+
+class PlantillaPrompt:
+    """Plantilla reutilizable para que todos los analistas construyan el prompt igual."""
+
+    def __init__(self, rol, tarea, formato_salida="texto libre"):
+        self.rol = rol
+        self.tarea = tarea
+        self.formato_salida = formato_salida
+        self.restricciones = []
+
+    def agregar_restriccion(self, texto):
+        """Añade una restricción a la lista."""
+        self.restricciones.append(texto)
+
+    def construir(self, entrada):
+        """Devuelve el prompt completo como un único texto de varias líneas."""
+        lineas = [
+            f"Actúa como {self.rol}.",
+            f"Tarea: {self.tarea}",
+        ]
+        if self.restricciones:
+            lineas.append("Restricciones:")
+            for restriccion in self.restricciones:
+                lineas.append(f"- {restriccion}")
+        lineas.append(f"Formato de salida: {self.formato_salida}")
+        lineas.append(f'Entrada: """{entrada}"""')
+        return "\n".join(lineas)
+
+    def __repr__(self):
+        return f"PlantillaPrompt(rol={self.rol!r}, restricciones={len(self.restricciones)})"
 
 
-
-# ===== Código de prueba del enunciado =====
+# Código de prueba del enunciado
 clasificador = PlantillaPrompt(
     "analista de experiencia de cliente",
     "clasifica el sentimiento de la reseña como POSITIVO, NEUTRO o NEGATIVO",

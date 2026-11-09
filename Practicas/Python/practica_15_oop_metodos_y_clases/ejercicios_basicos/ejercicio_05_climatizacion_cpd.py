@@ -1,13 +1,4 @@
-"""
-Práctica 15 · Ejercicio B5 - Climatización de un centro de datos
-Nivel: básico
-Regla: sin herencia ni polimorfismo (usa composición). Solo biblioteca estándar.
-"""
-
-# ======================================================================
-# ENUNCIADO (copiado tal cual del profesor)
-# ======================================================================
-# ### Ejercicio B5 - Climatización de un centro de datos
+# Ejercicio B5 - Climatización de un centro de datos
 #
 # La consigna de temperatura de cada sala del CPD solo puede estar entre **18 y 27 °C**. Nadie debe poder cambiarla «a mano» desde fuera del objeto. Crea la clase `Climatizador` aplicando las convenciones de nombres:
 #
@@ -18,36 +9,44 @@ Regla: sin herencia ni polimorfismo (usa composición). Solo biblioteca estánda
 # - Método `consigna()`: devuelve el valor actual.
 # - `__str__`: `"Sala A · 22 °C · 3 cambios"` (los cambios son las entradas del historial menos la inicial).
 # Responde en un comentario al final del archivo: ¿por qué `hasattr(sala_a, "__consigna")` devuelve `False` si el atributo existe?
-#
-# **Código de prueba:**
-#
-# ```python
-# sala_a = Climatizador("A", 22)
-# sala_b = Climatizador("B", 31)
-# print(sala_a.ajustar(-3), sala_a.ajustar(-4), sala_a.ajustar(6))
-# print(sala_a)
-# print(sala_b)
-# print(sala_a._historial)
-# print(vars(sala_b))
-# print(hasattr(sala_a, "__consigna"), hasattr(sala_a, "_Climatizador__consigna"))
-# ```
-#
-# **Salida esperada:**
-#
-# ```plain text
-# 19 18 24
-# Sala A · 24 °C · 3 cambios
-# Sala B · 27 °C · 0 cambios
-# [22, 19, 18, 24]
-# {'sala': 'B', '_Climatizador__consigna': 27, '_historial': [27]}
-# False True
-# ```
 
-# ===== ESCRIBE AQUÍ TU SOLUCIÓN =====
+# Solución:
+
+class Climatizador:
+    """Control de la consigna de temperatura de una sala del CPD."""
+
+    TEMP_MIN = 18
+    TEMP_MAX = 27
+
+    def __init__(self, sala, consigna):
+        self.sala = sala
+        self.__consigna = self._limitar(consigna)
+        self._historial = [self.__consigna]
+
+    def _limitar(self, valor):
+        """Uso interno: ajusta el valor al rango permitido."""
+        if valor < Climatizador.TEMP_MIN:
+            return Climatizador.TEMP_MIN
+        if valor > Climatizador.TEMP_MAX:
+            return Climatizador.TEMP_MAX
+        return valor
+
+    def ajustar(self, grados):
+        """Suma (o resta) grados a la consigna, respetando el rango, y la devuelve."""
+        self.__consigna = self._limitar(self.__consigna + grados)
+        self._historial.append(self.__consigna)
+        return self.__consigna
+
+    def consigna(self):
+        """Devuelve la consigna actual."""
+        return self.__consigna
+
+    def __str__(self):
+        cambios = len(self._historial) - 1
+        return f"Sala {self.sala} · {self.__consigna} °C · {cambios} cambios"
 
 
-
-# ===== Código de prueba del enunciado =====
+# Código de prueba del enunciado
 sala_a = Climatizador("A", 22)
 sala_b = Climatizador("B", 31)
 print(sala_a.ajustar(-3), sala_a.ajustar(-4), sala_a.ajustar(6))
@@ -57,6 +56,12 @@ print(sala_a._historial)
 print(vars(sala_b))
 print(hasattr(sala_a, "__consigna"), hasattr(sala_a, "_Climatizador__consigna"))
 
-# ===== RESPUESTA (comentario al final del archivo) =====
+
+# RESPUESTA:
 # ¿Por qué hasattr(sala_a, "__consigna") devuelve False si el atributo existe?
-# 
+# Porque Python aplica "name mangling" a los atributos que empiezan por dos guiones
+# bajos: dentro de la clase, __consigna se renombra a _Climatizador__consigna
+# (_NombreClase__atributo). El atributo existe, pero con ese nombre; desde fuera
+# no hay ninguno llamado literalmente "__consigna", y por eso hasattr da False.
+# Con el nombre real, hasattr(sala_a, "_Climatizador__consigna") da True. Esto no es
+# una protección absoluta, solo evita accesos accidentales y choques de nombres.
