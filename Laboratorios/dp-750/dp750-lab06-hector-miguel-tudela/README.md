@@ -277,7 +277,7 @@ WHERE transaction_id IN ('TXN-003', 'TXN-007');
 
 ## 12. Limpieza
 
-Si no vas a hacer más labs de Databricks hoy, borra el grupo de recursos para evitar cobros:
+Si no vas a hacer más labs de Databricks, borra el grupo de recursos para evitar cobros:
 
 ```bash
 az group delete --name rg-dp750 --yes --no-wait
