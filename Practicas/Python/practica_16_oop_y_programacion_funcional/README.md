@@ -36,11 +36,8 @@ Cada `.py` incluye al principio el **enunciado completo del profesor** y debajo 
 ## 🚀 Cómo ejecutar (pasos)
 
 1. Abre la carpeta `BigData/Practicas/practica_16_oop_y_programacion_funcional` en VS Code.
-   📸 Captura: el explorador de VS Code con las dos carpetas (`clase_20...` y `clase_21...`) y sus archivos `.py` desplegados.
 2. Abre una terminal integrada (`Ctrl + ñ`) y comprueba la versión de Python con `python --version`.
-   📸 Captura: la terminal mostrando `Python 3.x.x`.
 3. Ejecuta cada ejercicio con `python <carpeta>/<archivo>.py` (por ejemplo `python clase_20_herencia_polimorfismo/p1_empleados.py`).
-   📸 Captura: una por ejercicio, con el comando escrito y la salida completa visible en la terminal (los apartados siguientes indican qué debe verse en cada una).
 
 ---
 
@@ -91,7 +88,7 @@ Tipo de moto: Naked
 ...
 ```
 
-📸 Captura: `python clase_20_herencia_polimorfismo/ejercicio_1_vehiculos.py` mostrando los cuatro vehículos (Coche, Moto, Camion y Autobus) separados por líneas de guiones.
+![alt text](images/README-1794516501593.png)
 
 **Conceptos:** herencia simple, `super().__init__()`, sobrescritura de `mostrar_informacion()`.
 
@@ -120,32 +117,7 @@ for empleado in empleados:
     empleado.mostrar_informacion()   # cada objeto ejecuta SU versión
 ```
 
-**Resultado (extracto, los 6 empleados se muestran al ejecutar):**
-
-```plain text
-ID: E001
-Nombre: Ana López
-Departamento: Desarrollo
-Salario base: 2800 €
-Lenguaje principal: Python
-Nivel: Senior
-
-ID: E002
-Nombre: Carlos Pérez
-Departamento: Datos
-Salario base: 2600 €
-Herramienta BI: Power BI
-Especialidad: Análisis de ventas
-
-ID: E003
-Nombre: Laura Gómez
-Departamento: Infraestructura
-Salario base: 2900 €
-Sistema operativo: Linux
-...
-```
-
-📸 Captura: `python clase_20_herencia_polimorfismo/p1_empleados.py` con los seis empleados (E001 a E006) visibles, hay que hacer scroll o ampliar la terminal.
+![alt text](images/README-1794516642532.png)
 
 **Conceptos:** no repetir código común (DRY), sobrescritura, polimorfismo al recorrer una lista mixta.
 
@@ -175,38 +147,7 @@ atributos = vars(dispositivo)
 sin_none = all(valor is not None for valor in atributos.values())
 ```
 
-**Resultado (extracto):**
-
-```plain text
-ID: DEV001
-Nombre: Sensor de suelo
-Ubicación: Parcela A
-Valor: 45 %
-Profundidad: 30 cm
-Calibración: Automática
-Categoría: Sensor de humedad
-----------------------------------------
-ID: DEV002
-Nombre: Sensor ambiental
-Ubicación: Parcela B
-Valor: 26 °C
-Altitud: 650 m
-Precisión: 0.5 °C
-Categoría: Sensor de temperatura
-----------------------------------------
-...
-```
-
-Y al final, la comprobación con `vars()` (cada objeto tiene solo 7 atributos y ninguno vacío; en el código original tenían 14, la mayoría a `None`):
-
-```plain text
-DEV007: 7 atributos -> sin atributos vacíos: True
-   {'device_id': 'DEV007', 'nombre': 'Anemómetro 2', 'ubicacion': 'Parcela A', 'valor': 12, 'unidad': 'km/h', 'orientacion': 'Suroeste', 'velocidad_maxima': 75}
-DEV008: 7 atributos -> sin atributos vacíos: True
-   {'device_id': 'DEV008', 'nombre': 'Tanque auxiliar', 'ubicacion': 'Parcela B', 'valor': 40, 'unidad': '%', 'capacidad': 2000, 'nivel_bateria': 85}
-```
-
-📸 Captura (1): el inicio de la salida con DEV001 y DEV002, comparando con la salida orientativa del enunciado. 📸 Captura (2): el bloque final "Comprobación con vars()" con los ocho dispositivos y `sin atributos vacíos: True`.
+![alt text](images/README-1794516669056.png)
 
 **Conceptos:** refactorización de una clase "todo en uno" a una jerarquía, eliminación de `if/elif` por tipo, `isinstance()`, `vars()`.
 
@@ -226,22 +167,7 @@ def calcular_consumo(self):
 num_servidores = sum(1 for r in recursos if isinstance(r, Servidor))
 ```
 
-**Resultado (resumen final):**
-
-```plain text
-Consumo acumulado: 4.0 kWh
-
-========== RESUMEN DEL LABORATORIO ==========
-
-Ordenadores: 2
-Servidores: 2
-Dispositivos Edge: 2
-
-Consumo total: 78.5 kWh
-Dispositivo de mayor consumo: SRV-01
-```
-
-📸 Captura (1): el inicio con `LABORATORIO BIG DATA` y los dos primeros recursos con su consumo. 📸 Captura (2): el bloque `RESUMEN DEL LABORATORIO` con el recuento por tipo, el consumo total (78.5 kWh) y el dispositivo de mayor consumo (SRV-01).
+![alt text](images/README-1794516777102.png)
 
 **Conceptos:** método heredado que no se sobrescribe (`calcular_consumo()`), acumuladores, búsqueda del máximo, `isinstance()`.
 
@@ -255,23 +181,7 @@ Dispositivo de mayor consumo: SRV-01
 - **Ejemplo 2:** `SensorReal`, `SimuladorSensor` y `ArchivoLecturas` comparten solo `leer()`; `calcular_media(fuentes)` las trata igual.
 - Se añade una prueba con un objeto que **no** tiene el método, para ver el `AttributeError`.
 
-**Resultado:**
-
-```plain text
-=== EJEMPLO 1: exportadores (método guardar) ===
-[CSV]  Guardando fila: 1,Ana,Madrid
-[JSON] Guardando objeto: {"id": 1, "nombre": "Ana", "ciudad": "Madrid"}
-[SQL]  INSERT INTO clientes (id, nombre, ciudad) VALUES (1, 'Ana', 'Madrid');
-
-=== EJEMPLO 2: fuentes de lectura (método leer) ===
-Lecturas obtenidas: [24.5, 21.0, 26.5]
-Media de las lecturas: 24.00
-
-=== Qué pasa si el objeto NO tiene el método ===
-AttributeError: 'Objeto' object has no attribute 'guardar'
-```
-
-📸 Captura: la salida completa, con los dos ejemplos y el `AttributeError` final.
+![alt text](images/README-1794516882381.png)
 
 **Conceptos:** duck typing, polimorfismo sin herencia, `try/except AttributeError`.
 
@@ -298,35 +208,7 @@ class ArchivoXML(ArchivoDatos):  # se añade sin modificar nada más
         ...
 ```
 
-**Resultado (extracto):**
-
-```plain text
-Nombre: ventas.csv
-Tamaño: 15 MB
-Procesando archivo CSV: ventas.csv
-Leyendo registros separados por comas...
-
-Nombre: sensores.json
-Tamaño: 8 MB
-Procesando archivo JSON: sensores.json
-Extrayendo propiedades de los objetos JSON...
-
-Nombre: logs.txt
-Tamaño: 25 MB
-Procesando archivo TXT: logs.txt
-Leyendo líneas y realizando limpieza básica...
-
---- Llega un nuevo formato: XML ---
-
-Nombre: configuracion.xml
-Tamaño: 5 MB
-Procesando archivo XML: configuracion.xml
-Analizando etiquetas y atributos XML...
-
-...
-```
-
-📸 Captura (1): los tres archivos iniciales (CSV, JSON y TXT) procesados. 📸 Captura (2): el bloque tras `Llega un nuevo formato: XML` con `configuracion.xml` procesado correctamente.
+![alt text](images/README-1794516838033.png)
 
 ### Preguntas
 
@@ -362,47 +244,22 @@ class EnvioNacional(Envio):
     def calcular_coste(self):
         return super().calcular_coste() + 3
 
-envios_caros = [e.envio_id for e in envios if e.calcular_coste() >= 12]          # lista
-tipos_envio = {type(e).__name__ for e in envios}                                  # conjunto
-costes_por_envio = {e.envio_id: e.calcular_coste() for e in envios}               # diccionario
+envios_caros = [e.envio_id for e in envios if e.calcular_coste() >= 12]
+tipos_envio = {type(e).__name__ for e in envios}
+costes_por_envio = {e.envio_id: e.calcular_coste() for e in envios}
 
 def crear_descuento(porcentaje):
-    def aplicar_descuento(importe):       # closure: recuerda "porcentaje"
+    def aplicar_descuento(importe):
         return importe * (1 - porcentaje / 100)
     return aplicar_descuento
 
-costes_con_descuento = {                                                           # diccionario
+costes_con_descuento = {
     envio_id: aplicar_operacion(redondear_euros, aplicar_operacion(descontar_10, coste))
     for envio_id, coste in costes_por_envio.items() if coste >= 12
 }
 ```
 
-**Resultado:**
-
-```plain text
-E01: 7.0 €
-E02: 21.0 €
-E03: 12.0 €
-E04: 13.0 €
-E05: 17.0 €
-E06: 6.0 €
-E07: 5.0 €
-
-Envíos caros: ['E02', 'E03', 'E04', 'E05']
-
-Tipos de envío: ['EnvioInternacional', 'EnvioNacional', 'EnvioUrgente']
-
-Costes por envío: {'E01': 7.0, 'E02': 21.0, 'E03': 12.0, 'E04': 13.0, 'E05': 17.0, 'E06': 6.0, 'E07': 5.0}
-
-Costes con descuento: {'E02': 18.9, 'E03': 10.8, 'E04': 11.7, 'E05': 15.3}
-
---- Comprobaciones ---
-Envío E01 -> Madrid (2 kg)
-aplicar_operacion(redondear_euros, 12.345) = 12.35
-descontar_10(100) = 90.0
-```
-
-📸 Captura: el informe completo (costes, `Envíos caros`, `Tipos de envío`, `Costes por envío`, `Costes con descuento`) y las tres líneas de comprobaciones (`12.35` y `90.0`).
+![alt text](images/README-1794516951354.png)
 
 **Conceptos:** polimorfismo con `super()`, list/set/dict comprehensions, funciones como argumentos, closures (funciones que devuelven funciones).
 
@@ -425,32 +282,7 @@ pedidos_con_iva = list(map(
 facturacion_total = reduce(lambda acc, p: acc + p["importe_final"], pedidos_con_iva, 0)
 ```
 
-**Resultado:**
-
-```plain text
-Pedidos completados:
-  {'pedido_id': 'P001', 'cliente': 'Ana', 'importe': 120.0, 'estado': 'completado'}
-  {'pedido_id': 'P003', 'cliente': 'Marta', 'importe': 250.0, 'estado': 'completado'}
-  {'pedido_id': 'P005', 'cliente': 'Lucía', 'importe': 150.0, 'estado': 'completado'}
-
-Pedidos transformados (con IVA):
-  P001 - Ana: 145.20 €
-  P003 - Marta: 302.50 €
-  P005 - Lucía: 181.50 €
-
-Clasificaciones: ['Normal', 'Alto', 'Normal']
-
-Facturación total con IVA: 629.20 €
-
---- Comprobaciones ---
-3 pedidos completados: True
-Importes finales correctos: True
-Facturación total = 629.20 €: True
-Clasificaciones correctas: True
-Lista original sin cambios: True
-```
-
-📸 Captura: la salida completa con la facturación de 629.20 € y todas las comprobaciones en `True`.
+![alt text](images/README-1794516992366.png)
 
 **Conceptos:** `lambda`, `filter()`, `map()`, `reduce()` (de `functools`), inmutabilidad de los datos originales.
 
@@ -469,34 +301,7 @@ total_registros = reduce(lambda acc, e: acc + e["registros"], exitosas, 0)
 ordenadas = sorted(exitosas, key=lambda e: e["duracion_min"], reverse=True)
 ```
 
-**Resultado:**
-
-```plain text
-===== INFORME DE PIPELINES ETL =====
-
-Ejecuciones exitosas: 4
-Pipelines lentos (> 25 min): ['clientes', 'facturas', 'devoluciones']
-
-Lista transformada:
-  {'pipeline': 'ventas', 'duracion_min': 18, 'duracion_seg': 1080, 'registros': 12000}
-  {'pipeline': 'clientes', 'duracion_min': 32, 'duracion_seg': 1920, 'registros': 8000}
-  {'pipeline': 'facturas', 'duracion_min': 45, 'duracion_seg': 2700, 'registros': 15000}
-  {'pipeline': 'devoluciones', 'duracion_min': 26, 'duracion_seg': 1560, 'registros': 4000}
-
-Total de registros procesados: 39 000
-Tiempo acumulado: 121 minutos
-Orden por duración (mayor a menor): ['facturas', 'clientes', 'devoluciones', 'ventas']
-
---- Comprobaciones ---
-4 ejecuciones exitosas: True
-Lentos = clientes, facturas, devoluciones: True
-39 000 registros: True
-121 minutos: True
-Orden correcto: True
-Lista original sin cambios: True
-```
-
-📸 Captura: el informe completo y el bloque de comprobaciones con todo en `True`.
+![alt text](images/README-1794517062117.png)
 
 **Conceptos:** `filter()` encadenado, `map()` que crea diccionarios nuevos, `reduce()` con acumulador inicial, `sorted()` con `key=lambda`.
 

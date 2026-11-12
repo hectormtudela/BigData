@@ -73,38 +73,6 @@ Crea una lista que contenga los tres objetos anteriores.
 
 Recorre la lista utilizando un bucle `for` y llama a la función `ejecutar_procesamiento()` para cada objeto.
 
-### Salida esperada
-
-```plain text
-Nombre: ventas.csv
-Tamaño: 15 MB
-Procesando archivo CSV: ventas.csv
-Leyendo registros separados por comas...
-
-Nombre: sensores.json
-Tamaño: 8 MB
-Procesando archivo JSON: sensores.json
-Extrayendo propiedades de los objetos JSON...
-
-Nombre: logs.txt
-Tamaño: 25 MB
-Procesando archivo TXT: logs.txt
-Leyendo líneas y realizando limpieza básica...
-```
-
-## Parte F. Ampliación del sistema
-
-La empresa comienza a recibir archivos de un nuevo formato: **XML**.
-
-Debes incorporar una nueva clase llamada `ArchivoXML` que herede de `ArchivoDatos`.
-
-Esta clase debe sobrescribir `procesar()` para mostrar:
-
-```plain text
-Procesando archivo XML: configuracion.xml
-Analizando etiquetas y atributos XML...
-```
-
 Crea un objeto `ArchivoXML`, añádelo a la lista anterior y comprueba que puede procesarse correctamente.
 
 **Condición importante:** No puedes modificar la función `ejecutar_procesamiento()` para incorporar el nuevo formato.
@@ -119,15 +87,8 @@ Crea un objeto `ArchivoXML`, añádelo a la lista anterior y comprueba que puede
 ---
 
 > **Restricciones del ejercicio:** se permite herencia simple, sobrescritura de métodos, listas de objetos y funciones que reciben objetos como argumentos. No se permite utilizar `super()`, herencia múltiple ni estructuras condicionales para seleccionar el comportamiento de cada subclase.
-
-**Nota:** No es necesario leer archivos reales del disco. El procesamiento se simulará mostrando los mensajes correspondientes mediante `print()`.
 """
 
-# Restricciones de este ejercicio: SIN super(), SIN herencia múltiple y
-# SIN if/elif/isinstance/type para elegir el comportamiento.
-
-
-# Parte A: superclase
 class ArchivoDatos:
     def __init__(self, nombre, tamano):
         self.nombre = nombre
@@ -141,8 +102,6 @@ class ArchivoDatos:
         print("Procesamiento genérico de archivo")
 
 
-# Parte B: subclases. No definen __init__: heredan el de ArchivoDatos,
-# por eso no necesitamos super() y usan self.nombre y self.tamano.
 class ArchivoCSV(ArchivoDatos):
     def procesar(self):
         print(f"Procesando archivo CSV: {self.nombre}")
@@ -161,13 +120,11 @@ class ArchivoTXT(ArchivoDatos):
         print("Leyendo líneas y realizando limpieza básica...")
 
 
-# Parte D: función polimórfica. Recibe cualquier objeto con estos métodos.
 def ejecutar_procesamiento(archivo):
     archivo.mostrar_informacion()
     archivo.procesar()
 
 
-# Parte F: nueva clase XML. Se añade SIN tocar ejecutar_procesamiento().
 class ArchivoXML(ArchivoDatos):
     def procesar(self):
         print(f"Procesando archivo XML: {self.nombre}")
@@ -175,25 +132,21 @@ class ArchivoXML(ArchivoDatos):
 
 
 def main():
-    # Parte C: objetos
     archivo1 = ArchivoCSV("ventas.csv", 15)
     archivo2 = ArchivoJSON("sensores.json", 8)
     archivo3 = ArchivoTXT("logs.txt", 25)
 
-    # Parte E: lista y bucle
     archivos = [archivo1, archivo2, archivo3]
     for archivo in archivos:
         ejecutar_procesamiento(archivo)
         print()
 
-    # Parte F: ampliación con XML
     print("--- Llega un nuevo formato: XML ---\n")
     archivo4 = ArchivoXML("configuracion.xml", 5)
     archivos.append(archivo4)
     ejecutar_procesamiento(archivo4)
     print()
 
-    # Comprobación: la lista completa sigue funcionando con la misma función
     print("--- Procesando de nuevo TODA la lista (4 archivos) ---\n")
     for archivo in archivos:
         ejecutar_procesamiento(archivo)

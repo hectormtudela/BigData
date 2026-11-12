@@ -24,32 +24,6 @@ Debes desarrollar una estructura de clases basada en herencia que permita repres
 5. Crear al menos dos objetos de cada subclase.
 6. Almacenar los seis objetos en una única lista llamada `empleados`.
 7. Recorrer la lista e imprimir la información de todos los empleados.
-### Salida esperada (orientativa)
-
-```plain text
-ID: E001
-Nombre: Ana López
-Departamento: Desarrollo
-Salario base: 2800 €
-Lenguaje principal: Python
-Nivel: Senior
-
-ID: E002
-Nombre: Carlos Pérez
-Departamento: Datos
-Salario base: 2600 €
-Herramienta BI: Power BI
-Especialidad: Análisis de ventas
-
-ID: E003
-Nombre: Laura Gómez
-Departamento: Infraestructura
-Salario base: 2900 €
-Sistema operativo: Linux
-Certificación: AZ-104
-```
-
-La salida anterior representa únicamente tres empleados de ejemplo. Tu programa debe mostrar los seis.
 """
 
 class Empleado:
@@ -76,7 +50,6 @@ class Desarrollador(Empleado):
         self.nivel = nivel
 
     def mostrar_informacion(self):
-        # Reutilizamos la parte común y añadimos la específica
         super().mostrar_informacion()
         print(f"Lenguaje principal: {self.lenguaje_principal}")
         print(f"Nivel: {self.nivel}")
@@ -109,7 +82,6 @@ class AdministradorSistemas(Empleado):
 
 
 def main():
-    # Dos objetos de cada subclase en una única lista
     empleados = [
         Desarrollador("E001", "Ana López", 2800, "Desarrollo",
                       "Python", "Senior"),
@@ -125,7 +97,6 @@ def main():
                               "Windows Server", "AZ-800"),
     ]
 
-    # Misma llamada para todos: cada objeto ejecuta SU versión del método
     for empleado in empleados:
         empleado.mostrar_informacion()
         print()

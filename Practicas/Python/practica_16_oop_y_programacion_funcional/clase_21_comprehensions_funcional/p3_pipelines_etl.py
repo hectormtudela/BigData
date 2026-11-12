@@ -60,7 +60,7 @@ Al ejecutar el programa, verifica que:
 
 from functools import reduce
 
-UMBRAL_LENTO_MIN = 25  # minutos
+UMBRAL_LENTO_MIN = 25
 
 
 def main():
@@ -74,13 +74,10 @@ def main():
     ]
     copia_original = [dict(ejecucion) for ejecucion in ejecuciones]
 
-    # 44. filter() #1: solo ejecuciones exitosas
     exitosas = list(filter(lambda e: e["estado"] == "ok", ejecuciones))
 
-    # 45. filter() #2: de las exitosas, las de más de 25 minutos
     lentas = list(filter(lambda e: e["duracion_min"] > UMBRAL_LENTO_MIN, exitosas))
 
-    # 46. map(): nuevos diccionarios con la duración también en segundos
     transformadas = list(map(
         lambda e: {
             "pipeline": e["pipeline"],
@@ -91,16 +88,12 @@ def main():
         exitosas,
     ))
 
-    # 47. reduce() #1: total de registros procesados
     total_registros = reduce(lambda acc, e: acc + e["registros"], exitosas, 0)
 
-    # 48. reduce() #2: tiempo total en minutos
     total_minutos = reduce(lambda acc, e: acc + e["duracion_min"], exitosas, 0)
 
-    # 49. sorted(): de mayor a menor duración (key con lambda + reverse=True)
     ordenadas = sorted(exitosas, key=lambda e: e["duracion_min"], reverse=True)
 
-    # 50. Informe final
     print("===== INFORME DE PIPELINES ETL =====\n")
     print(f"Ejecuciones exitosas: {len(exitosas)}")
     print(f"Pipelines lentos (> {UMBRAL_LENTO_MIN} min): "
@@ -115,7 +108,6 @@ def main():
     print(f"Orden por duración (mayor a menor): "
           f"{[e['pipeline'] for e in ordenadas]}")
 
-    # Comprobaciones del enunciado
     print("\n--- Comprobaciones ---")
     print(f"4 ejecuciones exitosas: {len(exitosas) == 4}")
     print(f"Lentos = clientes, facturas, devoluciones: "

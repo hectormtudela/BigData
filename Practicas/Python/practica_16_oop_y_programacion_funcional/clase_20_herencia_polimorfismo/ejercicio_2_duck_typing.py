@@ -9,16 +9,6 @@ ENUNCIADO DEL PROFESOR (copiado íntegro)
 
 import json
 
-# ---------------------------------------------------------------------------
-# Duck typing: "si camina como un pato y hace cuac como un pato, es un pato".
-# A Python no le importa de qué CLASE es el objeto, sino si TIENE el método
-# que le pedimos. Por eso aquí NO hay herencia ni superclase común.
-# ---------------------------------------------------------------------------
-
-
-# ===========================================================================
-# EJEMPLO 1: exportadores de datos (todos tienen el método guardar())
-# ===========================================================================
 class ExportadorCSV:
     def guardar(self, datos):
         fila = ",".join(str(valor) for valor in datos.values())
@@ -43,9 +33,6 @@ def exportar(destino, datos):
     destino.guardar(datos)
 
 
-# ===========================================================================
-# EJEMPLO 2: fuentes de lectura (todas tienen el método leer())
-# ===========================================================================
 class SensorReal:
     def __init__(self, nombre, lectura_fija):
         self.nombre = nombre
@@ -75,7 +62,7 @@ class ArchivoLecturas:
         self.lecturas = lecturas
 
     def leer(self):
-        return self.lecturas[-1]  # devuelve la última lectura registrada
+        return self.lecturas[-1]
 
 
 def calcular_media(fuentes):

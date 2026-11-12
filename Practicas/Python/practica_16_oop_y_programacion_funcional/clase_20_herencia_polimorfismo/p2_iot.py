@@ -131,29 +131,7 @@ Cada subclase debe sobrescribir el método `mostrar_informacion()` para mostrar 
 10. Recorrer la lista y ejecutar `mostrar_informacion()` para cada dispositivo.
 11. Utilizar `isinstance()` para identificar el tipo de dispositivo y mostrar un mensaje personalizado.
 12. Comprobar que los objetos no contienen atributos innecesarios utilizando `vars()`.
-### Salida esperada (orientativa)
 
-```plain text
-ID: DEV001
-Nombre: Sensor de suelo
-Ubicación: Parcela A
-Valor: 45 %
-Profundidad: 30 cm
-Calibración: Automática
-Categoría: Sensor de humedad
-----------------------------------------
-
-ID: DEV002
-Nombre: Sensor ambiental
-Ubicación: Parcela B
-Valor: 26 °C
-Altitud: 650 m
-Precisión: 0.5 °C
-Categoría: Sensor de temperatura
-----------------------------------------
-```
-
-**Resultado esperado:** El nuevo programa debe conservar la funcionalidad original, eliminar los atributos innecesarios y aprovechar la herencia para reducir la duplicación de código.
 """
 
 class DispositivoIoT:
@@ -196,7 +174,6 @@ class SensorTemperatura(DispositivoIoT):
     def mostrar_informacion(self):
         super().mostrar_informacion()
         print(f"Altitud: {self.altitud} m")
-        # La precisión se expresa en la misma unidad que la medida (°C)
         print(f"Precisión: {self.precision} {self.unidad}")
 
 
@@ -240,7 +217,6 @@ def obtener_categoria(dispositivo):
 
 
 def main():
-    # Ocho dispositivos: dos de cada subclase
     dispositivos = [
         SensorHumedad("DEV001", "Sensor de suelo", "Parcela A",
                       45, "%", 30, "Automática"),
@@ -260,13 +236,11 @@ def main():
                      40, "%", 2000, 85),
     ]
 
-    # Información + categoría (isinstance)
     for dispositivo in dispositivos:
         dispositivo.mostrar_informacion()
         print(f"Categoría: {obtener_categoria(dispositivo)}")
         print("-" * 40)
 
-    # Comprobación con vars(): solo atributos necesarios, ninguno a None
     print("\nComprobación con vars():")
     for dispositivo in dispositivos:
         atributos = vars(dispositivo)

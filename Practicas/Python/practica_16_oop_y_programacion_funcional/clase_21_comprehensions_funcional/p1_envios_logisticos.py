@@ -153,27 +153,6 @@ El programa debe imprimir los siguientes apartados, en este orden:
 37. Diccionario `costes_por_envio`.
 38. Diccionario `costes_con_descuento`.
 Para presentar `tipos_envio` de forma ordenada, utiliza `sorted(tipos_envio)`; el conjunto original no tiene un orden garantizado.
-
-### Resultados esperados
-
-Puedes utilizar estos resultados para comprobar tu implementación. **No son una solución del código**.
-
-```plain text
-E01: 7.0 €
-E02: 21.0 €
-E03: 12.0 €
-E04: 13.0 €
-E05: 17.0 €
-E06: 6.0 €
-E07: 5.0 €
-
-Envíos caros: ['E02', 'E03', 'E04', 'E05']
-
-Tipos de envío: ['EnvioInternacional', 'EnvioNacional', 'EnvioUrgente']
-
-Costes por envío: {'E01': 7.0, 'E02': 21.0, 'E03': 12.0, 'E04': 13.0, 'E05': 17.0, 'E06': 6.0, 'E07': 5.0}
-
-Costes con descuento: {'E02': 18.9, 'E03': 10.8, 'E04': 11.7, 'E05': 15.3}
 ```
 
 ## 8. Restricciones
@@ -188,9 +167,7 @@ Costes con descuento: {'E02': 18.9, 'E03': 10.8, 'E04': 11.7, 'E05': 15.3}
 ---
 """
 
-# ---------------------------------------------------------------------------
 # PARTE A: jerarquía de clases (una superclase + tres subclases)
-# ---------------------------------------------------------------------------
 class Envio:
     """Superclase: datos comunes y tarifa base de un envío."""
 
@@ -210,7 +187,6 @@ class Envio:
 
 class EnvioNacional(Envio):
     def calcular_coste(self):
-        # super() da el coste base (peso * 2) sin repetir el cálculo
         return super().calcular_coste() + 3
 
 
@@ -224,9 +200,7 @@ class EnvioUrgente(Envio):
         return super().calcular_coste() * 1.5
 
 
-# ---------------------------------------------------------------------------
 # PARTE D: programación funcional
-# ---------------------------------------------------------------------------
 def aplicar_operacion(funcion, valor):
     """D.1: recibe una función y un valor, y devuelve funcion(valor)."""
     return funcion(valor)
@@ -247,9 +221,7 @@ def crear_descuento(porcentaje):
 
 
 def main():
-    # -----------------------------------------------------------------------
     # PARTE B: siete objetos y polimorfismo
-    # -----------------------------------------------------------------------
     envios = [
         EnvioNacional("E01", "Madrid", 2),
         EnvioInternacional("E02", "París", 3),
@@ -266,9 +238,7 @@ def main():
     # calcular_coste(), así que EnvioNacional, EnvioInternacional y EnvioUrgente
     # aplican su propia tarifa con exactamente la misma llamada (polimorfismo).
 
-    # -----------------------------------------------------------------------
     # PARTE C: comprehensions
-    # -----------------------------------------------------------------------
     # C.1 list comprehension: ids de los envíos con coste >= 12 €
     envios_caros = [envio.envio_id for envio in envios
                     if envio.calcular_coste() >= 12]
@@ -281,7 +251,6 @@ def main():
                         for envio in envios}
 
     # D.3 dict comprehension: solo los >= 12 €, con 10 % de descuento
-    # Se combinan las tres funciones con llamadas anidadas a aplicar_operacion()
     descontar_10 = crear_descuento(10)
     costes_con_descuento = {
         envio_id: aplicar_operacion(
@@ -292,9 +261,7 @@ def main():
         if coste >= 12
     }
 
-    # -----------------------------------------------------------------------
     # PARTE E: informe final (en el orden pedido)
-    # -----------------------------------------------------------------------
     for envio in envios:
         print(f"{envio.envio_id}: {envio.calcular_coste()} €")
 
@@ -303,9 +270,7 @@ def main():
     print(f"\nCostes por envío: {costes_por_envio}")
     print(f"\nCostes con descuento: {costes_con_descuento}")
 
-    # -----------------------------------------------------------------------
     # Comprobaciones extra de los apartados A y D
-    # -----------------------------------------------------------------------
     print("\n--- Comprobaciones ---")
     print(envios[0].mostrar_informacion())
     print(f"aplicar_operacion(redondear_euros, 12.345) = "

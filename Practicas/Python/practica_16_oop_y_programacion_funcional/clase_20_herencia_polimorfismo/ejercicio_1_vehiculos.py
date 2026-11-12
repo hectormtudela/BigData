@@ -30,7 +30,6 @@ class Coche(Vehiculo):
 
     def __init__(self, marca, modelo, anio, velocidad_max_kmh,
                  num_puertas, combustible):
-        # Reutilizamos el constructor de la superclase para los atributos comunes
         super().__init__(marca, modelo, anio, velocidad_max_kmh)
         self.num_puertas = num_puertas
         self.combustible = combustible
@@ -87,7 +86,6 @@ class Autobus(Vehiculo):
 
 
 def main():
-    # Un objeto de cada subclase
     vehiculos = [
         Coche("Seat", "León", 2022, 210, 5, "Gasolina"),
         Moto("Yamaha", "MT-07", 2021, 195, 689, "Naked"),

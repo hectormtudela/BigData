@@ -50,7 +50,7 @@ Al ejecutar el programa, verifica que:
 
 from functools import reduce
 
-IVA = 0.21  # 21 %
+IVA = 0.21
 
 
 def main():
@@ -63,11 +63,8 @@ def main():
     ]
     copia_original = [dict(pedido) for pedido in pedidos]
 
-    # 39. filter(): solo pedidos completados (lambda como criterio)
     completados = list(filter(lambda p: p["estado"] == "completado", pedidos))
 
-    # 40. map(): nuevos diccionarios con importe_final (importe + 21 % IVA).
-    # Se crea un diccionario NUEVO por pedido: los originales no se tocan.
     pedidos_con_iva = list(map(
         lambda p: {
             "pedido_id": p["pedido_id"],
@@ -77,19 +74,16 @@ def main():
         completados,
     ))
 
-    # 41. reduce(): suma de importe_final con acumulador inicial 0
     facturacion_total = reduce(
         lambda acumulado, pedido: acumulado + pedido["importe_final"],
         pedidos_con_iva,
         0,
     )
 
-    # 42. lambda independiente + map() sobre los importes finales
-    clasificar_importe = lambda importe: "Alto" if importe >= 200 else "Normal"  # noqa: E731
+    clasificar_importe = lambda importe: "Alto" if importe >= 200 else "Normal"
     importes_finales = list(map(lambda p: p["importe_final"], pedidos_con_iva))
     clasificaciones = list(map(clasificar_importe, importes_finales))
 
-    # 43. Presentación
     print("Pedidos completados:")
     for pedido in completados:
         print(f"  {pedido}")
@@ -102,7 +96,6 @@ def main():
     print(f"\nClasificaciones: {clasificaciones}")
     print(f"\nFacturación total con IVA: {facturacion_total:.2f} €")
 
-    # Comprobaciones del enunciado
     print("\n--- Comprobaciones ---")
     print(f"3 pedidos completados: {len(completados) == 3}")
     print(f"Importes finales correctos: "

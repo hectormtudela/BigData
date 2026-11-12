@@ -41,38 +41,6 @@ Cada subclase debe sobrescribir el método `mostrar_informacion()` para mostrar 
 17. Calcular el consumo total acumulado de todos los recursos.
 18. Utilizar `isinstance()` para contar cuántos objetos hay de cada subclase.
 19. Identificar qué dispositivo tiene el mayor consumo eléctrico.
-### Salida esperada (orientativa)
-
-```plain text
-========== LABORATORIO BIG DATA ==========
-
-Recurso: PC-01
-Tipo: Ordenador
-Fabricante: Dell
-Procesador: Intel Core i7
-RAM: 32 GB
-Sistema operativo: Windows 11
-Consumo acumulado: 12.5 kWh
-
-Recurso: SRV-01
-Tipo: Servidor
-Fabricante: HPE
-Número de CPU: 2
-RAM: 128 GB
-Almacenamiento: 4 TB
-Consumo acumulado: 42.0 kWh
-
-========== RESUMEN DEL LABORATORIO ==========
-
-Ordenadores: 2
-Servidores: 2
-Dispositivos Edge: 2
-
-Consumo total: 78.5 kWh
-Dispositivo de mayor consumo: SRV-01
-```
-
-> Los valores anteriores son orientativos y deben corresponder a los datos de los objetos que crees.
 """
 
 class RecursoComputacional:
@@ -171,7 +139,6 @@ def main():
         if consumo > recurso_mayor_consumo.calcular_consumo():
             recurso_mayor_consumo = recurso
 
-    # Conteo por subclase con isinstance()
     num_ordenadores = sum(1 for r in recursos if isinstance(r, Ordenador))
     num_servidores = sum(1 for r in recursos if isinstance(r, Servidor))
     num_edge = sum(1 for r in recursos if isinstance(r, DispositivoEdge))
