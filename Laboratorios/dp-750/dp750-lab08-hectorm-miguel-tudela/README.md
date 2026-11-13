@@ -54,13 +54,8 @@ Objetivos del laboratorio:
 3. Abrir el notebook y elegir cómputo **Serverless**.
 4. **Find and replace** → *Replace all*: `realestate_lab` → `realestate_lab_hmt`.
 
-📸 **Captura:** notebook abierto con **Serverless** conectado y el cuadro de Find and replace con `realestate_lab` → `realestate_lab_hmt` (o el resultado tras *Replace all*).
+![alt text](images/README-1794571529134.png)
 
-![Captura Task 1](images/lab08-01-notebook.png)
-
-> ℹ️ El notebook sugiere usar **Genie Code** en cada celda. Es una ayuda opcional: revisa siempre lo que propone antes de ejecutarlo.
->
-> Regla del lab (igual que en el 07): **SQL con `%sql` en la primera línea de la celda, PySpark sin magic**, y un solo magic por celda.
 
 ---
 
@@ -85,12 +80,8 @@ SHOW TABLES IN realestate_lab_hmt.bronze;
 SELECT COUNT(*) AS total_filas FROM realestate_lab_hmt.bronze.listings;
 ```
 
-📸 **Captura:** salida de `CREATE CATALOG` / mensaje `CSV files written to volume.` y `All tables loaded successfully.`
-
-📸 **Captura:** `SHOW TABLES` con las 4 tablas (`listings`, `agents`, `sales`, `market_stats`) y el `COUNT(*)` = **33**.
-
-![Captura Ejercicio 1 – estructura](images/lab08-02-estructura.png)
-![Captura Ejercicio 1 – tablas](images/lab08-03-tablas.png)
+![alt text](images/README-1794572553605.png)
+![alt text](images/README-1794573532290.png)
 
 ---
 
@@ -110,9 +101,7 @@ ANALYZE TABLE realestate_lab_hmt.bronze.listings COMPUTE STATISTICS FOR ALL COLU
 DESCRIBE TABLE EXTENDED realestate_lab_hmt.bronze.listings;
 ```
 
-📸 **Captura:** `DESCRIBE TABLE EXTENDED` mostrando la sección de estadísticas (`Statistics`, nº de filas = 33 y tamaño en bytes).
-
-![Captura Ejercicio 2.1](images/lab08-04-analyze.png)
+![alt text](images/README-1794574410700.png)
 
 ### Task 2.2 — Resumen con PySpark
 
@@ -124,9 +113,7 @@ display(df_listings.describe())
 
 Qué debe verse: `count` distinto entre columnas (`list_price` < 33, `bedrooms` < 33, etc.), lo que delata los nulos. `describe()` devuelve count, mean, stddev, min y max; `summary()` añade además percentiles (25 %, 50 %, 75 %).
 
-📸 **Captura:** tabla de `describe()` con las filas `count`, `mean`, `stddev`, `min`, `max` y los recuentos menores de 33 en `list_price`, `bedrooms`, `bathrooms` y `status`.
-
-![Captura Ejercicio 2.2](images/lab08-05-describe.png)
+![alt text](images/README-1794601848102.png)
 
 ### Task 2.3 — Tarea fuera del notebook: Data Profile en Catalog Explorer
 
@@ -144,7 +131,12 @@ Qué debe verse: `count` distinto entre columnas (`list_price` < 33, `bedrooms` 
 📸 **Captura:** dashboard del perfil con los recuentos de nulos (`list_price`, `bedrooms`, `bathrooms`, `status`) y el histograma de `list_price`.
 
 ![Captura Data Profile – monitor](images/lab08-06-monitor.png)
-![Captura Data Profile – dashboard](images/lab08-07-profile.png)
+
+![alt text](images/README-1794602395595.png)
+
+![alt text](images/README-1794602413210.png)
+
+![alt text](images/README-1794602422067.png)
 
 ---
 
@@ -189,12 +181,9 @@ FROM realestate_lab_hmt.bronze.listings;
 DESCRIBE TABLE realestate_lab_hmt.silver.listings_typed;
 ```
 
-📸 **Captura:** resultado de la celda proporcionada (`double_exact = false`, `decimal_exact = true`).
+![alt text](images/README-1794602643845.png)
 
-📸 **Captura:** `DESCRIBE TABLE` de `listings_typed` con `list_price` como `decimal(12,2)`, `listing_date` como `date` y `last_updated` como `timestamp`.
-
-![Captura 3.1 – DOUBLE vs DECIMAL](images/lab08-08-decimal.png)
-![Captura 3.1 – listings_typed](images/lab08-09-listings-typed.png)
+![alt text](images/README-1794602662541.png)
 
 ### Task 3.2 — `TIMESTAMP` vs `TIMESTAMP_NTZ`
 
@@ -205,9 +194,7 @@ Se ejecuta la celda proporcionada (vista temporal `viewing_appointments` + `SET 
 SET TIME ZONE 'UTC';
 ```
 
-📸 **Captura:** resultado con `viewing_time_ts` desplazado (p. ej. 09:00 → 03:00 de Nueva York) y `viewing_time_ntz` intacto (09:00).
-
-![Captura 3.2](images/lab08-10-timestamp.png)
+![alt text](images/README-1794602715422.png)
 
 ### Task 3.3 — `ARRAY`, `MAP` y `STRUCT`
 
@@ -243,10 +230,7 @@ SELECT
   address.city              AS city
 FROM listings_enriched;
 ```
-
-📸 **Captura:** las 3 filas con `first_amenity` (Parking / Garden / Pool), `energy_label` (A / B / A) y `city` (Amsterdam / Rotterdam / Utrecht).
-
-![Captura 3.3](images/lab08-11-complex-types.png)
+![alt text](images/README-1794602946927.png)
 
 ---
 
@@ -265,9 +249,7 @@ ORDER BY property_id;
 
 Resultado esperado: **3 propiedades** duplicadas (`PROP-001`, `PROP-002`, `PROP-003`), 2 apariciones cada una.
 
-📸 **Captura:** las 3 filas de duplicados con `veces = 2`.
-
-![Captura 4.1](images/lab08-12-duplicados.png)
+![alt text](images/README-1794603095188.png)
 
 ### Task 4.2 — Quedarse con la última versión (`ROW_NUMBER` + `QUALIFY`)
 
@@ -281,9 +263,7 @@ ORDER BY property_id;
 
 Resultado esperado: **30 filas** (33 − 3 duplicados). Para `PROP-001` queda el precio **279000.00** (actualizado el 2026-03-01).
 
-📸 **Captura:** resultado con 30 filas y la fila de `PROP-001` con `list_price = 279000.00` y `last_updated = 2026-03-01`.
-
-![Captura 4.2](images/lab08-13-qualify.png)
+![alt text](images/README-1794603109504.png)
 
 ### Task 4.3 — Deduplicar con PySpark
 
@@ -304,9 +284,7 @@ Resultado esperado: **33 → 30**.
 
 > ⚠️ `dropDuplicates` no garantiza formalmente qué fila conserva tras un `orderBy` en un entorno distribuido. Para un resultado determinista es mejor `ROW_NUMBER() ... QUALIFY` (Task 4.2) o una ventana con `row_number()` en PySpark.
 
-📸 **Captura:** salida con `Filas antes: 33` y `Filas después: 30`, más la tabla resultante.
-
-![Captura 4.3](images/lab08-14-dropduplicates.png)
+![alt text](images/README-1794603128647.png)
 
 ### Task 4.4 — Tratar nulos
 
@@ -333,9 +311,7 @@ Comprobación opcional:
 display(df_clean.select([F.sum(F.col(c).isNull().cast("int")).alias(c) for c in df_clean.columns]))
 ```
 
-📸 **Captura:** `Filas originales: 33` / `Filas limpias: 31` y la comprobación de nulos a 0 en `list_price`, `bedrooms`, `bathrooms` y `status`.
-
-![Captura 4.4](images/lab08-15-nulos.png)
+![alt text](images/README-1794603151120.png)
 
 ---
 
@@ -362,9 +338,7 @@ display(df_inner)
 
 Resultado esperado: **33 filas** (todos los listados tienen agente).
 
-📸 **Captura:** DataFrame con las columnas `listing_id`, `property_id`, `city`, `list_price`, `agent_name`, `agency` (33 filas).
-
-![Captura 5.1](images/lab08-16-inner-join.png)
+![alt text](images/README-1794603245062.png)
 
 ### Task 5.2 — Agentes sin listados (left join + `IS NULL`)
 
@@ -377,9 +351,7 @@ display(df_no_listings)
 
 Resultado esperado: **1 fila** → agente `108`, Robert Mulder, Canal Ring Realty.
 
-📸 **Captura:** una fila con el agente 108.
-
-![Captura 5.2](images/lab08-17-agentes-sin-listados.png)
+![alt text](images/README-1794603264525.png)
 
 ### Task 5.3 — Listados sin vender
 
@@ -393,9 +365,7 @@ display(df_unsold)
 
 Resultado esperado: **30 filas** (33 listados − 3 propiedades vendidas: `PROP-005`, `PROP-011`, `PROP-016`).
 
-📸 **Captura:** resultado con 30 filas, sin ninguna de las tres propiedades vendidas.
-
-![Captura 5.3](images/lab08-18-sin-vender.png)
+![alt text](images/README-1794603281948.png)
 
 ---
 
@@ -421,9 +391,7 @@ Columnas: `city`, `Apartment`, `House`, `Studio`, `Villa`.
 
 > Sobre la tabla bronze **sin deduplicar**, Amsterdam da `Apartment = 3, House = 1, Studio = 2, Villa = 1` (`PROP-003` aparece dos veces). El ejemplo del enunciado muestra `Studio = 1`, que corresponde a datos ya deduplicados. Si quieres que coincida, sustituye la subconsulta por la del Task 4.2 (`QUALIFY ROW_NUMBER() ...`) antes de filtrar `Active`.
 
-📸 **Captura:** tabla pivotada con una fila por ciudad (7 ciudades) y las 4 columnas de tipo de propiedad.
-
-![Captura 6.1](images/lab08-19-pivot.png)
+![alt text](images/README-1794603333567.png)
 
 ### Task 6.2 — `UNPIVOT`: estadísticas de mercado a formato largo
 
@@ -439,9 +407,7 @@ ORDER BY city;
 
 Resultado esperado: **84 filas** (7 ciudades × 12 meses) con columnas `city`, `month`, `avg_price`.
 
-📸 **Captura:** resultado con columnas `city`, `month`, `avg_price` (84 filas).
-
-![Captura 6.2](images/lab08-20-unpivot.png)
+![alt text](images/README-1794603342269.png)
 
 ---
 
@@ -462,7 +428,9 @@ Resultado esperado: **84 filas** (7 ciudades × 12 meses) con columnas `city`, `
 
 | Error | Causa | Solución |
 |---|---|---|
-| *(completar si aparece alguno)* | | |
+| `[PARSE_SYNTAX_ERROR] Syntax error at or near '-'. SQLSTATE: 42601` en la celda 18 (Ejercicio 3, Task 1: `listings_typed`) | La celda del notebook trae una línea de pista con un solo guion (`- Hint: CREATE OR REPLACE TABLE ... AS SELECT CAST(...) ...`). SQL solo reconoce `--` como comentario, así que intentó interpretar esa línea como código y falló al analizarla. | Borrar la línea `- Hint` y escribir en la celda el `CREATE OR REPLACE TABLE ... AS SELECT CAST(...)` con cada columna tipada (`list_price` como `DECIMAL(12,2)`). |
+| El monitor del Data Profile aparece como "Este monitor está pendiente" justo después de crearlo (Catalog Explorer → `listings` → Calidad) | Databricks genera el primer perfil de forma asíncrona y tarda unos minutos. | Esperar 2-5 minutos, refrescar la página y abrir **Ver tablero** cuando se active. |
+| En el dashboard del monitor, el gráfico "% NULLs Over Time" muestra "No se puede renderizar la visualización" | Probablemente se debe a que solo hay un snapshot, por lo que la serie temporal no se puede dibujar. No afecta al resto del dashboard. | No requiere arreglo: se usaron las demás secciones del dashboard (Row Count = 33, columnas con % alto de nulos) para la revisión del perfil. |
 
 Puntos donde es fácil tropezar en este lab:
 
@@ -481,6 +449,3 @@ No se elimina `rg-dp750`. Opcional, para borrar el catálogo del lab:
 
 Si se ha cambiado la zona horaria de la sesión, restaurar con `SET TIME ZONE 'UTC';`.
 
-📸 **Captura:** (opcional) celda de limpieza ejecutada y el catálogo ausente en Catalog Explorer.
-
-![Captura limpieza](images/lab08-21-limpieza.png)
