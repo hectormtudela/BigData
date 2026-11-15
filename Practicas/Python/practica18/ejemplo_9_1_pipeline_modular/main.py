@@ -12,13 +12,11 @@ sevilla,té verde,,3.20
 valencia,cacao,5,2.80
 """
 
-
 def main():
     almacen = ejecutar_pipeline(DATOS)
     print("Ventas cargadas:", len(almacen))
     print("Total por tienda:", almacen.total_por_tienda())
     print("Top 2 productos:", almacen.top_productos(2))
-
 
 if __name__ == "__main__":
     main()

@@ -2,7 +2,6 @@
 
 from modelos import Producto
 
-
 class Inventario:
     CRITERIOS = {
         "precio": lambda p: p.precio_venta(),

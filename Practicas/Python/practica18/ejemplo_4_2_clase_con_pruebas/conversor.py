@@ -3,7 +3,7 @@
 
 class ConversorDivisas:
     def __init__(self, tasas):
-        self.tasas = tasas                      # {divisa: unidades por 1 €}
+        self.tasas = tasas
 
     def convertir(self, importe_eur, divisa):
         return round(importe_eur * self.tasas[divisa], 2)

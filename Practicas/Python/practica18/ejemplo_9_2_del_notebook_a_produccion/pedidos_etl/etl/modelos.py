@@ -2,7 +2,6 @@
 
 from .config import IVA
 
-
 class Pedido:
     def __init__(self, id_pedido, cliente, ciudad, importe, estado):
         self.id_pedido = id_pedido

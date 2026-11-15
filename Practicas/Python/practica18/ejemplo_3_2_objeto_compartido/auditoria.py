@@ -19,4 +19,4 @@ class RegistroAuditoria:
             yield evento
 
 
-registro = RegistroAuditoria()          # instancia única, creada al importar el módulo
+registro = RegistroAuditoria()

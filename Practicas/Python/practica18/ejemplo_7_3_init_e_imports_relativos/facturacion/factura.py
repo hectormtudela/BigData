@@ -3,7 +3,6 @@
 from .modelos import Cliente, LineaFactura
 from .calculos import base_imponible, descuento_por_volumen, cuota_iva
 
-
 class Factura:
     _contador = 0
 
@@ -17,7 +16,7 @@ class Factura:
 
     def agregar_linea(self, concepto, unidades, precio_unitario):
         self.lineas.append(LineaFactura(concepto, unidades, precio_unitario))
-        return self                                   # permite encadenar llamadas
+        return self
 
     def total(self):
         base = base_imponible(self.lineas)

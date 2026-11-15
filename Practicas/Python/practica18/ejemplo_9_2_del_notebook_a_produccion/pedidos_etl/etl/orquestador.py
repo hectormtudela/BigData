@@ -4,7 +4,6 @@ from .extraccion import leer_lineas
 from .transformacion import transformar
 from .carga import ResumenVentas
 
-
 def ejecutar_pipeline(texto):
     lineas = leer_lineas(texto)
     activos, rechazados, cancelados = transformar(lineas)

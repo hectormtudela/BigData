@@ -2,8 +2,8 @@ import sys
 
 print("Inicio del programa")
 import configuracion
-import configuracion            # segunda vez: no se vuelve a ejecutar
-import informes                 # informes también importa configuracion
+import configuracion            # No se ejecuta
+import informes                 # Al importar informes también importa configuracion por lo que import configuracion no se ejecuta (creo)
 print("Fin de los import")
 
 print("¿Está en sys.modules?", "configuracion" in sys.modules)

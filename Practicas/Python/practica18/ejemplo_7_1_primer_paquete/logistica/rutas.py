@@ -1,6 +1,5 @@
 """Cálculos sobre rutas de reparto (funciones puras)."""
 
-
 def distancia_total(tramos_km):
     return round(sum(tramos_km), 1)
 

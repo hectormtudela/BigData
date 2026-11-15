@@ -3,10 +3,8 @@
 from .config import ESTADO_CANCELADO
 from .modelos import Pedido
 
-
 def parsear(linea):
     return [campo.strip() for campo in linea.split(",")]
-
 
 def es_valido(campos):
     if len(campos) != 5:
@@ -17,11 +15,9 @@ def es_valido(campos):
     except ValueError:
         return False
 
-
 def a_pedido(campos):
     id_pedido, cliente, ciudad, importe, estado = campos
     return Pedido(id_pedido, cliente.title(), ciudad.title(), float(importe), estado.lower())
-
 
 def transformar(lineas):
     registros = list(map(parsear, lineas))

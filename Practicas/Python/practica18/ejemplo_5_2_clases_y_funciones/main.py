@@ -12,7 +12,7 @@ print("Black Friday:", caja.tarifar(catalogo))
 caja.cambiar_politica("outlet")
 print("Outlet:      ", caja.tarifar(catalogo))
 
-caja.politica = crear_descuento(10)               # política creada al momento
+caja.politica = crear_descuento(10)
 print("Socios -10%: ", caja.tarifar(catalogo))
 
 print("Políticas disponibles:", list(POLITICAS))

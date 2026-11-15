@@ -2,7 +2,6 @@
 
 from etl import ejecutar_pipeline
 
-# En producción, estos datos llegarían de un fichero, una base de datos o una API
 DATOS = """id,cliente,ciudad,importe,estado
 P001, Ana López ,madrid,45.50,entregado
 P002,Luis Pérez,Sevilla,12.00,cancelado
@@ -11,7 +10,6 @@ P004,Jorge Gil,valencia,,entregado
 P005,Elena Sanz,sevilla,80.00,entregado
 P006,Pablo Ríos,Valencia,22.40,en reparto
 P007,Sara Mora,madrid,abc,entregado"""
-
 
 def mostrar_informe(resultado):
     print("Pedidos leídos:", resultado["leidos"])
@@ -22,11 +20,9 @@ def mostrar_informe(resultado):
     for ciudad, total in resultado["resumen"].por_ciudad().items():
         print(f"  {ciudad:<9}{total:>8.2f} €")
 
-
 def main():
     resultado = ejecutar_pipeline(DATOS)
     mostrar_informe(resultado)
-
 
 if __name__ == "__main__":
     main()

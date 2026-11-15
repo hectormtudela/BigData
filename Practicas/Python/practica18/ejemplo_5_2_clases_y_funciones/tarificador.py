@@ -2,7 +2,6 @@
 
 from politicas_precio import POLITICAS, precio_normal
 
-
 class Tarificador:
     def __init__(self, politica=precio_normal):
         self.politica = politica

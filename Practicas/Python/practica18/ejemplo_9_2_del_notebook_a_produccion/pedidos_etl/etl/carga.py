@@ -1,6 +1,5 @@
 """Carga: guarda los pedidos procesados y genera el resumen."""
 
-
 class ResumenVentas:
     def __init__(self):
         self._pedidos = []

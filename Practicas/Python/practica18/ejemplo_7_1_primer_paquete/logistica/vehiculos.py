@@ -1,6 +1,5 @@
 """Vehículos de la flota."""
 
-
 class Vehiculo:
     def __init__(self, matricula, capacidad_kg):
         self.matricula = matricula
