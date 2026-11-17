@@ -53,8 +53,6 @@ Se construye un **Lakeflow Spark Declarative Pipeline** que aplica calidad de da
 3. Abrir el notebook y elegir cómputo **Serverless**.
 4. **Find and replace** → *Replace all*: `insurance_lab` → `insurance_lab_hmt`.
 
-![alt text](images/README-1794823670261.png)
-
 ### Ejecutar el notebook
 
 Se ejecutan **todas las celdas**, de arriba a abajo. Crean:
@@ -66,9 +64,7 @@ Se ejecutan **todas las celdas**, de arriba a abajo. Crean:
 
 Verificación en **Catalog Explorer**: los tres esquemas, el volumen y la tabla `claims_raw`.
 
-📸 **Captura:** Catalog Explorer con el catálogo, esquemas, volumen y tabla creados.
-
-![](images/)
+![Catalog Explorer con el catálogo, esquemas, volumen y tabla creados.](images/README-1794906389231.png)
 
 ---
 
@@ -93,9 +89,7 @@ Hay que encontrar al menos una fila de cada tipo de problema:
 | Importe negativo | `claim_amount` |
 | Estado fuera de `OPEN`, `PENDING`, `CLOSED` | `status` |
 
-📸 **Captura:** resultado de la consulta con las filas problemáticas.
-
-![](images/)
+![resultado de la consulta con las filas problemáticas.](images/README-1794906476715.png)
 
 ### Task 2.2 — Comprobar los tipos
 
@@ -106,9 +100,7 @@ DESCRIBE TABLE insurance_lab_hmt.bronze.claims_raw;
 
 `claim_date` y `claim_amount` son `STRING`. Es intencionado: en bronze se guarda el dato tal como llega y la conversión se hace en silver.
 
-📸 **Captura:** salida de `DESCRIBE TABLE`.
-
-![](images/)
+![salida de `DESCRIBE TABLE`.](images/README-1794906491883.png)
 
 ---
 
@@ -132,9 +124,7 @@ DESCRIBE TABLE insurance_lab_hmt.bronze.claims_raw;
 4. En el explorador de assets de la izquierda, **Import** del `.py` como código fuente del pipeline. Se mantiene abierto durante los ejercicios 3 a 5.
 5. Abrir el `.py` y hacer **Find and replace** → *Replace all*: `insurance_lab` → `insurance_lab_hmt` (el fichero original referencia el catálogo `insurance_lab`; sin este cambio el pipeline apuntaría a un catálogo que no es el del lab).
 
-📸 **Captura:** configuración del pipeline.
-
-![](images/)
+![Configuración del pipeline](images/README-1794906938723.png)
 
 ### Task 3.1 — Expectations en `claims_validated()`
 
@@ -186,9 +176,7 @@ Dentro de `claims_validated()`, antes del `return`, se reemplazan las columnas o
 
 El orden de los decoradores no afecta al resultado. Un `cast()` que no puede convertir el valor devuelve `NULL`, y por eso se valida con `IS NOT NULL` después de la conversión.
 
-📸 **Captura:** código completo de `claims_validated()` con todas las expectations.
-
-![](images/)
+![código completo de `claims_validated()` con todas las expectations](images/README-1794907782060.png)
 
 ---
 
@@ -223,9 +211,7 @@ return (
 
 Si en el futuro llegan ficheros con columnas nuevas (por ejemplo `broker_reference` o `fraud_score`), se guardan como JSON en `_rescued_data` en lugar de romper el pipeline.
 
-📸 **Captura:** función `claims_rescued()` completada.
-
-![](images/)
+![función `claims_rescued()` completada](images/README-1794907803261.png)
 
 ---
 
@@ -239,9 +225,7 @@ Guardar el `.py` en el workspace.
 
 Pulsar **Start**. El DAG debe mostrar tres datasets: `silver.claims_validated`, `silver.claims_rescued` y `gold.claims_summary`.
 
-📸 **Captura:** DAG del pipeline con los tres datasets.
-
-![](images/)
+![DAG del pipeline con los tres datasets](images/README-1794908149941.png)
 
 ### Task 6.3 — Revisar la calidad de datos
 
@@ -249,15 +233,13 @@ Abrir el nodo `claims_validated` → pestaña **Data quality** y responder:
 
 | Pregunta | Respuesta |
 |---|---|
-| ¿Qué expectations descartaron filas y cuántas? | COMPLETAR TRAS EJECUTAR |
-| ¿Qué expectation emitió aviso (`warn`)? | COMPLETAR TRAS EJECUTAR |
-| ¿Falló `valid_coverage`? | COMPLETAR TRAS EJECUTAR |
+| ¿Qué expectations descartaron filas y cuántas? | 5 expectations con DROP: non_negative_amount (4 registros), valid_claim_amount (2), valid_claim_date (1), valid_claim_id (1) y valid_customer_id (1). En total se descartaron 7 filas (35 %) y se escribieron 13 (65 %). |
+| ¿Qué expectation emitió aviso (`warn`)? | valid_status (acción ALLOW): 1 registro con estado fuera de OPEN/PENDING/CLOSED. |
+| ¿Falló `valid_coverage`? | No. La ejecución terminó en Completado y la expectation no aparece en la vista “Solo errores”. Todas las filas cumplieron coverage_amount > 0. |
 
 Si `valid_coverage` falla, se buscan en `bronze.claims_raw` las filas con `coverage_amount` a cero o `NULL`; el *event log* muestra el registro que viola la regla.
 
-📸 **Captura:** pestaña **Data quality** de `claims_validated`.
-
-![](images/)
+![pestaña **Data quality** de `claims_validated`](images/README-1794908226903.png)
 
 ### Task 6.4 — Verificación con SQL
 
@@ -271,9 +253,9 @@ FROM insurance_lab_hmt.silver.claims_validated;
 
 claims_raw (20 filas) → claims_validated (**X** filas): **N** filas descartadas por las expectations. *(COMPLETAR TRAS EJECUTAR: X y N)*
 
-📸 **Captura:** resultado del recuento.
+📸 **Captura:** .
 
-![](images/)
+![resultado del recuento](images/README-1794908339590.png)
 
 **Filas por tipo de siniestro y estado:**
 
@@ -285,9 +267,7 @@ GROUP BY claim_type, status
 ORDER BY claim_type, status;
 ```
 
-📸 **Captura:** resultado por `claim_type` y `status`.
-
-![](images/)
+![resultado por `claim_type` y `status`](images/README-1794908366268.png)
 
 **Tabla gold:**
 
@@ -298,9 +278,7 @@ FROM insurance_lab_hmt.gold.claims_summary
 ORDER BY claim_type, status;
 ```
 
-📸 **Captura:** contenido de `gold.claims_summary`.
-
-![](images/)
+![contenido de `gold.claims_summary`](images/README-1794908388454.png)
 
 **Datos rescatados:**
 
@@ -311,9 +289,7 @@ FROM insurance_lab_hmt.silver.claims_rescued
 WHERE _rescued_data IS NOT NULL;
 ```
 
-📸 **Captura:** filas con `_rescued_data` no nulo.
-
-![](images/)
+![filas con `_rescued_data` no nulo](images/README-1794908414899.png)
 
 ---
 
@@ -329,10 +305,18 @@ WHERE _rescued_data IS NOT NULL;
 
 ## Problemas encontrados
 
+## Problemas encontrados
+
 | Error | Causa | Solución |
 |---|---|---|
-| *(Ejemplo, rellenar solo si ocurrió)* El pipeline termina en **Failed** con el error de la expectation `valid_coverage` (`expect_or_fail`) | Hay filas en `claims_raw` con `coverage_amount` a `0` o `NULL`; el registro que viola la regla aparece en el event log | COMPLETAR TRAS EJECUTAR: qué se hizo para que el pipeline terminara (p. ej. corregir o excluir esas filas de origen, o cambiar la acción de la expectation) |
-| COMPLETAR TRAS EJECUTAR | | |
+| El grupo de recursos `rg-dp750` y el workspace `adb-dp750` no existían | El entorno del Lab 00 había desaparecido de la suscripción | Se recrearon desde Cloud Shell: `az provider register --namespace Microsoft.Databricks`, `az group create --name rg-dp750 --location francecentral` y `az databricks workspace create ... --sku premium` (con instalación de la extensión `databricks`) |
+| `SyntaxError: invalid syntax` al ejecutar la consulta de la Task 2.1 | Se puso un comentario `# ...` antes de `%sql`; la *magic* `%sql` solo se interpreta si está en la **primera línea** de la celda | Dejar `%sql` en la primera línea (comentarios con `--` dentro del SQL) |
+| La pipeline apuntaba a `transformations/my_transformation.py` (archivo de ejemplo) en lugar del código del lab | Al crear la pipeline, Databricks genera un archivo de ejemplo como código fuente | Se pegó el contenido del `.py` del lab (con `insurance_lab_hmt`) en `my_transformation.py` y se guardó |
+| `claims_summary` con el decorador `@dp.table(name='gold.claims_summary')` duplicado | El fichero de partida lo traía repetido | Se dejó un único decorador |
+| `AttributeError: module 'pyspark.pipelines' has no attribute 'expect_or_drop'` | Se ejecutó el `.py` con el botón ▶ del editor de archivos, que lo corre como Python normal; ahí `pyspark.pipelines` es el módulo de Apache Spark, que no incluye las expectations (son de Databricks) | Ejecutar la pipeline desde **Jobs y canales** → `ClearCover Claims Quality Pipeline` → **Ejecutar el canal** |
+| La pipeline no aparecía en la lista de **Jobs y canales** | La lista no se había actualizado | Se abrió directamente con su URL `/pipelines/<ID del canal>` |
+
+Nota: `valid_coverage` (`expect_or_fail`) **no** hizo fallar la ejecución, porque todas las filas cumplían `coverage_amount > 0`.
 
 ## Limpieza
 
@@ -342,3 +326,4 @@ No se elimina `rg-dp750`. Opcional, para borrar el catálogo del lab:
 %sql
 -- DROP CATALOG IF EXISTS insurance_lab_hmt CASCADE;
 ```
+![Limpieza](images/README-1794908485793.png)
