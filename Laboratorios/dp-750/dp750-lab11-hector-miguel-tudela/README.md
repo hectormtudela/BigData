@@ -2,6 +2,7 @@
 
 > **Autor:** Héctor Miguel Tudela · **Máster Big Data & IA – Tajamar**
 > **Laboratorio:** https://microsoftlearning.github.io/DP-750T00-Implement-Data-Engineering-Solutions-using-Azure-Databricks/Instructions/Labs/11-implement-lakeflow-jobs.html
+> **Fecha de realización:** 17-nov-2026 · **Workspace:** `adb-dp750` (France Central) · **Compute:** Serverless
 
 ---
 
@@ -11,13 +12,11 @@ Somos ingenieros de datos en **TelConnect**, un operador de telecomunicaciones r
 
 | Requisito | Solución en el lab |
 |---|---|
-| Procesar CDRs por capas (bronce, plata, oro) | Notebook parametrizado con widget `processing_date` |
-| Encadenar el procesado con un resumen SQL | Job con 2 tareas dependientes (`process_cdrs → summarize_gold`) |
-| Ejecutar cuando llegan ficheros nuevos | Trigger **File arrival** sobre un Volume |
+| Procesar CDRs por capas | Notebook parametrizado con el widget `processing_date` |
+| Encadenar el procesado con un resumen SQL | Job con 2 tareas dependientes: `process_cdrs → summarize_gold` |
+| Ejecutar cuando llegan ficheros | Trigger **File arrival** sobre un Volume |
 | Ejecución nocturna fija | Trigger **Scheduled** con cron `0 0 2 * * ?` (Europe/Amsterdam) |
 | Enterarse de los fallos | Notificaciones por email, reintentos y timeout |
-
-**Compute:** Serverless (notebook y SQL warehouse)
 
 ## 2. Objetivos
 
@@ -34,9 +33,7 @@ Somos ingenieros de datos en **TelConnect**, un operador de telecomunicaciones r
 - Permiso para crear catálogos y esquemas.
 - PySpark y Spark SQL básicos.
 
-> ⚠️ Si `telconnect_lab` ya existe en el metastore compartido y no eres su propietario (como pasó con `edu_dev` o `banking_lab`), usa `telconnect_lab_hmt` y sustitúyelo **en todo el lab** (notebook, consulta SQL y ruta del trigger).
-
-> ⚠️ Si borraste `rg-dp750` tras el lab anterior, recrea el workspace antes de empezar (mismo procedimiento que en los labs 00 y 06).
+> ⚠️ **Nombre del catálogo:** `telconnect_lab` ya existía en el metastore compartido (creado por otro alumno), así que en todo el lab se ha usado **`telconnect_lab_hmt`**. Ver el apartado de problemas encontrados.
 
 ---
 
@@ -44,41 +41,71 @@ Somos ingenieros de datos en **TelConnect**, un operador de telecomunicaciones r
 
 ### Task 1.1 – Importar el notebook
 
-1. Barra lateral → **Workspace**.
-2. Crea/abre una carpeta para el lab → menú **⋮** → **Import**.
-3. Elige **URL** y pega:
+1. **Workspace** → menú **⋮** → **Importar** → **URL**.
+2. URL (raw, no la de `github.com/.../blob/...`):
    `https://raw.githubusercontent.com/MicrosoftLearning/DP-750T00-Implement-Data-Engineering-Solutions-using-Azure-Databricks/refs/heads/main/Allfiles/11-implement-lakeflow-jobs.ipynb`
-4. **Import** → abre `11-implement-lakeflow-jobs`.
-5. Arriba a la derecha conecta con compute **Serverless**.
+3. Abrir el notebook `11-implement-lakeflow-jobs` y conectar compute **Serverless**.
 
-> Usa la URL `raw.githubusercontent.com`, no la `github.com/.../blob/...`.
+![Notebook importado y conectado a Serverless](images/paso1-01-notebook-importado-serverless.png)
 
-📸 **Captura:** notebook importado y abierto, con **Serverless** conectado.
+### Exercise 1 – Estructura de Unity Catalog
 
-### Task 1.2 – Ejercicios 1 a 5 del notebook
+Celdas "Provided": registran el widget `processing_date` (por defecto, la fecha de hoy → `2026-11-17`) y crean el catálogo y los esquemas `bronze`, `silver` y `gold`.
 
-Ejecuta las celdas en orden. Qué hace cada ejercicio y qué debe verse:
+Al ejecutar la celda con el nombre original dio `PERMISSION_DENIED` (el catálogo era de otro usuario). Se sustituyó `telconnect_lab` por `telconnect_lab_hmt` con **Editar → Buscar y reemplazar** y se volvió a ejecutar:
 
-| Ejercicio | Qué hace | Resultado esperado |
-|---|---|---|
-| **1 – Estructura UC** | Crea el widget `processing_date` (por defecto, hoy), localiza el storage root y crea el catálogo `telconnect_lab` con esquemas `bronze`, `silver`, `gold` | Fecha de proceso, ruta del storage root y mensajes de creación de catálogo y esquemas |
-| **2 – Bronze** | Crea el volume `raw_uploads`, descarga `telecom_cdrs.csv`, lo lee con esquema explícito (14 columnas) y guarda `telconnect_lab.bronze.cdr_bronze` | DataFrame bruto y **recuento Bronze** |
-| **3 – Silver** | Aplica 4 reglas de calidad y guarda `telconnect_lab.silver.cdr_silver` | Recuento Bronze, recuento Silver y **registros descartados** |
-| **4 – Gold** | Agrupa por región y tipo de red y guarda `telconnect_lab.gold.network_summary` | Nº de filas Gold y la tabla resumen |
-| **5 – Job-ready** | Publica `gold_row_count` como *task value* y termina con `dbutils.notebook.exit(...)` (JSON con estado, fecha y filas Gold) | Mensaje de finalización y payload de salida |
+![Error PERMISSION_DENIED con telconnect_lab](images/ej1-01-error-permission-denied.png)
 
-Reglas de Silver: descartar duraciones negativas · descartar VOICE/DATA sin destinatario · descartar llamadas VOICE completadas con duración 0 · conservar solo tipos VOICE, DATA y SMS.
+![Catálogo telconnect_lab_hmt y esquemas creados](images/ej1-02-catalogo-esquemas-hmt.png)
 
-Métricas de Gold: total de llamadas, llamadas completadas, % de *drop rate*, duración media de voz (>0 s) y MB de datos totales.
+### Exercise 2 – Ingesta Bronze
 
-> Si usas un catálogo con otro nombre (`telconnect_lab_hmt`), usa **Buscar y reemplazar** del notebook antes de ejecutar.
+- Se crea el volume `telconnect_lab_hmt.bronze.raw_uploads` y se descarga `telecom_cdrs.csv`.
+- Se lee el CSV con un esquema explícito de 14 columnas: **30 registros**.
+- Se guarda como tabla Delta `telconnect_lab_hmt.bronze.cdr_bronze` (**30 registros**).
 
-📸 **Captura 1:** Ejercicio 1 con el catálogo y los 3 esquemas creados.
-📸 **Captura 2:** Ejercicio 2 con el recuento Bronze.
-📸 **Captura 3:** Ejercicio 3 con Bronze / Silver / descartados.
-📸 **Captura 4:** Ejercicio 4 con la tabla `network_summary`.
-📸 **Captura 5:** Ejercicio 5 con el payload de `dbutils.notebook.exit`.
-📸 **Captura 6:** **Catalog** → `telconnect_lab` desplegado con `bronze` (`cdr_bronze`, volume `raw_uploads`), `silver` (`cdr_silver`) y `gold` (`network_summary`).
+![Volume creado y CSV descargado](images/ej2-01-volume-y-csv.png)
+
+![DataFrame con 30 registros](images/ej2-02-dataframe-30-registros.png)
+
+![Tabla Bronze escrita](images/ej2-03-bronze-escrita.png)
+
+### Exercise 3 – Limpieza Silver
+
+Cuatro reglas de calidad sobre `bronze_df`:
+
+| Regla | Condición |
+|---|---|
+| 1 | Descartar `duration_seconds < 0` |
+| 2 | Descartar VOICE y DATA con `callee_msisdn` nulo |
+| 3 | Descartar VOICE `COMPLETED` con duración 0 |
+| 4 | Conservar solo `call_type` VOICE, DATA y SMS |
+
+Resultado: **Bronze 30 → Silver 29 → 1 descartado** (CDR010, duración −240).
+
+![Lectura de la tabla Bronze](images/ej3-01-lectura-bronze.png)
+
+![Silver escrita: 30 / 29 / 1 descartado](images/ej3-02-silver-escrita.png)
+
+### Exercise 4 – Agregación Gold
+
+Agrupa Silver por `region` y `network_type` y calcula `total_calls`, `completed_calls`, `drop_rate_pct`, `avg_voice_duration_sec` y `total_data_mb`. Se guarda en `telconnect_lab_hmt.gold.network_summary`: **11 filas**.
+
+![Lectura de Silver (29 registros)](images/ej4-01-lectura-silver.png)
+
+![Tabla Gold network_summary con 11 filas](images/ej4-02-gold-network-summary.png)
+
+### Exercise 5 – Notebook listo para el job
+
+Publica `gold_row_count` como *task value* con `dbutils.jobs.taskValues.set()` y termina con `dbutils.notebook.exit()` devolviendo un JSON de estado.
+
+![Salida: {"status": "success", "processing_date": "2026-11-17", "gold_rows": 11}](images/ej5-01-notebook-exit-json.png)
+
+### Catálogo final
+
+`telconnect_lab_hmt` con `bronze` (`cdr_bronze`, volume `raw_uploads`), `silver` (`cdr_silver`) y `gold` (`network_summary`):
+
+![Catálogo completo](images/catalogo-completo-telconnect.png)
 
 ---
 
@@ -86,26 +113,22 @@ Métricas de Gold: total de llamadas, llamadas completadas, % de *drop rate*, du
 
 ### Exercise 1 – Crear el job
 
-1. Barra lateral → **Jobs & Pipelines** → **Create** → **Job**.
-2. Nombre del job: `TelConnect CDR Pipeline`.
-3. Añade una tarea de tipo **Notebook**:
-   - **Task name:** `process_cdrs`
-   - **Path:** el notebook importado (`11-implement-lakeflow-jobs`)
-   - **Compute:** Serverless
-   - **Create task**
-4. En **Job details** → **Parameters** añade:
-   - **Key:** `processing_date`
-   - **Value:** referencia dinámica a la fecha del trigger, p. ej. `{{job.trigger.time.iso_date}}` (elige el valor de la lista **Browse dynamic values** si el nombre difiere en tu interfaz).
-5. Comprueba que el grafo tiene un solo nodo y pulsa **Run now**.
-6. Abre la ejecución y confirma que todas las celdas terminan correctamente.
+1. **Jobs y canales → Crear → Job**, nombre `TelConnect CDR Pipeline`.
+2. Tarea **Notebook** `process_cdrs`: notebook `11-implement-lakeflow-jobs`, compute **Serverless**.
+3. Parámetro de job (**Parámetros del trabajo → Editar parámetro**): clave `processing_date`, valor `{{job.trigger.time.iso_date}}`.
+4. **Ejecutar ahora** y comprobar que termina en **Satisfactorio**.
 
-📸 **Captura 1:** configuración de la tarea `process_cdrs`.
-📸 **Captura 2:** parámetro de job `processing_date` con su valor dinámico.
-📸 **Captura 3:** la ejecución terminada en **Succeeded**.
+![Configuración de la tarea process_cdrs](images/job1-01-tarea-process-cdrs.png)
 
-### Exercise 2 – Tarea SQL descendente (`summarize_gold`)
+![Lista de valores dinámicos](images/job1-02-valores-dinamicos.png)
 
-**Paso 1 – Crear la consulta guardada.** En **SQL Editor** (warehouse **Serverless**), crea una consulta que seleccione región, tipo de red, total de llamadas y *drop rate* de `telconnect_lab.gold.network_summary`, ordenada por *drop rate* descendente. Usa la consulta que da la página del lab; si los nombres de columna no coinciden, comprueba los reales con `DESCRIBE TABLE telconnect_lab.gold.network_summary;` (paso añadido por mí, no viene del lab). Versión orientativa:
+![Parámetro de job guardado: processing_date = {{job.trigger.time.iso_date}}](images/job1-04-parametro-guardado.png)
+
+![Primera ejecución: Satisfactorio (56 s)](images/job1-05-primera-ejecucion-satisfactoria.png)
+
+### Exercise 2 – Tarea SQL descendente `summarize_gold`
+
+1. En el **Editor de SQL** (Serverless Starter Warehouse) se crea y **guarda** la consulta `summarize_gold_query`:
 
 ```sql
 SELECT
@@ -113,134 +136,127 @@ SELECT
   network_type,
   total_calls,
   drop_rate_pct
-FROM telconnect_lab.gold.network_summary
+FROM telconnect_lab_hmt.gold.network_summary
 ORDER BY drop_rate_pct DESC;
 ```
 
-Renombra la consulta a `summarize_gold_query` y **guárdala**.
+2. En el job: nueva tarea `summarize_gold` de tipo **SQL → Consulta**, almacén Serverless Starter Warehouse, **depende de** `process_cdrs` con la condición *Todas se han completado correctamente*.
 
-**Paso 2 – Añadir la tarea al job.**
+![Consulta guardada con resultados (11 filas)](images/job2-01-consulta-guardada.png)
 
-1. Abre el job → **Tasks** → **Add task**.
-2. **Task name:** `summarize_gold` · **Type:** **SQL** → *Query*.
-3. **Query:** `summarize_gold_query` · **SQL warehouse:** Serverless.
-4. **Depends on:** `process_cdrs` · condición **All succeeded**.
-5. **Create task** y guarda.
-6. Verifica el grafo: `process_cdrs → summarize_gold`.
+![Aviso: la query no tenía contenido guardado](images/job2-02-tarea-aviso-query-sin-guardar.png)
 
-> Si no hay SQL warehouse Serverless disponible en la suscripción, anótalo en el apartado de problemas y usa el *Starter Warehouse* si existe.
-
-📸 **Captura 1:** consulta `summarize_gold_query` guardada con resultados.
-📸 **Captura 2:** configuración de la tarea `summarize_gold` (consulta, warehouse y dependencia).
-📸 **Captura 3:** grafo del job con las dos tareas conectadas.
+![Grafo process_cdrs → summarize_gold](images/job2-03-grafo-dos-tareas.png)
 
 ### Exercise 3 – Trigger de llegada de ficheros
 
-1. En el panel derecho del job → **Schedules & Triggers** → **Add trigger**.
-2. **Trigger type:** **File arrival**.
-3. **Storage location:** `/Volumes/telconnect_lab/bronze/raw_uploads/`
-4. Despliega **Advanced options** y ahí fija **Wait after last change:** `60` segundos.
-5. **Save**.
+**Programación y activadores → Añadir trigger** → tipo **Llegada de archivos**, ubicación `/Volumes/telconnect_lab_hmt/bronze/raw_uploads/`, y en **Avanzado** *Esperar después del último cambio* = 60 s (`00h 01m`).
 
-📸 **Captura:** trigger File arrival configurado y guardado.
+![Trigger File arrival con 60 s](images/job3-01-trigger-llegada-archivos-60s.png)
 
-### Exercise 4 – Programación nocturna (cron)
+![Trigger guardado en el panel del job](images/job3-02-trigger-guardado-panel.png)
 
-1. **Elimina** el trigger File arrival.
-2. **Add trigger** → comprueba que **Trigger Status** = **Active** → **Trigger type:** **Scheduled**.
-3. Selecciona **Schedule** (no *Interval*) y **Show cron syntax**.
-4. Cron (Quartz): `0 0 2 * * ?`
-5. **Time zone:** `Europe/Amsterdam` → **Save**.
-6. Verifica que solo queda el trigger programado, diario a las 02:00.
+### Exercise 4 – Programación nocturna
 
-| Campo | Valor |
-|---|---|
-| Segundos / Minutos / Hora | `0 0 2` |
-| Día mes / Mes / Día semana | `* * ?` (todos los días) |
-| Zona horaria | Europe/Amsterdam |
+Se elimina el trigger de llegada de archivos y se crea uno **Programado**: tipo *Programar* (no Intervalo), cron `0 0 2 * * ?`, zona horaria `Europe/Amsterdam`, estado **Activo**. Solo queda ese trigger, diario a las 02:00.
 
-📸 **Captura 1:** trigger Scheduled con la expresión cron y la zona horaria.
-📸 **Captura 2:** panel del job con **un único trigger** (el programado) activo.
+![Trigger programado con cron y zona horaria](images/job4-01-trigger-cron-amsterdam.png)
+
+![Panel con un único trigger (02:00, Europe/Amsterdam)](images/job4-02-panel-un-solo-trigger.png)
 
 ### Exercise 5 – Notificaciones
 
-**Nivel de job:**
+- **Nivel de job:** email a mi correo de Tajamar en caso de **Fallo**.
+- **Nivel de tarea (`process_cdrs`):** email en **Fallo** con *Silenciar notificaciones hasta el último reintento* (en el YAML del job aparece como `alert_on_last_attempt: true`).
 
-1. **Job notifications** → **Edit notifications** → **Add notification** → **Email** (tu correo de Tajamar) → evento **Failure**.
-2. *(Opcional)* añade **Duration warning** a **30 minutos**.
+![Notificaciones de job en el panel](images/job5-01-notificaciones-job.png)
 
-**Nivel de tarea (`process_cdrs`):**
+![Diálogo de notificaciones de job](images/job5-02-dialogo-notificaciones-job.png)
 
-1. Abre la tarea → **Notifications** → **Add** → **Email** → evento **Failure**.
-2. Marca **Mute notifications until the last retry**.
-3. **Save task**.
-
-📸 **Captura 1:** notificaciones a nivel de job.
-📸 **Captura 2:** notificación de la tarea con *Mute notifications until the last retry* marcado.
+![Notificaciones de la tarea process_cdrs](images/job5-03-notificaciones-tarea.png)
 
 ### Exercise 6 – Reintentos y timeout
 
-En la tarea `process_cdrs`:
+En `process_cdrs`: **2 reintentos** con **60 s** de intervalo y, en *Umbrales métricos*, **Duración de ejecución** con aviso a **20 min** y timeout a **30 min**.
 
-1. **Retries** → **Add**: **2** reintentos, intervalo de **60** segundos.
-2. **Metric thresholds** → **Run duration**:
-   - **Warning:** 20 minutos
-   - **Timeout:** 30 minutos
-3. **Save task**.
+Los umbrales se configuraron desde el formulario (aviso 20m 0s, timeout 30m 0s). El formulario no permitía cambiar el número de reintentos, así que se editó el job con **⋮ → Editar como YAML** y se fijó `max_retries: 2`.
 
-📸 **Captura:** tarea `process_cdrs` con reintentos y umbrales de duración visibles.
+![Formulario: umbrales 20m / 30m y reintentos antes del cambio](images/job6-01-reintentos-antes-y-umbrales.png)
+
+![YAML del job con max_retries: 2](images/job6-02-yaml-max-retries-2.png)
+
+Fragmento relevante del YAML final de la tarea:
+
+```yaml
+- task_key: process_cdrs
+  max_retries: 2
+  min_retry_interval_millis: 60000
+  timeout_seconds: 1800
+  health:
+    rules:
+      - metric: RUN_DURATION_SECONDS
+        op: GREATER_THAN
+        value: 1200
+  notification_settings:
+    no_alert_for_skipped_runs: true
+    alert_on_last_attempt: true
+```
 
 ### Exercise 7 – Ejecutar y monitorizar
 
-1. Pulsa **Run now**.
-2. Pestaña **Runs** → abre la ejecución activa.
-3. Confirma que **`process_cdrs` se ejecuta antes que `summarize_gold`**.
-4. En `process_cdrs`, revisa las salidas de celda, el valor de `processing_date` y los valores fijados con `dbutils.jobs.taskValues.set()` (`gold_row_count`).
-5. Confirma que el estado final es **Succeeded**.
+1. **Ejecutar ahora**: `process_cdrs` arranca primero y `summarize_gold` queda **Bloqueada** hasta que termine.
+2. Ambas tareas terminan en **Satisfactorio** (`process_cdrs` 49 s, `summarize_gold` 11 s; ejecución total 1m 2s).
+3. En la vista del notebook dentro del job se ve `Processing date: 2026-11-17` (viene del parámetro del job) y, al final, `gold_rows: 11`.
 
-📸 **Captura 1:** vista de la ejecución con las dos tareas en verde y su orden.
-📸 **Captura 2:** salida de `process_cdrs` mostrando `processing_date` y `gold_row_count`.
-📸 **Captura 3:** pestaña **Runs** con estado **Succeeded**.
+![Ejecución: process_cdrs pendiente, summarize_gold bloqueada](images/job7-01-ejecucion-pendiente-bloqueada.png)
+
+![Ejecución satisfactoria con las dos tareas en verde](images/job7-02-ejecucion-satisfactoria-grafo.png)
+
+![Notebook ejecutado dentro del job: processing_date](images/job7-03-notebook-dentro-del-job.png)
+
+![Salida final: gold_rows = 11](images/job7-04-salida-final-gold-rows.png)
 
 ---
 
-## 6. Resultados esperados (checklist)
+## 6. Resultados (checklist)
 
-- [ ] Catálogo `telconnect_lab` con `bronze`, `silver`, `gold` y las tablas `cdr_bronze`, `cdr_silver`, `network_summary`.
-- [ ] Job `TelConnect CDR Pipeline` con 2 tareas dependientes (`process_cdrs → summarize_gold`).
-- [ ] Parámetro dinámico `processing_date` en el job.
-- [ ] Solo el trigger programado `0 0 2 * * ?` (Europe/Amsterdam) activo; el File arrival eliminado.
-- [ ] Notificaciones de fallo (job y tarea) con *mute until last retry*.
-- [ ] 2 reintentos de 60 s y timeout de 30 min en `process_cdrs`.
-- [ ] Ejecución final en **Succeeded**.
+- [x] Catálogo `telconnect_lab_hmt` con `bronze`, `silver`, `gold` y las tablas `cdr_bronze` (30), `cdr_silver` (29) y `network_summary` (11).
+- [x] Job `TelConnect CDR Pipeline` con 2 tareas dependientes (`process_cdrs → summarize_gold`).
+- [x] Parámetro dinámico `processing_date = {{job.trigger.time.iso_date}}`.
+- [x] Solo el trigger programado `0 0 2 * * ?` (Europe/Amsterdam) activo; el de llegada de archivos eliminado.
+- [x] Notificaciones de fallo (job y tarea) con *mute until last retry*.
+- [x] 2 reintentos de 60 s, aviso a 20 min y timeout a 30 min en `process_cdrs`.
+- [x] Ejecución final en **Satisfactorio**.
 
 ## 7. Limpieza
 
-Para evitar ejecuciones y costes, **pausa o elimina el job** (el trigger diario seguiría lanzándolo a las 02:00):
+El trigger programado seguiría lanzando el job cada noche, así que se elimina al terminar:
 
-1. **Jobs & Pipelines** → `TelConnect CDR Pipeline` → **⋮** → **Delete** (o pausa el trigger).
-2. Elimina la consulta guardada si quieres: `summarize_gold_query`.
-3. Borra el catálogo:
+1. **Jobs y canales** → `TelConnect CDR Pipeline` → **⋮** → **Eliminar trabajo**.
+2. Borrar el catálogo en el Editor de SQL:
 
 ```sql
-DROP CATALOG IF EXISTS telconnect_lab CASCADE;
+DROP CATALOG IF EXISTS telconnect_lab_hmt CASCADE;
 ```
 
-4. Comprueba en **Compute** que no queda ningún warehouse ni cluster en ejecución.
-5. Si no vas a hacer más labs de Databricks:
-
-```bash
-az group delete --name rg-dp750 --yes --no-wait
-```
-
-> Haz la limpieza solo después de tener todas las capturas y el README entregados.
+3. Eliminar la consulta guardada `summarize_gold_query` (opcional).
+4. Comprobar en **Cómputo** que no queda ningún almacén ni clúster encendido.
 
 ## 8. Problemas encontrados
 
 | Error | Causa | Solución |
 |---|---|---|
-| _(rellenar si aparece alguno)_ | | |
+| `PERMISSION_DENIED: User does not have USE CATALOG on Catalog 'telconnect_lab'` | El catálogo ya existía en el metastore compartido, creado por otro alumno | Usar `telconnect_lab_hmt` en todo el lab (Buscar y reemplazar) |
+| Serverless se quedaba en "Esperando" más de 10 minutos | Navegador saturado por otra aplicación abierta (DataCamp) | Cerrar la aplicación y reconectar el compute |
+| Solo 1 registro descartado en Silver | Con este CSV solo CDR010 incumple las reglas; las llamadas con duración 0 eran DROPPED, NO_ANSWER o BUSY, no COMPLETED | Resultado esperado con estos datos |
+| Aviso "esta query no tiene contenido guardado" al añadir `summarize_gold` | La consulta tenía cambios sin guardar (`Guardar*`) | Guardarla en el Editor de SQL y recargar el job |
+| Valor `{{job.start_time.*}}` marcado como error | El comodín `*` no es una referencia válida | Usar `{{job.trigger.time.iso_date}}` |
+| El formulario no permitía cambiar el número de reintentos | La interfaz no aplicaba el cambio | Editar el job con **Editar como YAML** y fijar `max_retries: 2` |
 
 ## 9. Conclusiones
 
-_(rellenar al terminar: qué aporta Lakeflow Jobs frente a ejecutar el notebook a mano, diferencia entre trigger por fichero y por cron, utilidad de reintentos y timeouts)_
+- Lakeflow Jobs convierte un notebook manual en un proceso repetible: parámetros dinámicos, dependencias entre tareas y ejecución sin intervención.
+- El trigger de **llegada de archivos** reacciona a datos nuevos en un Volume, mientras que el **cron** da una ejecución predecible (aquí, diaria a las 02:00 hora de Ámsterdam). Se usa uno u otro según se quiera procesar por evento o por calendario.
+- Las **notificaciones, reintentos y timeouts** hacen el pipeline operable: *mute until last retry* evita ruido por fallos transitorios y el timeout evita ejecuciones colgadas.
+- Los *task values* (`gold_row_count`) y la salida de `dbutils.notebook.exit()` permiten pasar resultados entre tareas y ver el estado desde la línea de tiempo de la ejecución.
+- En un metastore compartido conviene usar nombres de catálogo propios para evitar colisiones de permisos.
