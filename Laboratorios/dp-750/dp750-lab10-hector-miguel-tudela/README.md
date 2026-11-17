@@ -28,10 +28,10 @@ Data engineer en **GlobStay**, un grupo hotelero con cinco propiedades. Su pipel
 
 | Capa | Objeto |
 |---|---|
-| Catálogo | `hospitality_lab` |
-| Bronze | `hospitality_lab.bronze.bookings_bronze` |
-| Silver | `hospitality_lab.silver.bookings_silver` |
-| Gold | `hospitality_lab.gold.property_performance`, `hospitality_lab.gold.channel_performance` |
+| Catálogo | `hospitality_lab_hector` |
+| Bronze | `hospitality_lab_hector.bronze.bookings_bronze` |
+| Silver | `hospitality_lab_hector.silver.bookings_silver` |
+| Gold | `hospitality_lab_hector.gold.property_performance`, `hospitality_lab_hector.gold.channel_performance` |
 | Job | `GlobStay Booking Pipeline` |
 
 ---
@@ -43,28 +43,32 @@ Data engineer en **GlobStay**, un grupo hotelero con cinco propiedades. Su pipel
 1. **Workspace → carpeta → Import → URL**:
    `https://raw.githubusercontent.com/MicrosoftLearning/DP-750T00-Implement-Data-Engineering-Solutions-using-Azure-Databricks/refs/heads/main/Allfiles/10-design-implement-data-pipelines.ipynb`
 2. Abrir el notebook y seleccionar compute **Serverless**.
-3. Ejecutar las celdas de setup, que crean el catálogo `hospitality_lab` (esquemas `bronze`, `silver`, `gold`) y el DataFrame `raw_df` con **16 filas** (15 reservas únicas; B001 duplicada).
+3. Ejecutar las celdas de setup, que crean el catálogo `hospitality_lab_hector` (esquemas `bronze`, `silver`, `gold`) y el DataFrame `raw_df` con **16 filas** (15 reservas únicas; B001 duplicada).
 
 Problemas de calidad incluidos a propósito: B001 duplicada; B004 y B015 con `guest_email` nulo; B005 con `room_type` nulo; B006 con `check_out_date` anterior a `check_in_date`; B007 con tarifa -50; B012 con tarifa 0.
 
-📸 **Captura:** notebook con las celdas de setup en verde y Catalog con `hospitality_lab` y sus tres esquemas.
+## Nota: nombre del catálogo
 
-![Captura preparación](capturas/00-setup.png)
+Al ejecutar la celda de setup con el nombre original `hospitality_lab` apareció el error `PERMISSION_DENIED: User does not have USE CATALOG on Catalog 'hospitality_lab'` (`UNAUTHORIZED_ACCESS`, SQLSTATE 42501): ese catálogo ya existe en el metastore compartido y no pertenece al alumno. Solución: usar un catálogo propio, `hospitality_lab_hector`, cambiando la línea `catalog = "hospitality_lab_hector"` en la celda de setup y utilizando ese nombre en todo el laboratorio.
+
+![alt text](images/README-1794909950904.png)
+
+![alt text](images/README-1794909939476.png)
 
 ## Ejercicio 1: Capa Bronze
 
 ```python
 raw_df.write.format("delta").mode("overwrite") \
-    .saveAsTable("hospitality_lab.bronze.bookings_bronze")
+    .saveAsTable("hospitality_lab_hector.bronze.bookings_bronze")
 
-print(spark.table("hospitality_lab.bronze.bookings_bronze").count())
+print(spark.table("hospitality_lab_hector.bronze.bookings_bronze").count())
 ```
 
 **Resultado esperado:** `16`. Se usa `overwrite` para poder re-ejecutar la celda.
 
 📸 **Captura:** celda con el recuento `16`.
 
-![Captura 1](capturas/01-bronze.png)
+![Celda con el recuento `16`](images/README-1794909920102.png)
 
 ## Ejercicio 2: Capa Silver
 
@@ -73,7 +77,7 @@ Reglas: deduplicar por `booking_id`; eliminar `room_type` nulo; eliminar reserva
 ```python
 from pyspark.sql.functions import col, to_date, datediff
 
-bronze_df = spark.table("hospitality_lab.bronze.bookings_bronze")
+bronze_df = spark.table("hospitality_lab_hector.bronze.bookings_bronze")
 
 silver_df = (
     bronze_df
@@ -84,7 +88,7 @@ silver_df = (
 )
 
 silver_df.write.format("delta").mode("overwrite") \
-    .saveAsTable("hospitality_lab.silver.bookings_silver")
+    .saveAsTable("hospitality_lab_hector.silver.bookings_silver")
 
 print("Bronze:", bronze_df.count(), "| Silver:", silver_df.count())
 ```
@@ -101,52 +105,46 @@ print("Bronze:", bronze_df.count(), "| Silver:", silver_df.count())
 
 B004 y B015 (email nulo) y B014 (pending) se conservan.
 
-📸 **Captura:** salida `Bronze: 16 | Silver: 11`.
-
-![Captura 2](capturas/02-silver.png)
+![salida `Bronze: 16 | Silver: 11`](images/README-1794910049736.png)
 
 ## Ejercicio 3 (parte A): Gold – `property_performance`
 
 ```sql
-CREATE OR REPLACE TABLE hospitality_lab.gold.property_performance AS
+CREATE OR REPLACE TABLE hospitality_lab_hector.gold.property_performance AS
 SELECT
   property_id,
   property_name,
   COUNT(*) AS confirmed_bookings,
   SUM(DATEDIFF(check_out_date, check_in_date)) AS total_nights,
   SUM(DATEDIFF(check_out_date, check_in_date) * rate_per_night) AS total_revenue
-FROM hospitality_lab.silver.bookings_silver
+FROM hospitality_lab_hector.silver.bookings_silver
 WHERE booking_status = 'confirmed'
 GROUP BY property_id, property_name
 ORDER BY total_revenue DESC;
 
-SELECT * FROM hospitality_lab.gold.property_performance;
+SELECT * FROM hospitality_lab_hector.gold.property_performance;
 ```
 
-📸 **Captura:** resultado del `SELECT`.
-
-![Captura 3a](capturas/03a-property-performance.png)
+![resultado del `SELECT`](images/README-1794910183815.png)
 
 ## Ejercicio 3 (parte B): Gold – `channel_performance`
 
 ```sql
-CREATE OR REPLACE TABLE hospitality_lab.gold.channel_performance AS
+CREATE OR REPLACE TABLE hospitality_lab_hector.gold.channel_performance AS
 SELECT
   channel,
   COUNT(*) AS booking_count,
   SUM(DATEDIFF(check_out_date, check_in_date) * rate_per_night) AS total_revenue,
   ROUND(AVG(DATEDIFF(check_out_date, check_in_date) * rate_per_night), 2) AS avg_revenue_per_booking
-FROM hospitality_lab.silver.bookings_silver
+FROM hospitality_lab_hector.silver.bookings_silver
 WHERE booking_status = 'confirmed'
 GROUP BY channel
 ORDER BY total_revenue DESC;
 
-SELECT * FROM hospitality_lab.gold.channel_performance;
+SELECT * FROM hospitality_lab_hector.gold.channel_performance;
 ```
 
-📸 **Captura:** resultado del `SELECT`.
-
-![Captura 3b](capturas/03b-channel-performance.png)
+![resultado del `SELECT`](images/README-1794910236401.png)
 
 ## Ejercicio 4 (parte A): Lectura segura de tablas
 
@@ -160,18 +158,16 @@ def safe_read_table(table_name):
         print(f"Error leyendo {table_name}: {e.getErrorClass()}")
         return None
 
-df_ok = safe_read_table("hospitality_lab.silver.bookings_silver")
+df_ok = safe_read_table("hospitality_lab_hector.silver.bookings_silver")
 print("OK:", df_ok.count())
 
-df_bad = safe_read_table("hospitality_lab.silver.no_existe")
+df_bad = safe_read_table("hospitality_lab_hector.silver.no_existe")
 print("Resultado tabla inexistente:", df_bad)
 ```
 
 **Resultado esperado:** recuento `11` para la tabla válida; para la inexistente, un mensaje con la clase de error (`TABLE_OR_VIEW_NOT_FOUND`) y `None`.
 
-📸 **Captura:** salida con ambos casos.
-
-![Captura 4a](capturas/04a-safe-read.png)
+![salida con ambos casos](images/README-1794910320120.png)
 
 ## Ejercicio 4 (parte B): Informar el resultado al job
 
@@ -183,14 +179,12 @@ def report_pipeline_outcome(table_name):
     except Exception as e:
         dbutils.notebook.exit(f"FAILED: {e}")
 
-# report_pipeline_outcome("hospitality_lab.silver.bookings_silver")  # comentada a propósito
+# report_pipeline_outcome("hospitality_lab_hector.silver.bookings_silver")  # comentada a propósito
 ```
 
 > La llamada se deja **comentada** porque `dbutils.notebook.exit()` detiene el notebook.
 
-📸 **Captura:** función definida y llamada comentada.
-
-![Captura 4b](capturas/04b-report-outcome.png)
+![función definida y llamada comentada](images/README-1794910360654.png)
 
 ## Ejercicio 5 (parte A): Parámetro con widget
 
@@ -198,21 +192,19 @@ def report_pipeline_outcome(table_name):
 dbutils.widgets.text("booking_status", "confirmed", "Booking Status Filter")
 
 status = dbutils.widgets.get("booking_status")
-filtered = spark.table("hospitality_lab.silver.bookings_silver") \
+filtered = spark.table("hospitality_lab_hector.silver.bookings_silver") \
     .filter(f"booking_status = '{status}'")
 
 display(filtered)
 print("Filas:", filtered.count())
 ```
 
-📸 **Captura:** widget "Booking Status Filter" y tabla filtrada.
-
-![Captura 5a](capturas/05a-widget.png)
+![widget "Booking Status Filter" y tabla filtrada](images/README-1794910436663.png)
 
 ## Ejercicio 5 (parte B): Task values
 
 ```python
-silver = spark.table("hospitality_lab.silver.bookings_silver")
+silver = spark.table("hospitality_lab_hector.silver.bookings_silver")
 props = [r.property_id for r in silver.select("property_id").distinct().collect()]
 
 dbutils.jobs.taskValues.set(key="silver_record_count", value=silver.count())
@@ -223,9 +215,7 @@ print(silver.count(), props)
 
 > Fuera de la ejecución de un job, `taskValues.set()` no hace nada y muestra un aviso. Es el comportamiento esperado.
 
-📸 **Captura:** salida con el recuento y la lista de propiedades.
-
-![Captura 5b](capturas/05b-task-values.png)
+![salida con el recuento y la lista de propiedades](images/README-1794910507381.png)
 
 ---
 
@@ -248,10 +238,8 @@ print(silver.count(), props)
 | `clean_silver` | `ingest_bronze` | `layer=silver` | 2 (60 s) |
 | `aggregate_gold` | `clean_silver` | `layer=gold` | – |
 
-📸 **Captura:** configuración de `clean_silver` (parámetro y reintentos) y DAG con las tres tareas en cadena.
-
-![Captura 6.1a](capturas/06a-clean-silver.png)
-![Captura 6.1b](capturas/06b-dag.png)
+![alt text](images/README-1794911363377.png)
+![alt text](images/README-1794911374281.png)
 
 ### 6.2 Notificaciones de fallo
 
@@ -260,18 +248,15 @@ print(silver.count(), props)
 3. (Opcional) silenciar notificaciones hasta el último reintento.
 4. Guardar.
 
-📸 **Captura:** notificación *On failure* configurada.
-
-![Captura 6.2](capturas/06c-notificaciones.png)
+![notificación *On failure* configurada.](images/README-1794918194675.png)
 
 ### 6.3 Ejecutar el job
 
 1. Pulsar **Run now**.
 2. En la pestaña **Runs**, comprobar el orden `ingest_bronze → clean_silver → aggregate_gold` y revisar salida, logs y duración de cada tarea.
 
-📸 **Captura:** ejecución finalizada con las tres tareas correctas y sus duraciones.
-
-![Captura 6.3](capturas/06d-run.png)
+![alt text](images/README-1794918932655.png)
+![alt text](images/README-1794918938385.png)
 
 ## Ejercicio 7: Añadir un flujo condicional (*Add a conditional task flow*)
 
@@ -287,12 +272,11 @@ El valor a comparar no lo especifica el enunciado. Propuesta: que `check_quality
 {{tasks.check_quality.values.issue_count}} > 5
 ```
 
-*(Indicar aquí el valor realmente utilizado.)*
+![alt text](images/README-1794919012883.png)
 
 📸 **Captura:** DAG final y configuración de la condición de `quality_gate`.
 
-![Captura 7a](capturas/07a-dag-condicional.png)
-![Captura 7b](capturas/07b-quality-gate.png)
+![alt text](images/README-1794919231687.png)
 
 ---
 
@@ -311,7 +295,7 @@ Lo habitual es combinarlos: el notebook detecta y reporta el problema, y el job 
 El laboratorio no incluye sección de limpieza. Solo tras tener capturas y README entregados:
 
 ```sql
-DROP CATALOG IF EXISTS hospitality_lab CASCADE;
+DROP CATALOG IF EXISTS hospitality_lab_hector CASCADE;
 ```
 
 # Conclusiones
