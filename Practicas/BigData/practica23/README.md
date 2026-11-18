@@ -3,7 +3,7 @@
 **Alumno:** Héctor Miguel Tudela · Máster Big Data & IA (Tajamar)
 **Fecha de realización:** 18-nov-2026
 
-> Documento vivo: se va completando a medida que se ejecuta cada ejercicio. Cada paso incluye su 📸 Captura (carpeta `capturas/`).
+> Documento vivo: se va completando a medida que se ejecuta cada ejercicio. Cada paso incluye su Captura (carpeta `images/`).
 
 ## 0. Recursos Azure utilizados
 
@@ -29,9 +29,9 @@
 ### 1.1 Servidor y base de datos SQL
 Se crea el servidor `server-practica1-hmt` (France Central, autenticación SQL) y la base `sqldb-ventas` con la oferta gratuita. En el firewall del servidor se añade la IP del cliente y se marca **«Permitir que los servicios y recursos de Azure accedan a este servidor»** (necesario para que Data Factory llegue a la base de datos).
 
-📸 Captura: `capturas/ej1_01_conexion_query_editor.jpg` – Query editor conectado, devolviendo `sqldb-ventas` y el usuario `practica`.
+Captura: `images/ej1_01_conexion_query_editor.jpg` – Query editor conectado, devolviendo `sqldb-ventas` y el usuario `practica`.
 
-![conexión](capturas/ej1_01_conexion_query_editor.jpg)
+![conexión](images/ej1_01_conexion_query_editor.jpg)
 
 ### 1.2 Modelo relacional y datos
 Desde el **Editor de consultas** se ejecuta el script del enunciado en dos partes:
@@ -39,16 +39,16 @@ Desde el **Editor de consultas** se ejecuta el script del enunciado en dos parte
 1. **Parte 1:** crea el esquema `etl` y las tablas `Clientes`, `Productos`, `Tiendas` y `Ventas` (con columnas calculadas persistidas `ImporteBruto`, `ImporteDescuento`, `ImporteNeto`, claves foráneas, restricciones `CHECK`) y 5 índices.
 2. **Parte 2:** inserta 10 clientes, 12 productos, 4 tiendas y 30 líneas de venta, crea la vista **`etl.vw_ventas_extraccion`** (une las 4 tablas; es el origen de la copia) y valida.
 
-📸 Captura: `ej1_02_tablas_creadas.jpg` – «Consulta ejecutada correctamente» tras crear tablas e índices.
-![tablas](capturas/ej1_02_tablas_creadas.jpg)
+Captura: `ej1_02_tablas_creadas.jpg` – «Consulta ejecutada correctamente» tras crear tablas e índices.
+![tablas](images/ej1_02_tablas_creadas.jpg)
 
-📸 Captura: `ej1_03_vista_resultado.jpg` – `SELECT TOP (20) * FROM etl.vw_ventas_extraccion` con 20 filas.
-![vista](capturas/ej1_03_vista_resultado.jpg)
+Captura: `ej1_03_vista_resultado.jpg` – `SELECT TOP (20) * FROM etl.vw_ventas_extraccion` con 20 filas.
+![vista](images/ej1_03_vista_resultado.jpg)
 
 **Validación:** conteos esperados 10 / 12 / 4 / 30 y la vista con 30 filas.
 
-📸 Captura: `ej1_04_validacion_conteos.jpg`
-![conteos](capturas/ej1_04_validacion_conteos.jpg)
+Captura: `ej1_04_validacion_conteos.jpg`
+![conteos](images/ej1_04_validacion_conteos.jpg)
 
 | Entidad | Registros |
 |---|---|
@@ -61,17 +61,17 @@ Desde el **Editor de consultas** se ejecuta el script del enunciado en dos parte
 ### 1.3 Permisos: Managed Identity de Data Factory sobre el lago
 En lugar de usar claves de la cuenta de almacenamiento, Data Factory se autentica con su **identidad administrada del sistema**. En la cuenta `stadfhmt2326` → *Control de acceso (IAM)* → *Agregar asignación de roles* se asigna **Storage Blob Data Contributor** (en español: *Colaborador de datos de Storage Blob*) a la identidad `adf-practica-hmt2326France`.
 
-📸 Captura: `ej1_05_rol_identidad_adf.jpg` – asignación con miembro `adf-practica-hmt2326France` (Factoría de datos V2).
-![rol](capturas/ej1_05_rol_identidad_adf.jpg)
+Captura: `ej1_05_rol_identidad_adf.jpg` – asignación con miembro `adf-practica-hmt2326France` (Factoría de datos V2).
+![rol](images/ej1_05_rol_identidad_adf.jpg)
 
-📸 Captura: `ej1_06_rol_asignado_ok.jpg` – notificación «Asignación de roles agregada».
-![rol ok](capturas/ej1_06_rol_asignado_ok.jpg)
+Captura: `ej1_06_rol_asignado_ok.jpg` – notificación «Asignación de roles agregada».
+![rol ok](images/ej1_06_rol_asignado_ok.jpg)
 
 ### 1.4 Contenedor `raw`
 En *Contenedores* se crea `raw` (acceso privado). Es la capa de aterrizaje de datos sin transformar (patrón **EL**: Extract–Load, sin transformaciones).
 
-📸 Captura: `ej1_07_contenedor_raw.jpg`
-![raw](capturas/ej1_07_contenedor_raw.jpg)
+Captura: `ej1_07_contenedor_raw.jpg`
+![raw](images/ej1_07_contenedor_raw.jpg)
 
 ### 1.5 Linked Services en Data Factory Studio
 Se crean en *Manage → Linked services*:
@@ -79,11 +79,11 @@ Se crean en *Manage → Linked services*:
 - **`ls_sql_ventas`** (Azure SQL Database): servidor `server-practica1-hmt.database.windows.net`, base `sqldb-ventas`, autenticación SQL con usuario `practica` (contraseña escrita por el alumno).
 - **`ls_adls_raw`** (ADLS Gen2): autenticación **System-assigned managed identity**, cuenta `stadfhmt2326`. El *Test connection* resulta correcto porque el rol del paso 1.3 ya está asignado.
 
-📸 Captura: `ej1_08_ls_sql_creado.jpg`
-![ls sql](capturas/ej1_08_ls_sql_creado.jpg)
+Captura: `ej1_08_ls_sql_creado.jpg`
+![ls sql](images/ej1_08_ls_sql_creado.jpg)
 
-📸 Captura: `ej1_09_ls_adls_conexion_ok.jpg` – «Connection successful».
-![ls adls](capturas/ej1_09_ls_adls_conexion_ok.jpg)
+Captura: `ej1_09_ls_adls_conexion_ok.jpg` – «Connection successful».
+![ls adls](images/ej1_09_ls_adls_conexion_ok.jpg)
 
 ### 1.6 Datasets (los "mapas" de los datos)
 
@@ -98,8 +98,8 @@ Un **Linked Service** dice *dónde* está el sistema; un **Dataset** dice *qué 
 - CSV con cabecera, separador coma y salto de línea `\n`.
 - En el dataset de ADLS dejé *Import schema = None*, porque la carpeta `sql/ventas` aún no existía (ADF la crea al escribir).
 
-📸 Captura: `ej1_10_dataset_sql_preview.jpg` – *Preview data* del dataset SQL con las 30 filas de la vista.
-![dataset sql](capturas/ej1_10_dataset_sql_preview.jpg)
+Captura: `ej1_10_dataset_sql_preview.jpg` – *Preview data* del dataset SQL con las 30 filas de la vista.
+![dataset sql](images/ej1_10_dataset_sql_preview.jpg)
 
 ### 1.7 Pipeline `pl_sql_ventas_to_adls_raw` (actividad Copy)
 
@@ -117,23 +117,23 @@ Como la lista de actividades no admitía arrastrar y soltar en esta sesión, def
 
 **Validate** → sin errores. **Debug** → `Succeeded` en 18 s.
 
-📸 Captura: `ej1_11_pipeline_validado.jpg` – pipeline con la actividad Copy y «Your pipeline has been validated».
-![validado](capturas/ej1_11_pipeline_validado.jpg)
+Captura: `ej1_11_pipeline_validado.jpg` – pipeline con la actividad Copy y «Your pipeline has been validated».
+![validado](images/ej1_11_pipeline_validado.jpg)
 
-📸 Captura: `ej1_12_debug_succeeded.jpg` – pestaña Output con la actividad en *Succeeded*.
-![debug](capturas/ej1_12_debug_succeeded.jpg)
+Captura: `ej1_12_debug_succeeded.jpg` – pestaña Output con la actividad en *Succeeded*.
+![debug](images/ej1_12_debug_succeeded.jpg)
 
 ### 1.8 Publicar y verificar el resultado
 
 *Debug* ejecuta el pipeline sin guardarlo en el servicio; para que exista de verdad (y poder usar triggers) hay que **Publish all**. Se publicaron 4 cambios: el pipeline, los 2 datasets y el Linked Service de ADLS.
 
-📸 Captura: `ej1_13_publicado.jpg` – aviso «Publishing completed – Successfully published».
-![publicado](capturas/ej1_13_publicado.jpg)
+Captura: `ej1_13_publicado.jpg` – aviso «Publishing completed – Successfully published».
+![publicado](images/ej1_13_publicado.jpg)
 
 Verificación en el Storage Account `stadfhmt2326` → contenedor `raw` → `sql/ventas`: aparece `ventas_20261118_163323.csv` (blob en bloques, nivel Hot). ADF creó las carpetas solo.
 
-📸 Captura: `ej1_14_archivo_en_raw.jpg` – ruta `raw > sql > ventas` con el CSV.
-![archivo](capturas/ej1_14_archivo_en_raw.jpg)
+Captura: `ej1_14_archivo_en_raw.jpg` – ruta `raw > sql > ventas` con el CSV.
+![archivo](images/ej1_14_archivo_en_raw.jpg)
 
 ### 1.9 Trigger de programación (ingesta recurrente)
 
@@ -141,11 +141,11 @@ Un **trigger** lanza el pipeline automáticamente. Creé `tr_diario_sql_ventas` 
 
 Importante: un trigger **no se activa hasta que se publica**. ADF lo avisa en rojo («Make sure to Publish for trigger to be activated»), por eso hice *Publish all* de nuevo.
 
-📸 Captura: `ej1_15_trigger_config.jpg` – panel *New trigger* con Schedule, cada 1 día.
-![trigger](capturas/ej1_15_trigger_config.jpg)
+Captura: `ej1_15_trigger_config.jpg` – panel *New trigger* con Schedule, cada 1 día.
+![trigger](images/ej1_15_trigger_config.jpg)
 
-📸 Captura: `ej1_16_trigger_publicado.jpg` – «Publishing… Deployed 1 of 1 resources» y el botón *Trigger (1)* en el pipeline.
-![trigger publicado](capturas/ej1_16_trigger_publicado.jpg)
+Captura: `ej1_16_trigger_publicado.jpg` – «Publishing… Deployed 1 of 1 resources» y el botón *Trigger (1)* en el pipeline.
+![trigger publicado](images/ej1_16_trigger_publicado.jpg)
 
 ---
 
@@ -164,8 +164,8 @@ Cosmos DB es una base de datos **NoSQL de documentos (JSON)**. Creé una cuenta 
 | Nivel gratis | Aplicado | Primeros 1000 RU/s y 25 GB gratis |
 | Límite total de rendimiento | Activado | Evita cargos inesperados |
 
-📸 Captura: `ej2_01_cosmos_basicos.jpg` – formulario con France Central, nivel gratis aplicado y límite de rendimiento.
-![cosmos](capturas/ej2_01_cosmos_basicos.jpg)
+Captura: `ej2_01_cosmos_basicos.jpg` – formulario con France Central, nivel gratis aplicado y límite de rendimiento.
+![cosmos](images/ej2_01_cosmos_basicos.jpg)
 
 ### 2.2 Base de datos y contenedor (Data Explorer)
 
@@ -180,25 +180,25 @@ En el **Explorador de datos** creé con *New Container*:
 
 La **clave de partición** decide cómo Cosmos reparte los documentos entre particiones físicas. `usuario_id` es una buena elección porque hay muchos usuarios distintos (reparto uniforme) y las consultas típicas filtran por usuario.
 
-📸 Captura: `ej2_02_nuevo_contenedor.jpg` – panel *New Container* con db-eventos, eventos, /usuario_id y 400 RU/s.
-![nuevo contenedor](capturas/ej2_02_nuevo_contenedor.jpg)
+Captura: `ej2_02_nuevo_contenedor.jpg` – panel *New Container* con db-eventos, eventos, /usuario_id y 400 RU/s.
+![nuevo contenedor](images/ej2_02_nuevo_contenedor.jpg)
 
-📸 Captura: `ej2_03_contenedor_creado.jpg` – árbol `db-eventos > eventos` en el Explorador de datos.
-![contenedor creado](capturas/ej2_03_contenedor_creado.jpg)
+Captura: `ej2_03_contenedor_creado.jpg` – árbol `db-eventos > eventos` en el Explorador de datos.
+![contenedor creado](images/ej2_03_contenedor_creado.jpg)
 
 ### 2.3 Carga de los 30 documentos
 
 Subí `eventos_web.json` (30 documentos con `usuario_id`) desde el Explorador de datos: *eventos → Items → Upload Item*. Cosmos añade a cada documento campos de sistema (`id`, `_rid`, `_ts`…) y por eso la copia posterior los incluirá.
 
-📸 Captura: `ej2_04_30_documentos.jpg` – pestaña *Items* con los 30 documentos cargados.
-![30 documentos](capturas/ej2_04_30_documentos.jpg)
+Captura: `ej2_04_30_documentos.jpg` – pestaña *Items* con los 30 documentos cargados.
+![30 documentos](images/ej2_04_30_documentos.jpg)
 
 ### 2.4 Linked Service `ls_cosmos_eventos`
 
 En ADF Studio → *Manage → Linked services → New → Azure Cosmos DB for NoSQL*. Elegí **Account key + From Azure subscription**: ADF obtiene él mismo la clave de la cuenta, así que **no hay que escribir ni pegar ninguna clave** (y por tanto no aparece en este README). Base de datos: `db-eventos`. *Test connection* → correcta.
 
-📸 Captura: `ej2_05_ls_cosmos_conexion_ok.jpg` – «Connection successful».
-![ls cosmos](capturas/ej2_05_ls_cosmos_conexion_ok.jpg)
+Captura: `ej2_05_ls_cosmos_conexion_ok.jpg` – «Connection successful».
+![ls cosmos](images/ej2_05_ls_cosmos_conexion_ok.jpg)
 
 ### 2.5 Datasets
 
@@ -235,21 +235,21 @@ Una actividad **Copy** (`Copy_eventos_cosmos_to_adls`): origen `CosmosDbSqlApiSo
 
 Para simular un "sistema origen" distinto del lago de datos creé una cuenta **`stblobhmt2326`** (Standard, LRS, France Central) con el **espacio de nombres jerárquico DESACTIVADO**: es Blob Storage normal, mientras que `stadfhmt2326` (destino) lo tiene activado y por eso es un ADLS Gen2.
 
-📸 Captura: `ej3_01_blob_sin_hns.jpg` – pestaña Avanzado con «Habilitar el espacio de nombres jerárquico» sin marcar.
-![blob sin hns](capturas/ej3_01_blob_sin_hns.jpg)
+Captura: `ej3_01_blob_sin_hns.jpg` – pestaña Avanzado con «Habilitar el espacio de nombres jerárquico» sin marcar.
+![blob sin hns](images/ej3_01_blob_sin_hns.jpg)
 
 ### 3.2 Contenedor `historico`
 
 Dentro de `stblobhmt2326` creé el contenedor privado **`historico`**; los CSV irán en la "carpeta" virtual `ventas/` (en Blob normal las carpetas son solo prefijos del nombre del blob).
 
-📸 Captura: `ej3_02_contenedor_historico.jpg` – lista de contenedores con `$logs` e `historico`.
-![historico](capturas/ej3_02_contenedor_historico.jpg)
+Captura: `ej3_02_contenedor_historico.jpg` – lista de contenedores con `$logs` e `historico`.
+![historico](images/ej3_02_contenedor_historico.jpg)
 
 ### 3.3 Subida de los 3 CSV
 
 Los tres históricos (`ventas_2020.csv`, `ventas_2021.csv`, `ventas_2022.csv`, 60 filas cada uno) se subieron al contenedor `historico` con *Cargar*, indicando la carpeta de destino **`ventas`**.
 
-📸 Captura: panel *Cargar blob* con los 3 archivos y la carpeta `ventas`; después, el contenedor mostrando `ventas/` con los 3 CSV.
+Captura: panel *Cargar blob* con los 3 archivos y la carpeta `ventas`; después, el contenedor mostrando `ventas/` con los 3 CSV.
 
 ### 3.4 Linked Service `ls_blob_historico`
 
