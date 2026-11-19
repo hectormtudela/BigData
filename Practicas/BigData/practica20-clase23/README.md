@@ -1,9 +1,6 @@
 # Clase 23 – Introducción a Big Data · Sesión 2: Ingesta EL con Azure Data Factory
 
 **Alumno:** Héctor Miguel Tudela · Máster Big Data & IA (Tajamar)
-**Fecha de realización:** 18-nov-2026
-
-> Documento vivo: se va completando a medida que se ejecuta cada ejercicio. Cada paso incluye su Captura (carpeta `images/`).
 
 ## 0. Recursos Azure utilizados
 
