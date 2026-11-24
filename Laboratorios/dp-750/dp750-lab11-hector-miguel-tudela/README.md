@@ -2,7 +2,6 @@
 
 > **Autor:** Héctor Miguel Tudela · **Máster Big Data & IA – Tajamar**
 > **Laboratorio:** https://microsoftlearning.github.io/DP-750T00-Implement-Data-Engineering-Solutions-using-Azure-Databricks/Instructions/Labs/11-implement-lakeflow-jobs.html
-> **Fecha de realización:** 17-nov-2026 · **Workspace:** `adb-dp750` (France Central) · **Compute:** Serverless
 
 ---
 
