@@ -1,0 +1,3 @@
+{"camion": "TRK-11", "velocidad_kmh": 87.5, "ubicacion": {"ciudad": "Zaragoza", "lat": 41.65, "lon": -0.88}, "alertas": ["neumatico"]}
+{"camion": "TRK-12", "velocidad_kmh": 0.0, "ubicacion": {"ciudad": "Bilbao", "lat": 43.26, "lon": -2.93}, "alertas": []}
+{"camion": "TRK-13", "velocidad_kmh": 104.2, "ubicacion": {"ciudad": "Madrid", "lat": 40.42, "lon": -3.70}, "alertas": ["velocidad", "combustible"]}

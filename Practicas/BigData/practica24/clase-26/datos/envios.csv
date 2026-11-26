@@ -1,0 +1,5 @@
+envio,destino,peso_kg,tarifa
+ENV-1,Madrid,2.5,4.90
+ENV-2,Bilbao,12.0,9.50
+ENV-3,Madrid,31.0,18.00
+ENV-4,Sevilla,0.8,3.90
