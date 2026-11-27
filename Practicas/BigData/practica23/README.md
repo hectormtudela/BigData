@@ -15,7 +15,7 @@ Conceptos demostrados: SCD1 (MERGE) y SCD2 (histórico de ciudad), claves sustit
 | 3 Gold (star schema) | [03-gold](03-gold/README.md) | ✅ |
 | 4 Procedimientos + SCD2 | [04-procedimientos](04-procedimientos/README.md) | ✅ |
 | 5 Pipeline | [05-pipeline](05-pipeline/README.md) | ✅ 7 de 7 actividades (Outlook incluido; Teams opcional no añadido) |
-| 6 Modelo semántico | [06-semantic-model](06-semantic-model/README.md) | ✅ (sin higiene 6.3) |
+| 6 Modelo semántico | [06-semantic-model](06-semantic-model/README.md) | ✅ higiene 6.3 aplicada con cuaderno |
 | 7 Informe | [07-informe](07-informe/README.md) | ✅ 3 páginas hechas, matriz y medida corregidas (maquetación mejorable) |
 | Opcional datamarts | [opcional-datamarts](opcional-datamarts/README.md) | ✅ 3 esquemas + vistas ejecutados (1200/1200/8 filas) |
 | Opcional tiempo real | [opcional-real-time](opcional-real-time/README.md) | ✅ Eventhouse + KQL + Real-Time Dashboard (sin Eventstream) |
